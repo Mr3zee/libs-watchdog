@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.diagnostics.AbstractKtDiagnosticFactory
 import org.jetbrains.kotlin.diagnostics.AbstractSourceElementPositioningStrategy
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory0
+import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory1
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory2
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory3
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
@@ -24,6 +25,8 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtDeclaration
+import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtTypeAlias
 
 /**
  * A diagnostic whose severity is chosen per compilation. A diagnostic factory bakes its severity
@@ -71,6 +74,18 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
     /** Parameters: declaration kind in words, declaration name. */
     val UNDOCUMENTED_PUBLIC_API by configurable2<KtDeclaration, String, Name>(NAME_IDENTIFIER)
 
+    /** Parameter: the alias name. */
+    val FUNCTION_TYPE_ALIAS_PUBLIC_API by configurable1<KtTypeAlias, Name>(NAME_IDENTIFIER)
+
+    /** Parameters: the marker name, the no-op target name. Reported on the `@Target` argument. */
+    val DSL_MARKER_NOOP_TARGET by configurable2<KtExpression, Name, String>()
+
+    /** Parameter: the marker name. */
+    val DSL_MARKER_WITHOUT_EXPLICIT_TARGETS by configurable1<KtClassOrObject, Name>(NAME_IDENTIFIER)
+
+    /** Parameters: the marker name, the type position in words. Reported on the annotation entry. */
+    val DSL_MARKER_NOOP_TYPE_POSITION by configurable2<KtAnnotationEntry, Name, String>()
+
     override fun getRendererFactory(): BaseDiagnosticRendererFactory = WatchdogErrorMessages
 
     /** Builds the error/warning factory pair, deriving the diagnostic name from the property. */
@@ -90,6 +105,12 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
         positioningStrategy: AbstractSourceElementPositioningStrategy = SourceElementPositioningStrategies.DEFAULT,
     ) = configurableDiagnostic { name, severity ->
         KtDiagnosticFactory0(name, severity, positioningStrategy, P::class, getRendererFactory())
+    }
+
+    private inline fun <reified P : PsiElement, A> configurable1(
+        positioningStrategy: AbstractSourceElementPositioningStrategy = SourceElementPositioningStrategies.DEFAULT,
+    ) = configurableDiagnostic { name, severity ->
+        KtDiagnosticFactory1<A>(name, severity, positioningStrategy, P::class, getRendererFactory())
     }
 
     private inline fun <reified P : PsiElement, A, B> configurable2(
@@ -143,6 +164,43 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             rendererA = STRING,
             rendererB = NAME,
         )
+        map.put(
+            diagnostic = WatchdogDiagnostics.FUNCTION_TYPE_ALIAS_PUBLIC_API,
+            message = "The type alias ''{0}'' abbreviates a function type, so clients bind to the " +
+                    "bare function shape: the alias is erased from the compiled API and cannot " +
+                    "evolve into a richer abstraction later. Declare a `fun interface` instead to " +
+                    "keep lambda ergonomics behind a stable nominal type, or mark the alias with " +
+                    "@IntentionallyFunctionTypeAlias if exposing the function type is intended.",
+            rendererA = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.DSL_MARKER_NOOP_TARGET,
+            message = "The DSL marker ''{0}'' allows the {1} annotation target, but a DSL marker " +
+                    "only takes effect on classifier declarations (CLASS, ANNOTATION_CLASS), type " +
+                    "usages (TYPE), and type aliases (TYPEALIAS). Applied to a {1} element the " +
+                    "marker restricts nothing and only gives a false sense of receiver scope " +
+                    "control. Remove the target from @Target.",
+            rendererA = NAME,
+            rendererB = STRING,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.DSL_MARKER_WITHOUT_EXPLICIT_TARGETS,
+            message = "The DSL marker ''{0}'' declares no explicit @Target, so it defaults to " +
+                    "targets like functions and properties where a DSL marker has no effect, while " +
+                    "the effective type usage (TYPE) and type alias (TYPEALIAS) targets stay " +
+                    "unavailable. Declare @Target(CLASS, TYPE, TYPEALIAS) or a subset of it.",
+            rendererA = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.DSL_MARKER_NOOP_TYPE_POSITION,
+            message = "The DSL marker ''{0}'' has no effect on this {1}: scope control only reacts " +
+                    "to markers on the type of an implicit value — a receiver type, a context " +
+                    "parameter type, or a function type with such implicit values. A named value " +
+                    "is always accessed explicitly, so the marker restricts nothing here. Move it " +
+                    "to the class or to a receiver position, or remove it.",
+            rendererA = NAME,
+            rendererB = STRING,
+        )
     }
 
     private fun KtDiagnosticFactoryToRendererMap.put(
@@ -151,6 +209,15 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
     ) {
         put(diagnostic.error, message)
         put(diagnostic.warning, message)
+    }
+
+    private fun <A> KtDiagnosticFactoryToRendererMap.put(
+        diagnostic: ConfigurableWatchdogDiagnostic<KtDiagnosticFactory1<A>>,
+        message: String,
+        rendererA: DiagnosticParameterRenderer<A>?,
+    ) {
+        put(diagnostic.error, message, rendererA)
+        put(diagnostic.warning, message, rendererA)
     }
 
     private fun <A, B> KtDiagnosticFactoryToRendererMap.put(

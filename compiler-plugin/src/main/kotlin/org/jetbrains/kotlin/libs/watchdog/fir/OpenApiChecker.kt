@@ -77,8 +77,8 @@ internal class OpenApiChecker(
         if (subclassOptIn != null) {
             if (!subclassOptIn.hasMarkerClasses()) {
                 reporter.reportOn(
-                    subclassOptIn.source,
-                    severities[WatchdogDiagnostics.SUBCLASS_OPT_IN_WITHOUT_MARKERS],
+                    source = subclassOptIn.source,
+                    factory = severities[WatchdogDiagnostics.SUBCLASS_OPT_IN_WITHOUT_MARKERS],
                 )
             }
             return
@@ -94,18 +94,18 @@ internal class OpenApiChecker(
         if (declaration.classKind == ClassKind.CLASS && !hasPublicPrimaryConstructor) {
             for (constructor in accessibleConstructors) {
                 reporter.reportOn(
-                    constructor.source,
-                    factory,
-                    declaration.classKind,
-                    declaration.name,
+                    source = constructor.source,
+                    factory = factory,
+                    a = declaration.classKind,
+                    b = declaration.name,
                 )
             }
         } else {
             reporter.reportOn(
-                declaration.source,
-                factory,
-                declaration.classKind,
-                declaration.name,
+                source = declaration.source,
+                factory = factory,
+                a = declaration.classKind,
+                b = declaration.name,
             )
         }
     }

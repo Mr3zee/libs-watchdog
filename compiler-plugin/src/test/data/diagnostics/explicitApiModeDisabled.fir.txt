@@ -57,3 +57,4 @@ FILE: explicitApiModeDisabled.kt
         }
 
     }
+    public final typealias UnacknowledgedCallback = R|(kotlin/Int) -> kotlin/Unit|

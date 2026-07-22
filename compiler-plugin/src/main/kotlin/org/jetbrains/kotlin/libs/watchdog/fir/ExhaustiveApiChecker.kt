@@ -38,11 +38,11 @@ internal class ExhaustiveApiChecker(
         }
 
         reporter.reportOn(
-            declaration.source,
-            severities[WatchdogDiagnostics.EXHAUSTIVE_PUBLIC_API],
-            declaration.classKind,
-            declaration.name,
-            declaration.classKind,
+            source = declaration.source,
+            factory = severities[WatchdogDiagnostics.EXHAUSTIVE_PUBLIC_API],
+            a = declaration.classKind,
+            b = declaration.name,
+            c = declaration.classKind,
         )
     }
 }

@@ -19,6 +19,10 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("e: ", "can be subclassed outside the library without restriction")
         result.assertDiagnosticReported("e: ", "can be matched exhaustively by clients")
         result.assertDiagnosticReported("e: ", "has no KDoc")
+        result.assertDiagnosticReported("e: ", "abbreviates a function type")
+        result.assertDiagnosticReported("e: ", "allows the FUNCTION annotation target")
+        result.assertDiagnosticReported("e: ", "declares no explicit @Target")
+        result.assertDiagnosticReported("e: ", "has no effect on this parameter type")
     }
 
     @Test
@@ -29,6 +33,10 @@ class WatchdogProjectTest {
                     openApiWithoutSubclassOptIn.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
                     exhaustivePublicApi.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
                     undocumentedPublicApi.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
+                    functionTypeAliasPublicApi.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
+                    dslMarkerNoopTarget.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
+                    dslMarkerWithoutExplicitTargets.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
+                    dslMarkerNoopTypePosition.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
                 }
             """.trimIndent(),
         ) {
@@ -39,6 +47,10 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("w: ", "can be subclassed outside the library without restriction")
         result.assertDiagnosticReported("w: ", "can be matched exhaustively by clients")
         result.assertDiagnosticReported("w: ", "has no KDoc")
+        result.assertDiagnosticReported("w: ", "abbreviates a function type")
+        result.assertDiagnosticReported("w: ", "allows the FUNCTION annotation target")
+        result.assertDiagnosticReported("w: ", "declares no explicit @Target")
+        result.assertDiagnosticReported("w: ", "has no effect on this parameter type")
     }
 
     @Test
@@ -72,6 +84,8 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("can be subclassed outside the library"))
         assertFalse(result.output.contains("can be matched exhaustively by clients"))
         assertFalse(result.output.contains("has no KDoc"))
+        assertFalse(result.output.contains("abbreviates a function type"))
+        assertFalse(result.output.contains("DSL marker"))
     }
 
     @Test
@@ -84,6 +98,8 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("can be subclassed outside the library"))
         assertFalse(result.output.contains("can be matched exhaustively by clients"))
         assertFalse(result.output.contains("has no KDoc"))
+        assertFalse(result.output.contains("abbreviates a function type"))
+        assertFalse(result.output.contains("DSL marker"))
     }
 
     /** Asserts the message was reported with the given compiler severity prefix (`e: ` or `w: `). */
@@ -95,13 +111,35 @@ class WatchdogProjectTest {
     }
 }
 
+@Suppress("RedundantVisibilityModifier")
 @Language("kotlin")
 private val unacknowledgedFile = """
     public open class UnprotectedOpenClass
 
     public enum class UnmarkedEnum { A, B }
+
+    /** An unacknowledged function type alias. */
+    public typealias UnacknowledgedCallback = (Int) -> Unit
+
+    /** A DSL marker with a target on which it has no effect. */
+    @DslMarker
+    @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+    public annotation class NoopTargetDsl
+
+    /** A DSL marker left with the default target set. */
+    @DslMarker
+    public annotation class TargetlessDsl
+
+    /** A DSL marker with tidy targets, misapplied to an inert type position below. */
+    @DslMarker
+    @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE, AnnotationTarget.TYPEALIAS)
+    public annotation class ScopedDsl
+
+    /** A parameter type carrying a DSL marker that restricts nothing. */
+    public fun processTag(tag: @ScopedDsl UnprotectedOpenClass): Unit = Unit
 """.trimIndent()
 
+@Suppress("RedundantVisibilityModifier")
 @Language("kotlin")
 private val acknowledgedFile = """
     /** A deliberately open class. */
@@ -110,8 +148,23 @@ private val acknowledgedFile = """
 
     /** A deliberately exhaustive enum. */
     @IntentionallyExhaustive
-    public enum class MarkedEnum { A, B }
+    public enum class MarkedEnum {
+        /** The first entry. */
+        A,
+
+        /** The second entry. */
+        B,
+    }
 
     @IntentionallyUndocumented
     public class DeliberatelyUndocumentedClass
+
+    /** A deliberate function type alias. */
+    @IntentionallyFunctionTypeAlias
+    public typealias DeliberateCallback = (Int) -> Unit
+
+    /** A DSL marker with only effective targets. */
+    @DslMarker
+    @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE, AnnotationTarget.TYPEALIAS)
+    public annotation class TidyDsl
 """.trimIndent()

@@ -23,3 +23,5 @@ sealed class UnmarkedSealedClass {
 class UndocumentedClass
 
 object UndocumentedObject
+
+typealias UnacknowledgedCallback = (Int) -> Unit

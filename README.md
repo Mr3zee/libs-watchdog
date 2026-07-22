@@ -8,8 +8,8 @@ top of the [compiler-plugin-dev-kit](../compiler-plugin-dev-kit) (consumed from 
 The plugin only runs in modules compiled with
 [explicit API mode](https://kotlinlang.org/docs/api-guidelines-simplicity.html#use-explicit-api-mode)
 (`kotlin { explicitApi() }` or `-Xexplicit-api`, in either `strict` or `warning` variant); without
-it the checkers are not registered at all. The checkers only look at declarations visible to
-library clients (public or protected API).
+it the checkers are not registered at all. Unless noted otherwise, the checkers only look at
+declarations visible to library clients (public or protected API).
 
 - `OPEN_API_WITHOUT_SUBCLASS_OPT_IN` — reports open/abstract classes and interfaces that can
   be subclassed outside the library without restriction. Suppress by gating subclassing with
@@ -27,6 +27,34 @@ library clients (public or protected API).
   described by `@constructor`/`@param` tags in the class KDoc, and a property is covered by a
   matching `@property` tag there. Fix by documenting the declaration, or acknowledge the
   omission with `@IntentionallyUndocumented`.
+- `FUNCTION_TYPE_ALIAS_PUBLIC_API` — reports type aliases that abbreviate function types
+  (including suspend, nullable, and receiver variants, and aliases of such aliases). The alias is
+  erased from the compiled API, so clients bind to the bare function shape and the type cannot
+  evolve into a richer abstraction later. Declare a
+  [`fun interface`](https://kotlinlang.org/docs/fun-interfaces.html) instead to keep lambda
+  ergonomics behind a stable nominal type, or acknowledge the alias with
+  `@IntentionallyFunctionTypeAlias`. Aliases of `KFunction`/`KSuspendFunction` reflection types
+  are exempt: a fun interface cannot replace them.
+- `DSL_MARKER_NOOP_TARGET` — reports annotation targets of a
+  [`@DslMarker`](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-dsl-marker/) annotation on
+  which the marker has no effect. Receiver scope control only reacts to markers on classifier
+  declarations (`CLASS`, `ANNOTATION_CLASS`), type usages (`TYPE`), and type aliases
+  (`TYPEALIAS`) — see the
+  [DSL marker design note](https://github.com/Kotlin/KEEP/blob/main/notes/0005-dsl-marker.md).
+  Any other target (`FUNCTION`, `PROPERTY`, `VALUE_PARAMETER`, ...) lets users apply the marker
+  where it silently restricts nothing, giving a false sense of scope control. Fix by removing the
+  no-op targets from `@Target`. Markers of any visibility are checked — even an internal marker
+  is applied across the library's possibly public DSL classes.
+- `DSL_MARKER_WITHOUT_EXPLICIT_TARGETS` — reports `@DslMarker` annotations without an explicit
+  `@Target`: the default target set allows nine such no-op targets while forbidding the effective
+  `TYPE` and `TYPEALIAS` ones. Fix by declaring `@Target(CLASS, TYPE, TYPEALIAS)` or a subset.
+- `DSL_MARKER_NOOP_TYPE_POSITION` — reports DSL markers written on type positions where they have
+  no effect: a plain parameter type (`fun process(tag: @MyDsl Tag)`), a return type, or a
+  property/variable type. Scope control only reacts to markers on the type of an implicit value —
+  a receiver type, a context parameter type, or a function type with such implicit values (there
+  the marker propagates to them). Markers on supertypes, type parameter bounds, and type alias
+  expansions are effective carriers and stay exempt; markers nested in type arguments are not
+  analyzed. Unlike the API-surface checks, this one also fires on non-public declarations.
 
 ## Configuring severities
 
@@ -41,6 +69,10 @@ libsWatchdog {
     subclassOptInWithoutMarkers.set(WatchdogSeverity.WARNING)
     exhaustivePublicApi.set(WatchdogSeverity.WARNING)
     undocumentedPublicApi.set(WatchdogSeverity.WARNING)
+    functionTypeAliasPublicApi.set(WatchdogSeverity.WARNING)
+    dslMarkerNoopTarget.set(WatchdogSeverity.WARNING)
+    dslMarkerWithoutExplicitTargets.set(WatchdogSeverity.WARNING)
+    dslMarkerNoopTypePosition.set(WatchdogSeverity.WARNING)
 }
 ```
 
@@ -54,7 +86,7 @@ demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
 
 - [`:compiler-plugin`](compiler-plugin/src) — the compiler plugin (FIR checkers).
 - [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) — `@IntentionallyOpen`,
-  `@IntentionallyExhaustive`, and `@IntentionallyUndocumented`.
+  `@IntentionallyExhaustive`, `@IntentionallyUndocumented`, and `@IntentionallyFunctionTypeAlias`.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations
   dependency to a Kotlin project (plugin id `org.jetbrains.kotlin.libs.watchdog`).
 

@@ -5,7 +5,9 @@ import org.jetbrains.kotlin.config.ExplicitApiMode
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirBasicDeclarationChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirCallableDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirTypeAliasChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.languageVersionSettings
 
@@ -23,10 +25,21 @@ class WatchdogFirCheckers(
             session.languageVersionSettings.getFlag(AnalysisFlags.explicitApiMode) != ExplicitApiMode.DISABLED
 
         override val classCheckers: Set<FirClassChecker> =
-            if (enabled) setOf(OpenApiChecker(severities), ExhaustiveApiChecker(severities)) else emptySet()
+            if (enabled) {
+                setOf(OpenApiChecker(severities), ExhaustiveApiChecker(severities), DslMarkerTargetsChecker(severities))
+            } else {
+                emptySet()
+            }
 
         // UndocumentedApiChecker watches every declaration kind, not just classes.
         override val basicDeclarationCheckers: Set<FirBasicDeclarationChecker> =
             if (enabled) setOf(UndocumentedApiChecker(severities)) else emptySet()
+
+        override val typeAliasCheckers: Set<FirTypeAliasChecker> =
+            if (enabled) setOf(FunctionTypeAliasChecker(severities)) else emptySet()
+
+        // Dispatched to every callable: functions, properties, accessors, and value parameters.
+        override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> =
+            if (enabled) setOf(DslMarkerTypePositionChecker(severities)) else emptySet()
     }
 }

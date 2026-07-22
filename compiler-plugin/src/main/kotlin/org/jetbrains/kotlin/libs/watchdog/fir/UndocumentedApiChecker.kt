@@ -79,10 +79,10 @@ internal class UndocumentedApiChecker(
         }
 
         reporter.reportOn(
-            declaration.source,
-            severities[WatchdogDiagnostics.UNDOCUMENTED_PUBLIC_API],
-            kind,
-            name,
+            source = declaration.source,
+            factory = severities[WatchdogDiagnostics.UNDOCUMENTED_PUBLIC_API],
+            a = kind,
+            b = name,
         )
     }
 

@@ -43,3 +43,16 @@ public annotation class IntentionallyExhaustive
 )
 @Retention(AnnotationRetention.BINARY)
 public annotation class IntentionallyUndocumented
+
+/**
+ * Acknowledges that the annotated type alias deliberately exposes a bare function type.
+ *
+ * The libs-watchdog compiler plugin warns about publicly visible type aliases that abbreviate
+ * function types, because the alias is erased from the compiled API: clients bind to the bare
+ * function shape, and the type cannot grow members or constraints later without breaking them,
+ * unlike a `fun interface`. Apply this annotation to suppress the warning when exposing the
+ * function type is intended (for example, for lambdas that only travel through inline functions).
+ */
+@Target(AnnotationTarget.TYPEALIAS)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyFunctionTypeAlias

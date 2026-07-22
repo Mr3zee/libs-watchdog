@@ -17,6 +17,7 @@ open class WatchdogProject(
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyOpen",
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyExhaustive",
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyUndocumented",
+        "org.jetbrains.kotlin.libs.watchdog.IntentionallyFunctionTypeAlias",
     )
 
     // The watchdog only activates in explicit API mode, so tests enable it unless they
