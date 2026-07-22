@@ -30,25 +30,37 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("can be matched exhaustively by clients"))
         assertFalse(result.output.contains("has no KDoc"))
     }
+
+    @Test
+    fun silentWithoutExplicitApiMode() {
+        val project = object : WatchdogProject(explicitApi = false) {
+            override fun sources() = listOf(source(unacknowledgedFile))
+        }.gradleProject
+
+        val result = build(project.rootDir, "build")
+        assertFalse(result.output.contains("can be subclassed outside the library"))
+        assertFalse(result.output.contains("can be matched exhaustively by clients"))
+        assertFalse(result.output.contains("has no KDoc"))
+    }
 }
 
 @Language("kotlin")
 private val unacknowledgedFile = """
-    open class UnprotectedOpenClass
+    public open class UnprotectedOpenClass
 
-    enum class UnmarkedEnum { A, B }
+    public enum class UnmarkedEnum { A, B }
 """.trimIndent()
 
 @Language("kotlin")
 private val acknowledgedFile = """
     /** A deliberately open class. */
     @IntentionallyOpen
-    open class DeliberatelyOpenClass
+    public open class DeliberatelyOpenClass
 
     /** A deliberately exhaustive enum. */
     @IntentionallyExhaustive
-    enum class MarkedEnum { A, B }
+    public enum class MarkedEnum { A, B }
 
     @IntentionallyUndocumented
-    class DeliberatelyUndocumentedClass
+    public class DeliberatelyUndocumentedClass
 """.trimIndent()

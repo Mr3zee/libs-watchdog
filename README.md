@@ -5,7 +5,11 @@ top of the [compiler-plugin-dev-kit](../compiler-plugin-dev-kit) (consumed from 
 
 ## Checkers
 
-The checkers only look at declarations visible to library clients (public or protected API).
+The plugin only runs in modules compiled with
+[explicit API mode](https://kotlinlang.org/docs/api-guidelines-simplicity.html#use-explicit-api-mode)
+(`kotlin { explicitApi() }` or `-Xexplicit-api`, in either `strict` or `warning` variant); without
+it the checkers are not registered at all. The checkers only look at declarations visible to
+library clients (public or protected API).
 
 - `OPEN_API_WITHOUT_SUBCLASS_OPT_IN` — warns about open/abstract classes and interfaces that can
   be subclassed outside the library without restriction. Suppress by gating subclassing with

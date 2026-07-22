@@ -6,7 +6,10 @@ import com.autonomousapps.kit.gradle.Repository
 import org.jetbrains.kotlin.compiler.plugin.devkit.test.AbstractDevKitGradleProject
 import org.jetbrains.kotlin.compiler.plugin.devkit.test.pluginUnderTestVersion
 
-open class WatchdogProject(multiplatform: Boolean = false) : AbstractDevKitGradleProject(
+open class WatchdogProject(
+    multiplatform: Boolean = false,
+    private val explicitApi: Boolean = true,
+) : AbstractDevKitGradleProject(
     multiplatform = multiplatform,
 ) {
     override val defaultImports: List<String> = listOf(
@@ -14,6 +17,12 @@ open class WatchdogProject(multiplatform: Boolean = false) : AbstractDevKitGradl
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyExhaustive",
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyUndocumented",
     )
+
+    // The watchdog only activates in explicit API mode, so tests enable it unless they
+    // specifically exercise the plugin being dormant.
+    override fun StringBuilder.onBuildScript() {
+        if (explicitApi) appendLine("kotlin { explicitApi() }")
+    }
 
     override val pluginUnderTest: Plugin = Plugin("org.jetbrains.kotlin.libs.watchdog", pluginUnderTestVersion)
 

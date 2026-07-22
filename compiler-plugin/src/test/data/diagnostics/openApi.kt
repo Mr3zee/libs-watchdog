@@ -1,4 +1,5 @@
 // RUN_PIPELINE_TILL: BACKEND
+// EXPLICIT_API_MODE: WARNING
 // DIAGNOSTICS: -UNDOCUMENTED_PUBLIC_API
 
 package foo.bar
@@ -6,55 +7,55 @@ package foo.bar
 import org.jetbrains.kotlin.libs.watchdog.IntentionallyOpen
 
 @RequiresOptIn
-annotation class ExperimentalFooApi
+public annotation class ExperimentalFooApi
 
 // Unprotected subclassable API: should warn.
 
-open class <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>UnprotectedOpenClass<!>
+public open class <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>UnprotectedOpenClass<!>
 
-abstract class <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>UnprotectedAbstractClass<!>
+public abstract class <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>UnprotectedAbstractClass<!>
 
-interface <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>UnprotectedInterface<!>
+public interface <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>UnprotectedInterface<!>
 
-fun interface <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>UnprotectedFunInterface<!> {
-    fun run()
+public fun interface <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>UnprotectedFunInterface<!> {
+    public fun run()
 }
 
-open class <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>PublicOpenOuter<!> {
+public open class <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>PublicOpenOuter<!> {
     protected open class <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>ProtectedNestedOpenClass<!>
 }
 
 // Subclassing is gated with @SubclassOptInRequired: no warning.
 
 @SubclassOptInRequired(ExperimentalFooApi::class)
-open class OptInProtectedClass
+public open class OptInProtectedClass
 
 @SubclassOptInRequired(ExperimentalFooApi::class)
-interface OptInProtectedInterface
+public interface OptInProtectedInterface
 
 // @SubclassOptInRequired without marker classes gates nothing: should warn.
 
 <!SUBCLASS_OPT_IN_WITHOUT_MARKERS!>@SubclassOptInRequired<!>
-open class OptInWithoutMarkersClass
+public open class OptInWithoutMarkersClass
 
 <!SUBCLASS_OPT_IN_WITHOUT_MARKERS!>@SubclassOptInRequired()<!>
-interface OptInWithoutMarkersInterface
+public interface OptInWithoutMarkersInterface
 
 // Deliberately open: no warning.
 
 @IntentionallyOpen
-open class DeliberatelyOpenClass
+public open class DeliberatelyOpenClass
 
 @IntentionallyOpen
-interface DeliberatelyOpenInterface
+public interface DeliberatelyOpenInterface
 
 // Not subclassable: no warning.
 
-class FinalClass
+public class FinalClass
 
-object SomeObject
+public object SomeObject
 
-annotation class SomeAnnotationClass
+public annotation class SomeAnnotationClass
 
 // Not visible outside the library: no warning.
 
