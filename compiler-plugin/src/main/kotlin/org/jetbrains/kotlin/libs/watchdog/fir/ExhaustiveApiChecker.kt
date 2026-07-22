@@ -20,16 +20,20 @@ import org.jetbrains.kotlin.fir.declarations.utils.modality
 internal object ExhaustiveApiChecker : FirClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirClass) {
-        if (declaration !is FirRegularClass) return
-        if (!declaration.isWatchedPublicApi()) return
-
-        val exhaustivelyMatchable =
-            declaration.classKind == ClassKind.ENUM_CLASS ||
-                declaration.modality == Modality.SEALED
-        if (!exhaustivelyMatchable) return
-
-        if (declaration.hasAnnotation(WatchdogClassIds.IntentionallyExhaustive, context.session))
+        if (declaration !is FirRegularClass || !declaration.isWatchedPublicApi()) {
             return
+        }
+
+        val exhaustivelyMatchable = declaration.classKind == ClassKind.ENUM_CLASS ||
+                declaration.modality == Modality.SEALED
+
+        if (!exhaustivelyMatchable) {
+            return
+        }
+
+        if (declaration.hasAnnotation(WatchdogClassIds.IntentionallyExhaustive, context.session)) {
+            return
+        }
 
         reporter.reportOn(
             declaration.source,

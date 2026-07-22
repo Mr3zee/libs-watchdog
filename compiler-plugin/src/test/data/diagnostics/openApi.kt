@@ -31,6 +31,14 @@ open class OptInProtectedClass
 @SubclassOptInRequired(ExperimentalFooApi::class)
 interface OptInProtectedInterface
 
+// @SubclassOptInRequired without marker classes gates nothing: should warn.
+
+<!SUBCLASS_OPT_IN_WITHOUT_MARKERS!>@SubclassOptInRequired<!>
+open class OptInWithoutMarkersClass
+
+<!SUBCLASS_OPT_IN_WITHOUT_MARKERS!>@SubclassOptInRequired()<!>
+interface OptInWithoutMarkersInterface
+
 // Deliberately open: no warning.
 
 @IntentionallyOpen

@@ -4,5 +4,6 @@ import org.jetbrains.kotlin.compiler.plugin.devkit.runners.DevKitJvmDiagnosticTe
 import org.jetbrains.kotlin.compiler.plugin.devkit.services.configurePlugin
 import org.jetbrains.kotlin.libs.watchdog.WatchdogCompilerPluginRegistrar
 
-open class AbstractJvmDiagnosticTest :
-    DevKitJvmDiagnosticTest({ configurePlugin(WatchdogCompilerPluginRegistrar()) })
+open class AbstractJvmDiagnosticTest : DevKitJvmDiagnosticTest({
+    configurePlugin(WatchdogCompilerPluginRegistrar())
+})

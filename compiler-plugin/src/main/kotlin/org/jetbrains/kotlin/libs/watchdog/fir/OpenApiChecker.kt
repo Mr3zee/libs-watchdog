@@ -9,14 +9,20 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
 import org.jetbrains.kotlin.fir.declarations.FirClass
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.findArgumentByName
+import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.declarations.utils.modality
+import org.jetbrains.kotlin.fir.expressions.FirAnnotation
+import org.jetbrains.kotlin.fir.expressions.unwrapAndFlattenArgument
+import org.jetbrains.kotlin.name.Name
 
 /**
  * Warns about publicly visible classes and interfaces that can be subclassed outside the library
  * without any control: every external subclass constrains how the declaration can evolve. Authors
  * either gate subclassing with [kotlin.SubclassOptInRequired] or explicitly acknowledge the
- * contract with `@IntentionallyOpen`.
+ * contract with `@IntentionallyOpen`. A `@SubclassOptInRequired` with no marker classes gates
+ * nothing, so it is reported as well.
  */
 internal object OpenApiChecker : FirClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -37,7 +43,21 @@ internal object OpenApiChecker : FirClassChecker(MppCheckerKind.Common) {
         if (!openForSubclassing) return
 
         val session = context.session
-        if (declaration.hasAnnotation(WatchdogClassIds.SubclassOptInRequired, session)) return
+        val subclassOptIn = declaration.getAnnotationByClassId(
+            classId = WatchdogClassIds.SubclassOptInRequired,
+            session = session,
+        )
+
+        if (subclassOptIn != null) {
+            if (!subclassOptIn.hasMarkerClasses()) {
+                reporter.reportOn(
+                    subclassOptIn.source,
+                    WatchdogDiagnostics.SUBCLASS_OPT_IN_WITHOUT_MARKERS,
+                )
+            }
+            return
+        }
+
         if (declaration.hasAnnotation(WatchdogClassIds.IntentionallyOpen, session)) return
 
         reporter.reportOn(
@@ -47,4 +67,12 @@ internal object OpenApiChecker : FirClassChecker(MppCheckerKind.Common) {
             declaration.name,
         )
     }
+
+    private val markerClassParameter = Name.identifier("markerClass")
+
+    /** `markerClass` is a vararg, so `@SubclassOptInRequired` compiles with no markers at all. */
+    private fun FirAnnotation.hasMarkerClasses(): Boolean =
+        findArgumentByName(markerClassParameter, returnFirstWhenNotFound = false)
+            ?.unwrapAndFlattenArgument(flattenArrays = true)
+            ?.isNotEmpty() == true
 }

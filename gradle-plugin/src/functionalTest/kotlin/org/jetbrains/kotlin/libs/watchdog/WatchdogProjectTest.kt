@@ -9,11 +9,10 @@ import org.junit.Test
 class WatchdogProjectTest {
     @Test
     fun warnsOnUnprotectedOpenAndExhaustiveApi() {
-        val project =
-            object : WatchdogProject() {
-                    override fun sources() = listOf(source(unacknowledgedFile))
-                }
-                .gradleProject
+        val project = object : WatchdogProject() {
+            override fun sources() = listOf(source(unacknowledgedFile))
+        }.gradleProject
+
         val result = build(project.rootDir, "build")
         result.assertOutputContains("can be subclassed outside the library without restriction")
         result.assertOutputContains("can be matched exhaustively by clients")
@@ -21,11 +20,10 @@ class WatchdogProjectTest {
 
     @Test
     fun acknowledgedApiCompilesWithoutWarnings() {
-        val project =
-            object : WatchdogProject() {
-                    override fun sources() = listOf(source(acknowledgedFile))
-                }
-                .gradleProject
+        val project = object : WatchdogProject() {
+            override fun sources() = listOf(source(acknowledgedFile))
+        }.gradleProject
+
         val result = build(project.rootDir, "build")
         assertFalse(result.output.contains("can be subclassed outside the library"))
         assertFalse(result.output.contains("can be matched exhaustively by clients"))
@@ -33,21 +31,17 @@ class WatchdogProjectTest {
 }
 
 @Language("kotlin")
-private val unacknowledgedFile =
-    """
+private val unacknowledgedFile = """
     open class UnprotectedOpenClass
 
     enum class UnmarkedEnum { A, B }
-    """
-        .trimIndent()
+""".trimIndent()
 
 @Language("kotlin")
-private val acknowledgedFile =
-    """
+private val acknowledgedFile = """
     @IntentionallyOpen
     open class DeliberatelyOpenClass
 
     @IntentionallyExhaustive
     enum class MarkedEnum { A, B }
-    """
-        .trimIndent()
+""".trimIndent()

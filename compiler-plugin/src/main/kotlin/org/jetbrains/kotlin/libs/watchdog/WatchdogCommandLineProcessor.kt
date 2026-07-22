@@ -12,11 +12,7 @@ class WatchdogCommandLineProcessor : DevKitCommandLineProcessor(WatchdogCLP::cla
 }
 
 class WatchdogCLP : DevKitCLP {
-    override fun processOption(
-        option: AbstractCliOption,
-        value: String,
-        configuration: CompilerConfiguration,
-    ) {
+    override fun processOption(option: AbstractCliOption, value: String, configuration: CompilerConfiguration) {
         error("Unexpected config option: '${option.optionName}'")
     }
 }

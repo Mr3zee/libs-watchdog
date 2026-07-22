@@ -15,9 +15,7 @@ class WatchdogCompilerPluginRegistrar : DevKitCompilerPluginRegistrar(
 }
 
 class WatchdogComponentRegistrar : DevKitComponentRegistrar {
-    override fun CompilerPluginRegistrar.ExtensionStorage.registerExtensions(
-        configuration: CompilerConfiguration,
-    ) {
+    override fun CompilerPluginRegistrar.ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         FirExtensionRegistrarAdapter.registerExtension(WatchdogFirExtensionRegistrar())
     }
 }

@@ -46,6 +46,14 @@ FILE: openApi.kt
     }
     @R|kotlin/SubclassOptInRequired|(markerClass = vararg(<getClass>(Q|foo/bar/ExperimentalFooApi|)) [evaluated = vararg(<getClass>(Q|foo/bar/ExperimentalFooApi|))]) public abstract interface OptInProtectedInterface : R|kotlin/Any| {
     }
+    @R|kotlin/SubclassOptInRequired|() public open class OptInWithoutMarkersClass : R|kotlin/Any| {
+        public constructor(): R|foo/bar/OptInWithoutMarkersClass| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|kotlin/SubclassOptInRequired|() public abstract interface OptInWithoutMarkersInterface : R|kotlin/Any| {
+    }
     @R|org/jetbrains/kotlin/libs/watchdog/IntentionallyOpen|() public open class DeliberatelyOpenClass : R|kotlin/Any| {
         public constructor(): R|foo/bar/DeliberatelyOpenClass| {
             super<R|kotlin/Any|>()
