@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtensi
 
 class WatchdogFirCheckers(session: FirSession) : FirAdditionalCheckersExtension(session) {
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
-        override val classCheckers: Set<FirClassChecker> = setOf(OpenApiChecker, ExhaustiveApiChecker)
+        override val classCheckers: Set<FirClassChecker> =
+            setOf(OpenApiChecker, ExhaustiveApiChecker, UndocumentedApiChecker)
     }
 }

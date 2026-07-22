@@ -16,6 +16,7 @@ class WatchdogProjectTest {
         val result = build(project.rootDir, "build")
         result.assertOutputContains("can be subclassed outside the library without restriction")
         result.assertOutputContains("can be matched exhaustively by clients")
+        result.assertOutputContains("has no KDoc")
     }
 
     @Test
@@ -27,6 +28,7 @@ class WatchdogProjectTest {
         val result = build(project.rootDir, "build")
         assertFalse(result.output.contains("can be subclassed outside the library"))
         assertFalse(result.output.contains("can be matched exhaustively by clients"))
+        assertFalse(result.output.contains("has no KDoc"))
     }
 }
 
@@ -39,9 +41,14 @@ private val unacknowledgedFile = """
 
 @Language("kotlin")
 private val acknowledgedFile = """
+    /** A deliberately open class. */
     @IntentionallyOpen
     open class DeliberatelyOpenClass
 
+    /** A deliberately exhaustive enum. */
     @IntentionallyExhaustive
     enum class MarkedEnum { A, B }
+
+    @IntentionallyUndocumented
+    class DeliberatelyUndocumentedClass
 """.trimIndent()

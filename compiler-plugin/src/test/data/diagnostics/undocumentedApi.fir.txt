@@ -1,0 +1,169 @@
+FILE: undocumentedApi.kt
+    package foo.bar
+
+    public final class UndocumentedClass : R|kotlin/Any| {
+        public constructor(): R|foo/bar/UndocumentedClass| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public abstract interface UndocumentedInterface : R|kotlin/Any| {
+    }
+    public final object UndocumentedObject : R|kotlin/Any| {
+        private constructor(): R|foo/bar/UndocumentedObject| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final enum class UndocumentedEnum : R|kotlin/Enum<foo/bar/UndocumentedEnum>| {
+        private constructor(): R|foo/bar/UndocumentedEnum| {
+            super<R|kotlin/Enum<foo/bar/UndocumentedEnum>|>()
+        }
+
+        public final static enum entry A: R|foo/bar/UndocumentedEnum|
+        public final static fun values(): R|kotlin/Array<foo/bar/UndocumentedEnum>| {
+        }
+
+        public final static fun valueOf(value: R|kotlin/String|): R|foo/bar/UndocumentedEnum| {
+        }
+
+        public final static val entries: R|kotlin/enums/EnumEntries<foo/bar/UndocumentedEnum>|
+            public static get(): R|kotlin/enums/EnumEntries<foo/bar/UndocumentedEnum>|
+
+    }
+    public final annotation class UndocumentedAnnotation : R|kotlin/Annotation| {
+        public constructor(): R|foo/bar/UndocumentedAnnotation| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class LineCommentedClass : R|kotlin/Any| {
+        public constructor(): R|foo/bar/LineCommentedClass| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class BlockCommentedClass : R|kotlin/Any| {
+        public constructor(): R|foo/bar/BlockCommentedClass| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class DocumentedClass : R|kotlin/Any| {
+        public constructor(): R|foo/bar/DocumentedClass| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public abstract interface DocumentedInterface : R|kotlin/Any| {
+    }
+    public final annotation class Marker : R|kotlin/Annotation| {
+        public constructor(): R|foo/bar/Marker| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|foo/bar/Marker|() public final class DocumentedAnnotatedClass : R|kotlin/Any| {
+        public constructor(): R|foo/bar/DocumentedAnnotatedClass| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|org/jetbrains/kotlin/libs/watchdog/IntentionallyUndocumented|() public final class DeliberatelyUndocumentedClass : R|kotlin/Any| {
+        public constructor(): R|foo/bar/DeliberatelyUndocumentedClass| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|org/jetbrains/kotlin/libs/watchdog/IntentionallyUndocumented|() public final object DeliberatelyUndocumentedObject : R|kotlin/Any| {
+        private constructor(): R|foo/bar/DeliberatelyUndocumentedObject| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|org/jetbrains/kotlin/libs/watchdog/IntentionallyUndocumented|() public final class DeliberatelyUndocumentedOuter : R|kotlin/Any| {
+        public constructor(): R|foo/bar/DeliberatelyUndocumentedOuter| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final class UndocumentedNestedInAcknowledged : R|kotlin/Any| {
+            public constructor(): R|foo/bar/DeliberatelyUndocumentedOuter.UndocumentedNestedInAcknowledged| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+    }
+    public final class DocumentedOuter : R|kotlin/Any| {
+        public constructor(): R|foo/bar/DocumentedOuter| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final class UndocumentedNested : R|kotlin/Any| {
+            public constructor(): R|foo/bar/DocumentedOuter.UndocumentedNested| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+        public final class DocumentedNested : R|kotlin/Any| {
+            public constructor(): R|foo/bar/DocumentedOuter.DocumentedNested| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+        private final class PrivateNested : R|kotlin/Any| {
+            public constructor(): R|foo/bar/DocumentedOuter.PrivateNested| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+    }
+    public final class WithUndocumentedMembers : R|kotlin/Any| {
+        public constructor(): R|foo/bar/WithUndocumentedMembers| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final fun undocumentedFunction(): R|kotlin/Unit| {
+        }
+
+        public final val undocumentedProperty: R|kotlin/Int| = Int(0)
+            public get(): R|kotlin/Int|
+
+    }
+    internal final class InternalClass : R|kotlin/Any| {
+        public constructor(): R|foo/bar/InternalClass| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    private final class PrivateClass : R|kotlin/Any| {
+        public constructor(): R|foo/bar/PrivateClass| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    internal final class InternalOuter : R|kotlin/Any| {
+        public constructor(): R|foo/bar/InternalOuter| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final class NestedInsideInternal : R|kotlin/Any| {
+            public constructor(): R|foo/bar/InternalOuter.NestedInsideInternal| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+    }
+    public final fun documentedFunction(): R|kotlin/Unit| {
+        local final class LocalClass : R|kotlin/Any| {
+            public constructor(): R|<local>/LocalClass| {
+                super<R|kotlin/Any|>()
+            }
+
+        }
+
+    }

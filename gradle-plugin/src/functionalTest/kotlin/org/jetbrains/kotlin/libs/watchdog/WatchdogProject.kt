@@ -12,6 +12,7 @@ open class WatchdogProject(multiplatform: Boolean = false) : AbstractDevKitGradl
     override val defaultImports: List<String> = listOf(
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyOpen",
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyExhaustive",
+        "org.jetbrains.kotlin.libs.watchdog.IntentionallyUndocumented",
     )
 
     override val pluginUnderTest: Plugin = Plugin("org.jetbrains.kotlin.libs.watchdog", pluginUnderTestVersion)

@@ -24,6 +24,9 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
     /** Parameters: class kind, declaration name, class kind again for the member wording. */
     val EXHAUSTIVE_PUBLIC_API by warning3<KtClassOrObject, ClassKind, Name, ClassKind>(NAME_IDENTIFIER)
 
+    /** Parameters: class kind, declaration name. */
+    val UNDOCUMENTED_PUBLIC_API by warning2<KtClassOrObject, ClassKind, Name>(NAME_IDENTIFIER)
+
     override fun getRendererFactory(): BaseDiagnosticRendererFactory = WatchdogErrorMessages
 }
 
@@ -56,6 +59,14 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             rendererA = CLASS_KIND,
             rendererB = NAME,
             rendererC = MEMBER_KIND,
+        )
+        map.put(
+            factory = WatchdogDiagnostics.UNDOCUMENTED_PUBLIC_API,
+            message = "The {0} ''{1}'' is part of the public API but has no KDoc. Document it " +
+                    "so clients do not have to guess its purpose and usage contract, or mark it " +
+                    "with @IntentionallyUndocumented if leaving it undocumented is intended.",
+            rendererA = CLASS_KIND,
+            rendererB = NAME,
         )
     }
 }

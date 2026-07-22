@@ -5,7 +5,7 @@ top of the [compiler-plugin-dev-kit](../compiler-plugin-dev-kit) (consumed from 
 
 ## Checkers
 
-Both checkers only look at declarations visible to library clients (public or protected API).
+The checkers only look at declarations visible to library clients (public or protected API).
 
 - `OPEN_API_WITHOUT_SUBCLASS_OPT_IN` — warns about open/abstract classes and interfaces that can
   be subclassed outside the library without restriction. Suppress by gating subclassing with
@@ -14,12 +14,15 @@ Both checkers only look at declarations visible to library clients (public or pr
 - `EXHAUSTIVE_PUBLIC_API` — warns about enums and sealed hierarchies, which clients can match
   exhaustively (`when` without `else`), so adding an entry or a subtype later breaks client code.
   Acknowledge the contract with `@IntentionallyExhaustive`.
+- `UNDOCUMENTED_PUBLIC_API` — warns about classes, interfaces, and objects that have no KDoc.
+  Only KDoc presence is checked, not its content. Fix by documenting the declaration, or
+  acknowledge the omission with `@IntentionallyUndocumented`.
 
 ## Modules
 
 - [`:compiler-plugin`](compiler-plugin/src) — the compiler plugin (FIR checkers).
-- [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) — `@IntentionallyOpen` and
-  `@IntentionallyExhaustive`.
+- [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) — `@IntentionallyOpen`,
+  `@IntentionallyExhaustive`, and `@IntentionallyUndocumented`.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations
   dependency to a Kotlin project (plugin id `org.jetbrains.kotlin.libs.watchdog`).
 
