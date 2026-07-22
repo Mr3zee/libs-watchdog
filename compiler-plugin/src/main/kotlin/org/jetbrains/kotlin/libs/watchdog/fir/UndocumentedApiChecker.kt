@@ -12,23 +12,27 @@ import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 
 /**
- * Warns about publicly visible classes and interfaces that have no KDoc: undocumented API forces
+ * Reports publicly visible classes and interfaces that have no KDoc: undocumented API forces
  * clients to guess the usage contract. Only KDoc presence is checked, not its content. Authors
  * acknowledge deliberately undocumented declarations with `@IntentionallyUndocumented`.
  */
-internal object UndocumentedApiChecker : FirClassChecker(MppCheckerKind.Common) {
-    /**
-     * The same plugin jar runs both in the CLI compiler and in `kotlin-compiler-embeddable`,
-     * which relocates the IntelliJ platform classes to another package. Referencing
-     * `KDocTokens.KDOC` directly would hard-code the `com.intellij` field type in the bytecode
-     * and fail to link in one of the two worlds, so the value is resolved reflectively. It is
-     * only passed through generic signatures, which erase to `java.util.Set` and link everywhere.
-     */
-    @Suppress("UNCHECKED_CAST")
-    private val kdocElementTypes: Set<IElementType> =
-        setOf(
-            Class.forName("org.jetbrains.kotlin.kdoc.lexer.KDocTokens").getField("KDOC").get(null)
-        ) as Set<IElementType>
+internal class UndocumentedApiChecker(
+    private val severities: WatchdogDiagnosticSeverities,
+) : FirClassChecker(MppCheckerKind.Common) {
+    private companion object {
+        /**
+         * The same plugin jar runs both in the CLI compiler and in `kotlin-compiler-embeddable`,
+         * which relocates the IntelliJ platform classes to another package. Referencing
+         * `KDocTokens.KDOC` directly would hard-code the `com.intellij` field type in the bytecode
+         * and fail to link in one of the two worlds, so the value is resolved reflectively. It is
+         * only passed through generic signatures, which erase to `java.util.Set` and link everywhere.
+         */
+        @Suppress("UNCHECKED_CAST")
+        private val kdocElementTypes: Set<IElementType> =
+            setOf(
+                Class.forName("org.jetbrains.kotlin.kdoc.lexer.KDocTokens").getField("KDOC").get(null)
+            ) as Set<IElementType>
+    }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirClass) {
@@ -50,7 +54,7 @@ internal object UndocumentedApiChecker : FirClassChecker(MppCheckerKind.Common) 
 
         reporter.reportOn(
             declaration.source,
-            WatchdogDiagnostics.UNDOCUMENTED_PUBLIC_API,
+            severities[WatchdogDiagnostics.UNDOCUMENTED_PUBLIC_API],
             declaration.classKind,
             declaration.name,
         )

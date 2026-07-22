@@ -18,13 +18,15 @@ import org.jetbrains.kotlin.fir.expressions.unwrapAndFlattenArgument
 import org.jetbrains.kotlin.name.Name
 
 /**
- * Warns about publicly visible classes and interfaces that can be subclassed outside the library
+ * Reports publicly visible classes and interfaces that can be subclassed outside the library
  * without any control: every external subclass constrains how the declaration can evolve. Authors
  * either gate subclassing with [kotlin.SubclassOptInRequired] or explicitly acknowledge the
  * contract with `@IntentionallyOpen`. A `@SubclassOptInRequired` with no marker classes gates
  * nothing, so it is reported as well.
  */
-internal object OpenApiChecker : FirClassChecker(MppCheckerKind.Common) {
+internal class OpenApiChecker(
+    private val severities: WatchdogDiagnosticSeverities,
+) : FirClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirClass) {
         if (declaration !is FirRegularClass) return
@@ -52,7 +54,7 @@ internal object OpenApiChecker : FirClassChecker(MppCheckerKind.Common) {
             if (!subclassOptIn.hasMarkerClasses()) {
                 reporter.reportOn(
                     subclassOptIn.source,
-                    WatchdogDiagnostics.SUBCLASS_OPT_IN_WITHOUT_MARKERS,
+                    severities[WatchdogDiagnostics.SUBCLASS_OPT_IN_WITHOUT_MARKERS],
                 )
             }
             return
@@ -62,7 +64,7 @@ internal object OpenApiChecker : FirClassChecker(MppCheckerKind.Common) {
 
         reporter.reportOn(
             declaration.source,
-            WatchdogDiagnostics.OPEN_API_WITHOUT_SUBCLASS_OPT_IN,
+            severities[WatchdogDiagnostics.OPEN_API_WITHOUT_SUBCLASS_OPT_IN],
             declaration.classKind,
             declaration.name,
         )

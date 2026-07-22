@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.compiler.plugin.devkit.DevKitCompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.devkit.DevKitComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
+import org.jetbrains.kotlin.libs.watchdog.fir.WatchdogDiagnosticSeverities
 import org.jetbrains.kotlin.libs.watchdog.fir.WatchdogFirExtensionRegistrar
 
 class WatchdogCompilerPluginRegistrar : DevKitCompilerPluginRegistrar(
@@ -16,6 +17,9 @@ class WatchdogCompilerPluginRegistrar : DevKitCompilerPluginRegistrar(
 
 class WatchdogComponentRegistrar : DevKitComponentRegistrar {
     override fun CompilerPluginRegistrar.ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        FirExtensionRegistrarAdapter.registerExtension(WatchdogFirExtensionRegistrar())
+        val severities = WatchdogDiagnosticSeverities(
+            configuration[WatchdogConfigurationKeys.DIAGNOSTIC_SEVERITIES, emptyMap()],
+        )
+        FirExtensionRegistrarAdapter.registerExtension(WatchdogFirExtensionRegistrar(severities))
     }
 }

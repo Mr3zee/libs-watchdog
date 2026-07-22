@@ -13,11 +13,13 @@ import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.declarations.utils.modality
 
 /**
- * Warns about publicly visible enums and sealed hierarchies: clients can match on them
+ * Reports publicly visible enums and sealed hierarchies: clients can match on them
  * exhaustively (`when` without an `else` branch), so adding an entry or a subtype later breaks
  * client code. Authors acknowledge the contract with `@IntentionallyExhaustive`.
  */
-internal object ExhaustiveApiChecker : FirClassChecker(MppCheckerKind.Common) {
+internal class ExhaustiveApiChecker(
+    private val severities: WatchdogDiagnosticSeverities,
+) : FirClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirClass) {
         if (declaration !is FirRegularClass || !declaration.isWatchedPublicApi()) {
@@ -37,7 +39,7 @@ internal object ExhaustiveApiChecker : FirClassChecker(MppCheckerKind.Common) {
 
         reporter.reportOn(
             declaration.source,
-            WatchdogDiagnostics.EXHAUSTIVE_PUBLIC_API,
+            severities[WatchdogDiagnostics.EXHAUSTIVE_PUBLIC_API],
             declaration.classKind,
             declaration.name,
             declaration.classKind,

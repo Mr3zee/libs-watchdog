@@ -14,5 +14,12 @@ class WatchdogSupportPlugin : DevKitSupportPlugin(PluginInfo.PLUGIN_INFO) {
 
     override fun Project.applyToCompilation(
         kotlinCompilation: KotlinCompilation<*>
-    ): Provider<List<SubpluginOption>> = providers.provider { emptyList() }
+    ): Provider<List<SubpluginOption>> {
+        val extension = extensions.getByType(WatchdogGradleExtension::class.java)
+        return providers.provider {
+            extension.diagnosticSeverities().map { (diagnostic, severity) ->
+                SubpluginOption("diagnosticSeverity", "$diagnostic:${severity.get().name.lowercase()}")
+            }
+        }
+    }
 }

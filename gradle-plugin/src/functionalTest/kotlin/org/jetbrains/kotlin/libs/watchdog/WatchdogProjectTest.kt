@@ -1,26 +1,69 @@
 package org.jetbrains.kotlin.libs.watchdog
 
 import com.autonomousapps.kit.GradleBuilder.build
+import com.autonomousapps.kit.GradleBuilder.buildAndFail
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import org.gradle.testkit.runner.BuildResult
 import org.intellij.lang.annotations.Language
-import org.jetbrains.kotlin.compiler.plugin.devkit.test.assertOutputContains
 import org.junit.Test
 
 class WatchdogProjectTest {
     @Test
-    fun warnsOnUnprotectedOpenAndExhaustiveApi() {
+    fun failsWithErrorsOnUnacknowledgedApiByDefault() {
         val project = object : WatchdogProject() {
             override fun sources() = listOf(source(unacknowledgedFile))
         }.gradleProject
 
-        val result = build(project.rootDir, "build")
-        result.assertOutputContains("can be subclassed outside the library without restriction")
-        result.assertOutputContains("can be matched exhaustively by clients")
-        result.assertOutputContains("has no KDoc")
+        val result = buildAndFail(project.rootDir, "build")
+        result.assertDiagnosticReported("e: ", "can be subclassed outside the library without restriction")
+        result.assertDiagnosticReported("e: ", "can be matched exhaustively by clients")
+        result.assertDiagnosticReported("e: ", "has no KDoc")
     }
 
     @Test
-    fun acknowledgedApiCompilesWithoutWarnings() {
+    fun demotedDiagnosticsAreReportedAsWarnings() {
+        val project = object : WatchdogProject(
+            extraBuildScript = """
+                libsWatchdog {
+                    openApiWithoutSubclassOptIn.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
+                    exhaustivePublicApi.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
+                    undocumentedPublicApi.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
+                }
+            """.trimIndent(),
+        ) {
+            override fun sources() = listOf(source(unacknowledgedFile))
+        }.gradleProject
+
+        val result = build(project.rootDir, "build")
+        result.assertDiagnosticReported("w: ", "can be subclassed outside the library without restriction")
+        result.assertDiagnosticReported("w: ", "can be matched exhaustively by clients")
+        result.assertDiagnosticReported("w: ", "has no KDoc")
+    }
+
+    @Test
+    fun severityIsConfiguredPerDiagnostic() {
+        // The compiler swallows regular warnings when a compilation fails with errors, so warning
+        // reporting is forced to observe the demoted diagnostic next to the remaining errors.
+        val project = object : WatchdogProject(
+            extraBuildScript = """
+                kotlin { compilerOptions { freeCompilerArgs.add("-Xreport-all-warnings") } }
+                libsWatchdog {
+                    undocumentedPublicApi.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
+                }
+            """.trimIndent(),
+        ) {
+            override fun sources() = listOf(source(unacknowledgedFile))
+        }.gradleProject
+
+        val result = buildAndFail(project.rootDir, "build")
+        result.assertDiagnosticReported("e: ", "can be subclassed outside the library without restriction")
+        result.assertDiagnosticReported("e: ", "can be matched exhaustively by clients")
+        result.assertDiagnosticReported("w: ", "has no KDoc")
+    }
+
+    @Test
+    fun acknowledgedApiCompilesWithoutDiagnostics() {
         val project = object : WatchdogProject() {
             override fun sources() = listOf(source(acknowledgedFile))
         }.gradleProject
@@ -41,6 +84,14 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("can be subclassed outside the library"))
         assertFalse(result.output.contains("can be matched exhaustively by clients"))
         assertFalse(result.output.contains("has no KDoc"))
+    }
+
+    /** Asserts the message was reported with the given compiler severity prefix (`e: ` or `w: `). */
+    private fun BuildResult.assertDiagnosticReported(severityPrefix: String, message: String) {
+        assertTrue(
+            output.lineSequence().any { it.startsWith(severityPrefix) && message in it },
+            "Expected a '$severityPrefix' line containing '$message' in build output:\n$output",
+        )
     }
 }
 

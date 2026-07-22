@@ -13,11 +13,14 @@ import org.jetbrains.kotlin.fir.languageVersionSettings
  * [explicit API mode](https://kotlinlang.org/docs/api-guidelines-simplicity.html#use-explicit-api-mode)
  * (`kotlin { explicitApi() }` / `-Xexplicit-api`), in either `strict` or `warning` variant.
  */
-class WatchdogFirCheckers(session: FirSession) : FirAdditionalCheckersExtension(session) {
+class WatchdogFirCheckers(
+    session: FirSession,
+    severities: WatchdogDiagnosticSeverities,
+) : FirAdditionalCheckersExtension(session) {
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
         override val classCheckers: Set<FirClassChecker> =
             if (session.languageVersionSettings.getFlag(AnalysisFlags.explicitApiMode) != ExplicitApiMode.DISABLED) {
-                setOf(OpenApiChecker, ExhaustiveApiChecker, UndocumentedApiChecker)
+                setOf(OpenApiChecker(severities), ExhaustiveApiChecker(severities), UndocumentedApiChecker(severities))
             } else {
                 emptySet()
             }

@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.compiler.plugin.devkit.test.pluginUnderTestVersion
 open class WatchdogProject(
     multiplatform: Boolean = false,
     private val explicitApi: Boolean = true,
+    private val extraBuildScript: String = "",
 ) : AbstractDevKitGradleProject(
     multiplatform = multiplatform,
 ) {
@@ -22,6 +23,7 @@ open class WatchdogProject(
     // specifically exercise the plugin being dormant.
     override fun StringBuilder.onBuildScript() {
         if (explicitApi) appendLine("kotlin { explicitApi() }")
+        if (extraBuildScript.isNotBlank()) appendLine(extraBuildScript)
     }
 
     override val pluginUnderTest: Plugin = Plugin("org.jetbrains.kotlin.libs.watchdog", pluginUnderTestVersion)
