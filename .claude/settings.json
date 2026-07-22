@@ -1,0 +1,49 @@
+{
+    "hooks": {
+        "SessionStart": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "jbcontext index --silent",
+                        "async": true
+                    }
+                ]
+            }
+        ],
+        "SessionEnd": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "jbcontext index --silent",
+                        "async": true
+                    }
+                ]
+            }
+        ],
+        "PreToolUse": [
+            {
+                "matcher": "Bash|Grep",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "jbcontext hook pre-tool-use"
+                    }
+                ]
+            }
+        ],
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "jbcontext hook user-prompt-submit"
+                    }
+                ]
+            }
+        ]
+    }
+}

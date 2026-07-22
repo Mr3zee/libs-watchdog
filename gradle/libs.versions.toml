@@ -1,0 +1,6 @@
+[versions]
+# https://github.com/JetBrains/kotlin
+kotlin = "2.4.0"
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
