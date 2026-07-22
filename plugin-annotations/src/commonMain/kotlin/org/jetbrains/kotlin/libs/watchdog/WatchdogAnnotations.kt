@@ -26,13 +26,20 @@ public annotation class IntentionallyOpen
 public annotation class IntentionallyExhaustive
 
 /**
- * Acknowledges that the annotated class, interface, or object is deliberately left without KDoc.
+ * Acknowledges that the annotated declaration is deliberately left without KDoc.
  *
- * The libs-watchdog compiler plugin warns about publicly visible classifiers that have no KDoc,
- * because undocumented API forces clients to guess the usage contract. Apply this annotation to
- * suppress the warning when leaving the declaration undocumented is intended (for example, when
- * it is self-explanatory or documented elsewhere).
+ * The libs-watchdog compiler plugin warns about publicly visible declarations that have no KDoc —
+ * classifiers, type aliases, functions, properties, constructors, and enum entries — because
+ * undocumented API forces clients to guess the usage contract. Apply this annotation to suppress
+ * the warning when leaving the declaration undocumented is intended (for example, when it is
+ * self-explanatory or documented elsewhere).
  */
-@Target(AnnotationTarget.CLASS)
+@Target(
+    AnnotationTarget.CLASS,
+    AnnotationTarget.TYPEALIAS,
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.CONSTRUCTOR,
+)
 @Retention(AnnotationRetention.BINARY)
 public annotation class IntentionallyUndocumented

@@ -54,6 +54,44 @@ FILE: openApi.kt
     }
     @R|kotlin/SubclassOptInRequired|() public abstract interface OptInWithoutMarkersInterface : R|kotlin/Any| {
     }
+    public open class OpenClassWithInternalConstructor : R|kotlin/Any| {
+        internal constructor(): R|foo/bar/OpenClassWithInternalConstructor| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public abstract class AbstractClassWithPrivateConstructor : R|kotlin/Any| {
+        private constructor(): R|foo/bar/AbstractClassWithPrivateConstructor| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public open class OpenClassWithHiddenConstructors : R|kotlin/Any| {
+        internal constructor(): R|foo/bar/OpenClassWithHiddenConstructors| {
+            super<R|kotlin/Any|>()
+        }
+
+        private constructor(x: R|kotlin/Int|): R|foo/bar/OpenClassWithHiddenConstructors| {
+            this<R|foo/bar/OpenClassWithHiddenConstructors|>()
+        }
+
+    }
+    public open class OpenClassWithProtectedConstructor : R|kotlin/Any| {
+        protected constructor(): R|foo/bar/OpenClassWithProtectedConstructor| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public abstract class AbstractClassWithVisibleSecondaryConstructor : R|kotlin/Any| {
+        private constructor(): R|foo/bar/AbstractClassWithVisibleSecondaryConstructor| {
+            super<R|kotlin/Any|>()
+        }
+
+        public constructor(x: R|kotlin/Int|): R|foo/bar/AbstractClassWithVisibleSecondaryConstructor| {
+            this<R|foo/bar/AbstractClassWithVisibleSecondaryConstructor|>()
+        }
+
+    }
     @R|org/jetbrains/kotlin/libs/watchdog/IntentionallyOpen|() public open class DeliberatelyOpenClass : R|kotlin/Any| {
         public constructor(): R|foo/bar/DeliberatelyOpenClass| {
             super<R|kotlin/Any|>()

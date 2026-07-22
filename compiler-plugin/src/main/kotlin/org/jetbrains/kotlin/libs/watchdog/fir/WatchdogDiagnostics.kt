@@ -17,11 +17,13 @@ import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies.NAME_
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.diagnostics.rendering.CommonRenderers.CLASS_KIND
 import org.jetbrains.kotlin.diagnostics.rendering.CommonRenderers.NAME
+import org.jetbrains.kotlin.diagnostics.rendering.CommonRenderers.STRING
 import org.jetbrains.kotlin.diagnostics.rendering.DiagnosticParameterRenderer
 import org.jetbrains.kotlin.diagnostics.rendering.Renderer
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtDeclaration
 
 /**
  * A diagnostic whose severity is chosen per compilation. A diagnostic factory bakes its severity
@@ -50,20 +52,24 @@ class WatchdogDiagnosticSeverities(private val overrides: Map<String, Severity>)
 }
 
 object WatchdogDiagnostics : KtDiagnosticsContainer() {
-    /** Parameters: class kind, declaration name. */
-    val OPEN_API_WITHOUT_SUBCLASS_OPT_IN by configurable2<KtClassOrObject, ClassKind, Name>(NAME_IDENTIFIER)
+    /**
+     * Every diagnostic whose severity can be configured, for CLI option validation. Must be
+     * declared before the diagnostics themselves: their delegate providers register into it
+     * during class initialization.
+     */
+    val allDiagnostics: List<ConfigurableWatchdogDiagnostic<*>>
+        field = mutableListOf()
+
+    /** Parameters: class kind, declaration name. Reported on the class or on a constructor. */
+    val OPEN_API_WITHOUT_SUBCLASS_OPT_IN by configurable2<KtDeclaration, ClassKind, Name>(NAME_IDENTIFIER)
 
     val SUBCLASS_OPT_IN_WITHOUT_MARKERS by configurable0<KtAnnotationEntry>()
 
     /** Parameters: class kind, declaration name, class kind again for the member wording. */
     val EXHAUSTIVE_PUBLIC_API by configurable3<KtClassOrObject, ClassKind, Name, ClassKind>(NAME_IDENTIFIER)
 
-    /** Parameters: class kind, declaration name. */
-    val UNDOCUMENTED_PUBLIC_API by configurable2<KtClassOrObject, ClassKind, Name>(NAME_IDENTIFIER)
-
-    /** Every diagnostic whose severity can be configured, for CLI option validation. */
-    val allDiagnostics: List<ConfigurableWatchdogDiagnostic<*>>
-        field = mutableListOf()
+    /** Parameters: declaration kind in words, declaration name. */
+    val UNDOCUMENTED_PUBLIC_API by configurable2<KtDeclaration, String, Name>(NAME_IDENTIFIER)
 
     override fun getRendererFactory(): BaseDiagnosticRendererFactory = WatchdogErrorMessages
 
@@ -134,7 +140,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "The {0} ''{1}'' is part of the public API but has no KDoc. Document it " +
                     "so clients do not have to guess its purpose and usage contract, or mark it " +
                     "with @IntentionallyUndocumented if leaving it undocumented is intended.",
-            rendererA = CLASS_KIND,
+            rendererA = STRING,
             rendererB = NAME,
         )
     }

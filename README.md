@@ -20,9 +20,13 @@ library clients (public or protected API).
 - `EXHAUSTIVE_PUBLIC_API` — reports enums and sealed hierarchies, which clients can match
   exhaustively (`when` without `else`), so adding an entry or a subtype later breaks client code.
   Acknowledge the contract with `@IntentionallyExhaustive`.
-- `UNDOCUMENTED_PUBLIC_API` — reports classes, interfaces, and objects that have no KDoc.
-  Only KDoc presence is checked, not its content. Fix by documenting the declaration, or
-  acknowledge the omission with `@IntentionallyUndocumented`.
+- `UNDOCUMENTED_PUBLIC_API` — reports public declarations of every kind that have no KDoc:
+  classifiers, type aliases, functions, properties, secondary constructors, and enum entries.
+  Only KDoc presence is checked, not its content. Declarations documented elsewhere are exempt:
+  overrides inherit the KDoc of the declaration they override, the primary constructor is
+  described by `@constructor`/`@param` tags in the class KDoc, and a property is covered by a
+  matching `@property` tag there. Fix by documenting the declaration, or acknowledge the
+  omission with `@IntentionallyUndocumented`.
 
 ## Configuring severities
 

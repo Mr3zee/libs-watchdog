@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.config.AnalysisFlags
 import org.jetbrains.kotlin.config.ExplicitApiMode
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationCheckers
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirBasicDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.languageVersionSettings
@@ -18,11 +19,14 @@ class WatchdogFirCheckers(
     severities: WatchdogDiagnosticSeverities,
 ) : FirAdditionalCheckersExtension(session) {
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
+        private val enabled =
+            session.languageVersionSettings.getFlag(AnalysisFlags.explicitApiMode) != ExplicitApiMode.DISABLED
+
         override val classCheckers: Set<FirClassChecker> =
-            if (session.languageVersionSettings.getFlag(AnalysisFlags.explicitApiMode) != ExplicitApiMode.DISABLED) {
-                setOf(OpenApiChecker(severities), ExhaustiveApiChecker(severities), UndocumentedApiChecker(severities))
-            } else {
-                emptySet()
-            }
+            if (enabled) setOf(OpenApiChecker(severities), ExhaustiveApiChecker(severities)) else emptySet()
+
+        // UndocumentedApiChecker watches every declaration kind, not just classes.
+        override val basicDeclarationCheckers: Set<FirBasicDeclarationChecker> =
+            if (enabled) setOf(UndocumentedApiChecker(severities)) else emptySet()
     }
 }

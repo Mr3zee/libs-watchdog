@@ -41,6 +41,26 @@ public open class OptInWithoutMarkersClass
 <!SUBCLASS_OPT_IN_WITHOUT_MARKERS!>@SubclassOptInRequired()<!>
 public interface OptInWithoutMarkersInterface
 
+// Constructors are not visible outside the library, so subclassing is impossible: no warning.
+
+public open class OpenClassWithInternalConstructor internal constructor()
+
+public abstract class AbstractClassWithPrivateConstructor private constructor()
+
+public open class OpenClassWithHiddenConstructors internal constructor() {
+    private constructor(x: Int) : this()
+}
+
+// A public or protected constructor keeps the class subclassable: should warn. Unless the class
+// has a public primary constructor, the accessible constructors are the declarations that open
+// the class, so the diagnostic is anchored on them.
+
+public open class OpenClassWithProtectedConstructor <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>protected constructor()<!>
+
+public abstract class AbstractClassWithVisibleSecondaryConstructor private constructor() {
+    <!OPEN_API_WITHOUT_SUBCLASS_OPT_IN!>public constructor(x: Int) : this()<!>
+}
+
 // Deliberately open: no warning.
 
 @IntentionallyOpen

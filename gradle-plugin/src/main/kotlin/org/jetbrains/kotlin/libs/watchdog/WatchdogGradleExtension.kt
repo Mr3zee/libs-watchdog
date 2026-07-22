@@ -23,7 +23,7 @@ open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
     /** Severity of `EXHAUSTIVE_PUBLIC_API`: exhaustively matchable enums and sealed hierarchies. */
     val exhaustivePublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
-    /** Severity of `UNDOCUMENTED_PUBLIC_API`: public classifiers without KDoc. */
+    /** Severity of `UNDOCUMENTED_PUBLIC_API`: public declarations without KDoc. */
     val undocumentedPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
     internal fun diagnosticSeverities(): Map<String, Property<WatchdogSeverity>> = mapOf(
