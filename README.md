@@ -12,7 +12,8 @@ annotations.
 
 The plugin only runs in modules compiled with
 [explicit API mode](https://kotlinlang.org/docs/api-guidelines-simplicity.html#use-explicit-api-mode)
-(strict or warning variant); without it the checkers are not registered at all.
+(strict or warning variant); without it the checkers are not registered at all, and the Gradle
+plugin prints a warning.
 
 ```kotlin
 plugins {
@@ -25,15 +26,15 @@ kotlin {
 ```
 
 Applying the Gradle plugin registers the compiler plugin for every compilation and automatically
-adds the `plugin-annotations` dependency with the `@Intentionally*` exemption annotations. Every
-check reports a compilation error by default; each one can individually be demoted to a warning
-or disabled through the `libsApiWatchdog` extension:
+adds the `plugin-annotations` dependency with the `@Intentionally*` exemption annotations. The
+plugin is intentionally restrictive by default: every check reports a compilation error until it
+is individually demoted to a warning or disabled through the `apiWatchdog` extension:
 
 ```kotlin
 import org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity
 
-libsApiWatchdog {
-    undocumentedPublicApi.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    undocumentedPublicApi = WatchdogSeverity.WARNING
     javaInterop {
         enabled = false // A Kotlin-only library can drop the whole Java interop group.
     }
@@ -130,6 +131,8 @@ Only run in JVM compilations; a Kotlin-only library disables the group with
 
 Performed by the Gradle plugin rather than the compiler:
 
+- [Explicit API mode warning](https://mr3zee.github.io/libs-api-watchdog/setup.html) - warns when
+  explicit API mode is not enabled, since the watchdog registers no checks without it.
 - [Tapmoc suggestion](https://mr3zee.github.io/libs-api-watchdog/tapmoc-suggestion.html) - warns
   when [Tapmoc](https://github.com/GradleUp/Tapmoc) is not applied, so the Java and Kotlin
   compatibility levels are not pinned.

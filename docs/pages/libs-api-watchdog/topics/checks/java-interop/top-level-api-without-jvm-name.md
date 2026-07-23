@@ -89,9 +89,9 @@ Since the diagnostic fires once per file, one file-level annotation covers the w
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
+apiWatchdog {
     javaInterop {
-        topLevelApiWithoutJvmName.set(WatchdogSeverity.WARNING)
+        topLevelApiWithoutJvmName = WatchdogSeverity.WARNING
     }
 }
 ```

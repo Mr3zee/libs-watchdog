@@ -11,9 +11,9 @@ import org.gradle.api.provider.Provider
  * unless demoted to [WatchdogSeverity.WARNING] or disabled with [WatchdogSeverity.NONE] here:
  *
  * ```kotlin
- * libsApiWatchdog {
- *     undocumentedPublicApi.set(WatchdogSeverity.WARNING)
- *     dataClassPublicApi.set(WatchdogSeverity.NONE)
+ * apiWatchdog {
+ *     undocumentedPublicApi = WatchdogSeverity.WARNING
+ *     dataClassPublicApi = WatchdogSeverity.NONE
  * }
  * ```
  *
@@ -22,7 +22,7 @@ import org.gradle.api.provider.Provider
  * them at once, no matter what the individual severities say:
  *
  * ```kotlin
- * libsApiWatchdog {
+ * apiWatchdog {
  *     javaInterop {
  *         enabled = false
  *     }

@@ -86,8 +86,8 @@ public enum class Direction {
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    exhaustivePublicApi.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    exhaustivePublicApi = WatchdogSeverity.WARNING
 }
 ```
 

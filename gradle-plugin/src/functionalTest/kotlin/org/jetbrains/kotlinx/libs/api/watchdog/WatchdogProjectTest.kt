@@ -48,30 +48,30 @@ class WatchdogProjectTest {
     fun demotedDiagnosticsAreReportedAsWarnings() {
         val project = object : WatchdogProject(
             extraBuildScript = """
-                libsApiWatchdog {
-                    openApiWithoutSubclassOptIn.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    exhaustivePublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    undocumentedPublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    functionTypeAliasPublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    dataClassPublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    statefulClassWithoutToString.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    mutableCollectionPublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    pairOrTriplePublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    booleanParameterPublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    nullableBooleanPublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    requiredParameterAfterOptional.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    inconsistentParameterOrderInOverloads.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    inlineFunctionWithLogic.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    dslMarkerNoopTarget.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    dslMarkerWithoutExplicitTargets.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                    dslMarkerNoopTypePosition.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
+                apiWatchdog {
+                    openApiWithoutSubclassOptIn = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    exhaustivePublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    undocumentedPublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    functionTypeAliasPublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    dataClassPublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    statefulClassWithoutToString = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    mutableCollectionPublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    pairOrTriplePublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    booleanParameterPublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    nullableBooleanPublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    requiredParameterAfterOptional = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    inconsistentParameterOrderInOverloads = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    inlineFunctionWithLogic = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    dslMarkerNoopTarget = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    dslMarkerWithoutExplicitTargets = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                    dslMarkerNoopTypePosition = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
                     javaInterop {
-                        mangledJvmNamePublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                        kotlinOnlyApiWithoutJvmSynthetic.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                        companionApiWithoutJvmStatic.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                        companionConstantWithoutJvmField.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                        topLevelApiWithoutJvmName.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
-                        defaultParametersWithoutJvmOverloads.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
+                        mangledJvmNamePublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                        kotlinOnlyApiWithoutJvmSynthetic = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                        companionApiWithoutJvmStatic = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                        companionConstantWithoutJvmField = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                        topLevelApiWithoutJvmName = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
+                        defaultParametersWithoutJvmOverloads = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
                     }
                 }
             """.trimIndent(),
@@ -111,8 +111,8 @@ class WatchdogProjectTest {
         val project = object : WatchdogProject(
             extraBuildScript = """
                 kotlin { compilerOptions { freeCompilerArgs.add("-Xreport-all-warnings") } }
-                libsApiWatchdog {
-                    undocumentedPublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
+                apiWatchdog {
+                    undocumentedPublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
                 }
             """.trimIndent(),
         ) {
@@ -131,10 +131,10 @@ class WatchdogProjectTest {
         // individual severities inside the group.
         val project = object : WatchdogProject(
             extraBuildScript = """
-                libsApiWatchdog {
+                apiWatchdog {
                     javaInterop {
                         enabled = false
-                        companionApiWithoutJvmStatic.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.ERROR)
+                        companionApiWithoutJvmStatic = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.ERROR
                     }
                 }
             """.trimIndent(),
@@ -157,9 +157,9 @@ class WatchdogProjectTest {
     fun disabledDiagnosticsAreNotReported() {
         val project = object : WatchdogProject(
             extraBuildScript = """
-                libsApiWatchdog {
-                    undocumentedPublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.NONE)
-                    statefulClassWithoutToString.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.NONE)
+                apiWatchdog {
+                    undocumentedPublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.NONE
+                    statefulClassWithoutToString = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.NONE
                 }
             """.trimIndent(),
         ) {
@@ -182,8 +182,8 @@ class WatchdogProjectTest {
         // deliberately offers no property for it.
         val project = object : WatchdogProject(
             extraBuildScript = """
-                libsApiWatchdog {
-                    undocumentedPublicApi.set(org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING)
+                apiWatchdog {
+                    undocumentedPublicApi = org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity.WARNING
                 }
             """.trimIndent(),
         ) {
@@ -293,6 +293,51 @@ class WatchdogProjectTest {
     }
 
     @Test
+    fun warnsWhenExplicitApiModeIsNotEnabled() {
+        // The warning is logged during configuration, so `help` is enough to observe it.
+        val project = WatchdogProject(explicitApi = false).gradleProject
+
+        val result = build(project.rootDir, "help")
+        assertTrue(result.output.contains("does not enable explicit API mode"))
+        assertTrue(result.output.contains("explicitApi()"))
+    }
+
+    @Test
+    fun explicitApiWarningIsSilentWhenExplicitApiModeIsEnabled() {
+        val project = WatchdogProject().gradleProject
+
+        val result = build(project.rootDir, "help")
+        assertFalse(result.output.contains("does not enable explicit API mode"))
+    }
+
+    @Test
+    fun explicitApiWarningSeesTheRawCompilerFlag() {
+        // The flag lands in the effective free compiler arguments of the compile tasks, which is
+        // where the check looks when the DSL setting is absent.
+        val project = WatchdogProject(
+            explicitApi = false,
+            extraBuildScript = """
+                kotlin { compilerOptions { freeCompilerArgs.add("-Xexplicit-api=strict") } }
+            """.trimIndent(),
+        ).gradleProject
+
+        val result = build(project.rootDir, "help")
+        assertFalse(result.output.contains("does not enable explicit API mode"))
+    }
+
+    @Test
+    fun explicitApiWarningCanBeSuppressedWithAGradleProperty() {
+        val project = WatchdogProject(explicitApi = false).gradleProject
+
+        val result = build(
+            project.rootDir,
+            "help",
+            "-Porg.jetbrains.kotlinx.libs.api.watchdog.suppressExplicitApiWarning=true",
+        )
+        assertFalse(result.output.contains("does not enable explicit API mode"))
+    }
+
+    @Test
     fun suggestsTapmocWhenItIsNotApplied() {
         // The suggestion is logged during configuration, so `help` is enough to observe it.
         val project = WatchdogProject().gradleProject
@@ -302,15 +347,15 @@ class WatchdogProjectTest {
         assertTrue(result.output.contains("""id("com.gradleup.tapmoc") version "<version>""""))
         assertTrue(result.output.contains("https://github.com/GradleUp/Tapmoc/releases/latest"))
         assertTrue(result.output.contains("https://gradleup.com/tapmoc/"))
-        assertTrue(result.output.contains("suggestTapmoc.set(false)"))
+        assertTrue(result.output.contains("suggestTapmoc = false"))
     }
 
     @Test
     fun tapmocSuggestionCanBeDisabled() {
         val project = WatchdogProject(
             extraBuildScript = """
-                libsApiWatchdog {
-                    suggestTapmoc.set(false)
+                apiWatchdog {
+                    suggestTapmoc = false
                 }
             """.trimIndent(),
         ).gradleProject
@@ -381,15 +426,15 @@ class WatchdogProjectTest {
         assertTrue(result.output.contains("abiValidation()"))
         assertTrue(result.output.contains("https://kotlinlang.org/docs/gradle-binary-compatibility-validation.html"))
         assertTrue(result.output.contains("https://github.com/Kotlin/binary-compatibility-validator"))
-        assertTrue(result.output.contains("suggestAbiValidation.set(false)"))
+        assertTrue(result.output.contains("suggestAbiValidation = false"))
     }
 
     @Test
     fun abiValidationSuggestionCanBeDisabled() {
         val project = WatchdogProject(
             extraBuildScript = """
-                libsApiWatchdog {
-                    suggestAbiValidation.set(false)
+                apiWatchdog {
+                    suggestAbiValidation = false
                 }
             """.trimIndent(),
         ).gradleProject

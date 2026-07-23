@@ -98,9 +98,9 @@ public fun acknowledged(id: UserId): Unit = Unit
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
+apiWatchdog {
     javaInterop {
-        mangledJvmNamePublicApi.set(WatchdogSeverity.WARNING)
+        mangledJvmNamePublicApi = WatchdogSeverity.WARNING
     }
 }
 ```

@@ -84,8 +84,8 @@ public fun setEnabled(enabled: Boolean): Unit {}
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    booleanParameterPublicApi.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    booleanParameterPublicApi = WatchdogSeverity.WARNING
 }
 ```
 

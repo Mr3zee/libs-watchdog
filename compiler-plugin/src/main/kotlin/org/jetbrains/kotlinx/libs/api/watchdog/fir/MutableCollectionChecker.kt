@@ -16,11 +16,11 @@ import org.jetbrains.kotlin.name.StandardClassIds
 /**
  * Reports [mutable collection types](https://kotlinlang.org/docs/api-guidelines-predictability.html#avoid-exposing-mutable-state)
  * in publicly visible signatures, type parameter bounds and type arguments included
- * (`List<MutableList<Int>>` still hands out mutable state; see [ExposedTypeChecker] for the
- * shared sweep). Once mutable state is shared across the API boundary, it is unclear whether
- * client-side and library-side mutations affect each other, so the API should accept and return
- * read-only types, handing out defensive copies where needed. Authors acknowledge deliberate
- * sharing with `@IntentionallyMutableCollection`.
+ * (`List<MutableList<Int>>` still hands out a mutable collection; see [ExposedTypeChecker] for
+ * the shared sweep). Once a mutable collection is shared across the API boundary, it is unclear
+ * whether client-side and library-side mutations affect each other, so the API should accept and
+ * return read-only types, handing out defensive copies where needed. Authors acknowledge
+ * deliberate sharing with `@IntentionallyMutableCollection`.
  *
  * A type counts as mutable when it is one of the `kotlin.collections` mutable interfaces, any
  * classifier implementing them (`ArrayList`, a hand-written `MutableList` subtype, ...), or an
@@ -40,7 +40,7 @@ internal class MutableCollectionChecker(
 
     /**
      * A `vararg` parameter receives a defensive copy of the array, so only the declared element
-     * type - the array's type argument - can leak mutable state, not the array itself.
+     * type - the array's type argument - can leak a mutable collection, not the array itself.
      */
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun findVarargViolation(parameterType: ConeKotlinType): Name? =

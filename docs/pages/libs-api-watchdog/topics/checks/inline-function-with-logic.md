@@ -113,8 +113,8 @@ accessors at once; there is no parameter- or type-level placement.
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    inlineFunctionWithLogic.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    inlineFunctionWithLogic = WatchdogSeverity.WARNING
 }
 ```
 

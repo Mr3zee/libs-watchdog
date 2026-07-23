@@ -76,8 +76,8 @@ the Gradle property below; there is no per-declaration escape hatch.
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    subclassOptInWithoutMarkers.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    subclassOptInWithoutMarkers = WatchdogSeverity.WARNING
 }
 ```
 

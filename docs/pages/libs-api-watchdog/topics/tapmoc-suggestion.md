@@ -30,8 +30,8 @@ oldest Kotlin version they must stay compatible with.
 Turn off the suggestion through the extension:
 
 ```kotlin
-libsApiWatchdog {
-    suggestTapmoc.set(false)
+apiWatchdog {
+    suggestTapmoc = false
 }
 ```
 

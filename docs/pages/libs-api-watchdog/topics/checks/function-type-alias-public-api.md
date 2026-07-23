@@ -85,8 +85,8 @@ public typealias Callback = (Int) -> Unit
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    functionTypeAliasPublicApi.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    functionTypeAliasPublicApi = WatchdogSeverity.WARNING
 }
 ```
 

@@ -28,7 +28,7 @@ These checks only pay off for libraries that support Java consumers. A library w
 audience turns off the whole group instead of demoting each check individually:
 
 ```kotlin
-libsApiWatchdog {
+apiWatchdog {
     javaInterop {
         enabled = false
     }

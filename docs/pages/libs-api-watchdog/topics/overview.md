@@ -7,9 +7,12 @@ modules compiled with
 (`kotlin { explicitApi() }` or `-Xexplicit-api`, in either `strict` or `warning` variant). Outside
 explicit API mode, the checks are not registered at all.
 
+%product% is intentionally restrictive by default: every check reports a compilation error until
+it is demoted to a warning, disabled, or exempted in place.
+
 ## What it looks like
 
-A public data class that hands out a mutable property, without documentation, triggers three
+A public data class that hands out a mutable collection, without documentation, triggers three
 diagnostics at once:
 
 ```kotlin
@@ -20,8 +23,8 @@ public data class Config( // DATA_CLASS_PUBLIC_API, UNDOCUMENTED_PUBLIC_API
 
 - The generated `copy` and `componentN` functions and the constructor bake the exact property
   list into the compiled API.
-- `tags` shares mutable state across the API boundary: it is unclear whether client-side and
-  library-side mutations affect each other.
+- `tags` shares a mutable collection across the API boundary: it is unclear whether client-side
+  and library-side mutations affect each other.
 - Neither the class nor the property has KDoc.
 
 The fixed version documents the type, exposes a read-only collection, and drops the data class
@@ -114,7 +117,8 @@ consumers; the whole group is disabled with `javaInterop { enabled = false }`. S
   annotations left with the default `OTHER` reason and an empty description, which explains
   nothing. Always an error; it cannot be configured like the other diagnostics.
 
-Beyond the diagnostic catalog, the Gradle plugin also runs two build-level checks: the
+Beyond the diagnostic catalog, the Gradle plugin warns when explicit API mode is not enabled
+(see [Setup](setup.md)), and it also runs two build-level checks: the
 [Tapmoc suggestion](tapmoc-suggestion.md) warns when the
 [Tapmoc](https://github.com/GradleUp/Tapmoc) plugin, which pins the oldest Java and Kotlin
 versions a module is built against, is not applied alongside %product%, and the

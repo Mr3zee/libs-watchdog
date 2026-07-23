@@ -30,8 +30,8 @@ On Kotlin 2.2 and 2.3, write `abiValidation { enabled.set(true) }` instead of th
 Turn off the suggestion through the extension:
 
 ```kotlin
-libsApiWatchdog {
-    suggestAbiValidation.set(false)
+apiWatchdog {
+    suggestAbiValidation = false
 }
 ```
 

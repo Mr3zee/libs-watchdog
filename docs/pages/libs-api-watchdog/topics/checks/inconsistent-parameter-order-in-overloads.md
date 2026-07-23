@@ -103,8 +103,8 @@ type-level placement.
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    inconsistentParameterOrderInOverloads.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    inconsistentParameterOrderInOverloads = WatchdogSeverity.WARNING
 }
 ```
 

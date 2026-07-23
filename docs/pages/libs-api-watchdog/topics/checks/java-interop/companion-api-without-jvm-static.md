@@ -89,9 +89,9 @@ companion-level placement covers both checks for every member inside at once.
 The property lives inside the `javaInterop { }` block:
 
 ```kotlin
-libsApiWatchdog {
+apiWatchdog {
     javaInterop {
-        companionApiWithoutJvmStatic.set(WatchdogSeverity.WARNING)
+        companionApiWithoutJvmStatic = WatchdogSeverity.WARNING
     }
 }
 ```

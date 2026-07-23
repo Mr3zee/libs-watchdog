@@ -292,13 +292,13 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
         )
         map.put(
             diagnostic = WatchdogDiagnostics.MUTABLE_COLLECTION_PUBLIC_API,
-            message = "The {0} ''{1}'' exposes the mutable collection type ''{2}''. Once mutable " +
-                    "state is shared across the API boundary, it is unclear whether client-side " +
-                    "and library-side mutations affect each other, and the library can no longer " +
-                    "evolve its internal representation freely. Accept and return read-only " +
-                    "types instead (arrays count as mutable collections too), handing out " +
-                    "defensive copies where needed, or mark the declaration with " +
-                    "@IntentionallyMutableCollection if sharing mutable state is intended. See " +
+            message = "The {0} ''{1}'' exposes the mutable collection type ''{2}''. Once a " +
+                    "mutable collection is shared across the API boundary, it is unclear whether " +
+                    "client-side and library-side mutations affect each other, and the library " +
+                    "can no longer evolve its internal representation freely. Accept and return " +
+                    "read-only types instead (arrays count as mutable collections too), handing " +
+                    "out defensive copies where needed, or mark the declaration with " +
+                    "@IntentionallyMutableCollection if sharing the collection is intended. See " +
                     "https://mr3zee.github.io/libs-api-watchdog/mutable-collection-public-api.html " +
                     "for details.",
             rendererA = STRING,

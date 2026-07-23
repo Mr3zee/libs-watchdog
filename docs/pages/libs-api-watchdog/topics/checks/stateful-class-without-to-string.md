@@ -86,8 +86,8 @@ public class Credentials(public val token: String)
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    statefulClassWithoutToString.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    statefulClassWithoutToString = WatchdogSeverity.WARNING
 }
 ```
 

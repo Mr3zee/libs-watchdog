@@ -77,8 +77,8 @@ The annotation targets the class declaration only; there is no parameter- or typ
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    dataClassPublicApi.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    dataClassPublicApi = WatchdogSeverity.WARNING
 }
 ```
 

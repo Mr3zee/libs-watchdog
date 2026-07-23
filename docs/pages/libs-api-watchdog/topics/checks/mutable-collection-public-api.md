@@ -28,11 +28,11 @@ public fun nested(): List<MutableList<Int>> = emptyList()
 
 ## Rationale
 
-A mutable return type or property lets clients mutate state they do not own; a mutable parameter
-lets the library mutate an argument the client still holds. Either way, once mutable state crosses
-the API boundary it is unclear whose mutations are safe, and the library can no longer swap its
-internal representation for a different collection type without risking a behavioral change for
-clients that relied on mutating the exposed instance. See the Kotlin guide on
+A mutable return type or property lets clients mutate a collection they do not own; a mutable
+parameter lets the library mutate an argument the client still holds. Either way, once a mutable
+collection crosses the API boundary it is unclear whose mutations are safe, and the library can
+no longer swap its internal representation for a different collection type without risking a
+behavioral change for clients that relied on mutating the exposed instance. See the Kotlin guide on
 [avoiding exposing mutable state](https://kotlinlang.org/docs/api-guidelines-predictability.html#avoid-exposing-mutable-state).
 
 ## Don't
@@ -78,8 +78,8 @@ Notable edge cases and deliberate exceptions:
 
 ## When to exempt
 
-Use `@IntentionallyMutableCollection` when sharing the mutable state is a deliberate part of the
-API contract. It applies on the whole declaration (function, property, or constructor - covering
+Use `@IntentionallyMutableCollection` when sharing the mutable collection is a deliberate part of
+the API contract. It applies on the whole declaration (function, property, or constructor - covering
 the whole signature), on a single parameter or type parameter, or on a type usage, where it covers
 the annotated type and everything nested in it:
 
@@ -101,8 +101,8 @@ default use-site target - not on the property it generates; it still covers the 
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    mutableCollectionPublicApi.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    mutableCollectionPublicApi = WatchdogSeverity.WARNING
 }
 ```
 

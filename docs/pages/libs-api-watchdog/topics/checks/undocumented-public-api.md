@@ -101,8 +101,8 @@ public fun currentTimestamp(): Long = System.currentTimeMillis()
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    undocumentedPublicApi.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    undocumentedPublicApi = WatchdogSeverity.WARNING
 }
 ```
 

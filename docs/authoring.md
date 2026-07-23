@@ -9,7 +9,7 @@ reference served under `/api`.
 - Never use the em dash character (U+2014). Use a plain hyphen, a colon, or rewrite the sentence.
   Also avoid smart quotes; use straight ASCII quotes.
 - Naming: the product is `libs-api-watchdog`. The Gradle plugin id is
-  `org.jetbrains.kotlinx.libs.api.watchdog`. The Gradle extension is `libsApiWatchdog`. The
+  `org.jetbrains.kotlinx.libs.api.watchdog`. The Gradle extension is `apiWatchdog`. The
   annotations package is `org.jetbrains.kotlinx.libs.api.watchdog`.
 - Every Kotlin API example must compile in explicit API mode: `public` modifiers and explicit
   return types on all API declarations.
@@ -139,8 +139,8 @@ parameter, type usage, containing class) when the annotation has several.
 ## Configuration
 
     ```kotlin
-    libsApiWatchdog {
-        <propertyName>.set(WatchdogSeverity.WARNING)
+    apiWatchdog {
+        <propertyName> = WatchdogSeverity.WARNING
     }
     ```
 

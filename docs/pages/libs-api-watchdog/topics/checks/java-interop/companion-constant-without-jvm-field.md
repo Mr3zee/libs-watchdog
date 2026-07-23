@@ -99,9 +99,9 @@ companion, so one class-level placement can acknowledge a companion that mixes b
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
+apiWatchdog {
     javaInterop {
-        companionConstantWithoutJvmField.set(WatchdogSeverity.WARNING)
+        companionConstantWithoutJvmField = WatchdogSeverity.WARNING
     }
 }
 ```

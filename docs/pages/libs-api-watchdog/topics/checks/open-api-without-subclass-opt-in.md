@@ -88,8 +88,8 @@ public open class Widget
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    openApiWithoutSubclassOptIn.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    openApiWithoutSubclassOptIn = WatchdogSeverity.WARNING
 }
 ```
 

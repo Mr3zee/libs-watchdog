@@ -97,8 +97,8 @@ use-site target, not on the property it generates; it still covers the property.
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    nullableBooleanPublicApi.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    nullableBooleanPublicApi = WatchdogSeverity.WARNING
 }
 ```
 

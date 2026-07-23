@@ -95,8 +95,8 @@ type-level placement.
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    requiredParameterAfterOptional.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    requiredParameterAfterOptional = WatchdogSeverity.WARNING
 }
 ```
 

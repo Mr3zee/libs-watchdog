@@ -1,11 +1,11 @@
 # Gradle plugin reference
 
 Applying the Gradle plugin (plugin id `org.jetbrains.kotlinx.libs.api.watchdog`) adds the
-`libsApiWatchdog` extension. It configures the severity of every check and two setup suggestions
+`apiWatchdog` extension. It configures the severity of every check and two setup suggestions
 the plugin makes. See [Setup](setup.md) for applying the plugin and [Exemptions and internal
 API](exemptions.md) for silencing a single declaration instead of changing severity project-wide.
 
-## The libsApiWatchdog extension
+## The apiWatchdog extension
 
 Every property has a default, so a full sample only needs to set the ones you want to change.
 This one sets all of them, for reference:
@@ -13,36 +13,36 @@ This one sets all of them, for reference:
 ```kotlin
 import org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity
 
-libsApiWatchdog {
-    openApiWithoutSubclassOptIn.set(WatchdogSeverity.WARNING)
-    subclassOptInWithoutMarkers.set(WatchdogSeverity.WARNING)
-    exhaustivePublicApi.set(WatchdogSeverity.WARNING)
-    undocumentedPublicApi.set(WatchdogSeverity.NONE)
-    functionTypeAliasPublicApi.set(WatchdogSeverity.WARNING)
-    dataClassPublicApi.set(WatchdogSeverity.WARNING)
-    statefulClassWithoutToString.set(WatchdogSeverity.WARNING)
-    mutableCollectionPublicApi.set(WatchdogSeverity.WARNING)
-    pairOrTriplePublicApi.set(WatchdogSeverity.WARNING)
-    booleanParameterPublicApi.set(WatchdogSeverity.WARNING)
-    nullableBooleanPublicApi.set(WatchdogSeverity.WARNING)
-    requiredParameterAfterOptional.set(WatchdogSeverity.WARNING)
-    inconsistentParameterOrderInOverloads.set(WatchdogSeverity.WARNING)
-    inlineFunctionWithLogic.set(WatchdogSeverity.WARNING)
-    dslMarkerNoopTarget.set(WatchdogSeverity.WARNING)
-    dslMarkerWithoutExplicitTargets.set(WatchdogSeverity.WARNING)
-    dslMarkerNoopTypePosition.set(WatchdogSeverity.WARNING)
-    suggestTapmoc.set(true)
-    suggestAbiValidation.set(true)
+apiWatchdog {
+    openApiWithoutSubclassOptIn = WatchdogSeverity.WARNING
+    subclassOptInWithoutMarkers = WatchdogSeverity.WARNING
+    exhaustivePublicApi = WatchdogSeverity.WARNING
+    undocumentedPublicApi = WatchdogSeverity.NONE
+    functionTypeAliasPublicApi = WatchdogSeverity.WARNING
+    dataClassPublicApi = WatchdogSeverity.WARNING
+    statefulClassWithoutToString = WatchdogSeverity.WARNING
+    mutableCollectionPublicApi = WatchdogSeverity.WARNING
+    pairOrTriplePublicApi = WatchdogSeverity.WARNING
+    booleanParameterPublicApi = WatchdogSeverity.WARNING
+    nullableBooleanPublicApi = WatchdogSeverity.WARNING
+    requiredParameterAfterOptional = WatchdogSeverity.WARNING
+    inconsistentParameterOrderInOverloads = WatchdogSeverity.WARNING
+    inlineFunctionWithLogic = WatchdogSeverity.WARNING
+    dslMarkerNoopTarget = WatchdogSeverity.WARNING
+    dslMarkerWithoutExplicitTargets = WatchdogSeverity.WARNING
+    dslMarkerNoopTypePosition = WatchdogSeverity.WARNING
+    suggestTapmoc = true
+    suggestAbiValidation = true
 
     javaInterop {
         // One switch for the whole Java interop group; it overrides the severities below.
         enabled = true
-        mangledJvmNamePublicApi.set(WatchdogSeverity.WARNING)
-        kotlinOnlyApiWithoutJvmSynthetic.set(WatchdogSeverity.WARNING)
-        companionApiWithoutJvmStatic.set(WatchdogSeverity.WARNING)
-        companionConstantWithoutJvmField.set(WatchdogSeverity.WARNING)
-        topLevelApiWithoutJvmName.set(WatchdogSeverity.WARNING)
-        defaultParametersWithoutJvmOverloads.set(WatchdogSeverity.WARNING)
+        mangledJvmNamePublicApi = WatchdogSeverity.WARNING
+        kotlinOnlyApiWithoutJvmSynthetic = WatchdogSeverity.WARNING
+        companionApiWithoutJvmStatic = WatchdogSeverity.WARNING
+        companionConstantWithoutJvmField = WatchdogSeverity.WARNING
+        topLevelApiWithoutJvmName = WatchdogSeverity.WARNING
+        defaultParametersWithoutJvmOverloads = WatchdogSeverity.WARNING
     }
 }
 ```
@@ -106,8 +106,8 @@ warns that the library's Java and Kotlin compatibility levels are not pinned. Se
 silence the warning:
 
 ```kotlin
-libsApiWatchdog {
-    suggestTapmoc.set(false)
+apiWatchdog {
+    suggestTapmoc = false
 }
 ```
 
@@ -122,8 +122,8 @@ incompatible changes to already-shipped API would go unnoticed. Set it to `false
 warning:
 
 ```kotlin
-libsApiWatchdog {
-    suggestAbiValidation.set(false)
+apiWatchdog {
+    suggestAbiValidation = false
 }
 ```
 

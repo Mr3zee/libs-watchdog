@@ -4,14 +4,20 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.compiler.plugin.devkit.DevKitSupportPlugin
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 @Suppress("unused") // Used via reflection.
 public class WatchdogSupportPlugin : DevKitSupportPlugin(PluginInfo.PLUGIN_INFO) {
     override fun apply(target: Project) {
-        val extension = target.extensions.create("libsApiWatchdog", WatchdogGradleExtension::class.java)
+        val extension = target.extensions.create("apiWatchdog", WatchdogGradleExtension::class.java)
         target.afterEvaluate { project ->
+            if (!project.explicitApiWarningSuppressed() && !project.hasExplicitApiMode()) {
+                project.logger.warn(missingExplicitApiWarning(project.path))
+            }
             if (extension.suggestTapmoc.get() && TAPMOC_PLUGIN_IDS.none(project.pluginManager::hasPlugin)) {
                 project.logger.warn(tapmocSuggestion(project.path))
             }
@@ -43,6 +49,34 @@ public class WatchdogSupportPlugin : DevKitSupportPlugin(PluginInfo.PLUGIN_INFO)
         private val ABI_VALIDATION_TASK_NAMES = listOf("checkKotlinAbi", "checkLegacyAbi")
 
         /**
+         * Deliberately undocumented escape hatch: `-P` this property to `true` to silence the
+         * missing-explicit-API warning should its detection misjudge a project.
+         */
+        private const val SUPPRESS_EXPLICIT_API_WARNING_PROPERTY =
+            "org.jetbrains.kotlinx.libs.api.watchdog.suppressExplicitApiWarning"
+
+        private fun Project.explicitApiWarningSuppressed(): Boolean =
+            providers.gradleProperty(SUPPRESS_EXPLICIT_API_WARNING_PROPERTY)
+                .map(String::toBoolean)
+                .getOrElse(false)
+
+        /**
+         * Whether explicit API mode (strict or warning) is enabled: through the `kotlin` DSL, or
+         * through a raw `-Xexplicit-api` flag in the effective free compiler arguments of any
+         * Kotlin compile task. The DSL check comes first so that the common case does not force
+         * task realization.
+         */
+        private fun Project.hasExplicitApiMode(): Boolean {
+            val kotlin = extensions.findByName("kotlin") as? KotlinBaseExtension ?: return false
+            val mode = kotlin.explicitApi
+            if (mode != null && mode != ExplicitApiMode.Disabled) return true
+            return tasks.withType(KotlinCompilationTask::class.java).any { task ->
+                task.compilerOptions.freeCompilerArgs.orNull.orEmpty()
+                    .any { it.startsWith("-Xexplicit-api=") && it != "-Xexplicit-api=disable" }
+            }
+        }
+
+        /**
          * Whether some binary compatibility validation guards this project: the standalone
          * Binary Compatibility Validator plugin (it covers subprojects when applied to a parent
          * project) or the Kotlin Gradle plugin's built-in ABI validation.
@@ -68,6 +102,18 @@ public class WatchdogSupportPlugin : DevKitSupportPlugin(PluginInfo.PLUGIN_INFO)
             return ABI_VALIDATION_TASK_NAMES.any(tasks.names::contains)
         }
 
+        private fun missingExplicitApiWarning(projectPath: String): String = """
+            |Project '$projectPath' applies libs-api-watchdog but does not enable explicit API mode, so the
+            |watchdog registers no checks: there is no declared public API contract to watch. Enable it in
+            |the module's build script:
+            |
+            |    kotlin {
+            |        explicitApi()
+            |    }
+            |
+            |The `explicitApiWarning()` variant and the `-Xexplicit-api` compiler flag also count.
+        """.trimMargin()
+
         private fun tapmocSuggestion(projectPath: String): String = """
             |Project '$projectPath' applies libs-api-watchdog but not Tapmoc. The watchdog guards the shape of
             |the public API, while Tapmoc pins the Java and Kotlin compatibility levels the artifacts are
@@ -86,7 +132,7 @@ public class WatchdogSupportPlugin : DevKitSupportPlugin(PluginInfo.PLUGIN_INFO)
             |
             |See https://gradleup.com/tapmoc/ for the full configuration reference.
             |
-            |Disable this suggestion with `libsApiWatchdog { suggestTapmoc.set(false) }`.
+            |Disable this suggestion with `apiWatchdog { suggestTapmoc = false }`.
         """.trimMargin()
 
         private fun abiValidationSuggestion(projectPath: String): String = """
@@ -108,7 +154,7 @@ public class WatchdogSupportPlugin : DevKitSupportPlugin(PluginInfo.PLUGIN_INFO)
             |dump tasks and the full configuration reference. On older Kotlin versions, apply the standalone
             |Binary Compatibility Validator plugin instead: https://github.com/Kotlin/binary-compatibility-validator.
             |
-            |Disable this suggestion with `libsApiWatchdog { suggestAbiValidation.set(false) }`.
+            |Disable this suggestion with `apiWatchdog { suggestAbiValidation = false }`.
         """.trimMargin()
     }
 }

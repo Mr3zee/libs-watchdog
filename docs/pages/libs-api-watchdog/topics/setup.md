@@ -14,7 +14,7 @@ kotlin {
 
 The `-Xexplicit-api` compiler flag, and the `warning` variant of either form, also count. Without
 explicit API mode enabled, %product% registers no checks at all: there is no public API contract
-to watch.
+to watch. The Gradle plugin prints a build warning when explicit API mode is not enabled.
 
 ## Apply the Gradle plugin
 
@@ -31,12 +31,14 @@ Applying the plugin:
 - Registers the compiler plugin for every compilation in the project.
 - Adds a dependency on `plugin-annotations`, a Kotlin Multiplatform library with the
   `@Intentionally*` exemption annotations, automatically.
+- Warns when explicit API mode is not enabled, since the checks never run without it.
 - Checks whether Tapmoc and binary compatibility validation are applied alongside it, printing a
   build warning with a setup snippet for either one that is missing. See below.
 
 ## First build
 
-Every check reports a compilation error by default. See [Gradle plugin reference](gradle-plugin.md)
+%product% is intentionally restrictive by default: every check reports a compilation error until
+configured otherwise. See [Gradle plugin reference](gradle-plugin.md)
 for demoting individual checks to warnings or disabling them, and
 [Exemptions and internal API](exemptions.md) for exempting a single declaration in place instead of
 changing severity project-wide.

@@ -90,8 +90,8 @@ targets instead of reaching for this exemption.
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    dslMarkerWithoutExplicitTargets.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    dslMarkerWithoutExplicitTargets = WatchdogSeverity.WARNING
 }
 ```
 

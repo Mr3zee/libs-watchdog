@@ -99,8 +99,8 @@ property below; there is no other per-declaration escape hatch.
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    dslMarkerNoopTypePosition.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    dslMarkerNoopTypePosition = WatchdogSeverity.WARNING
 }
 ```
 

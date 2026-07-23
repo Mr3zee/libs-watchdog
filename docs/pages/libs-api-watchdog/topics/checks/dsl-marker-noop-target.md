@@ -106,8 +106,8 @@ New markers should declare effective targets instead of reaching for this exempt
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    dslMarkerNoopTarget.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    dslMarkerNoopTarget = WatchdogSeverity.WARNING
 }
 ```
 

@@ -94,9 +94,9 @@ type-level placement.
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
+apiWatchdog {
     javaInterop {
-        defaultParametersWithoutJvmOverloads.set(WatchdogSeverity.WARNING)
+        defaultParametersWithoutJvmOverloads = WatchdogSeverity.WARNING
     }
 }
 ```

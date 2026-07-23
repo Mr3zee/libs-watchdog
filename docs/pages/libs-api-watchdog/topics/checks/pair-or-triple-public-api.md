@@ -93,8 +93,8 @@ public fun corners(): List<@IntentionallyPairOrTriple(reason = ExemptionReason.A
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
-    pairOrTriplePublicApi.set(WatchdogSeverity.WARNING)
+apiWatchdog {
+    pairOrTriplePublicApi = WatchdogSeverity.WARNING
 }
 ```
 

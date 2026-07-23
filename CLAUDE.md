@@ -63,7 +63,7 @@ bootstrap/dev repositories configured in `settings.gradle.kts`.
 - `:plugin-annotations` - Kotlin Multiplatform library with the user-facing `@Intentionally*` exemption annotations,
   `@InternalAnnotationMarker`, and `ExemptionReason`. Added automatically as a dependency by the Gradle plugin.
 - `:gradle-plugin` - `WatchdogSupportPlugin` applies the compiler plugin and the annotations dependency;
-  `WatchdogGradleExtension` (`libsApiWatchdog { ... }`) exposes one severity `Property` per configurable diagnostic and
+  `WatchdogGradleExtension` (`apiWatchdog { ... }`) exposes one severity `Property` per configurable diagnostic and
   turns them into `diagnosticSeverity` subplugin options.
 
 ### Diagnostics tests

@@ -95,9 +95,9 @@ public suspend fun refresh(key: String): String = key
 ## Configuration
 
 ```kotlin
-libsApiWatchdog {
+apiWatchdog {
     javaInterop {
-        kotlinOnlyApiWithoutJvmSynthetic.set(WatchdogSeverity.WARNING)
+        kotlinOnlyApiWithoutJvmSynthetic = WatchdogSeverity.WARNING
     }
 }
 ```

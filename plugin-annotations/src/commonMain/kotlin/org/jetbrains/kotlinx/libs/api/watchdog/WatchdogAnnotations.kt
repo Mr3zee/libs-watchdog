@@ -207,10 +207,10 @@ public annotation class IntentionallyWithoutToString(
  * types, and parameter types, including their type arguments - that mention mutable collection
  * types (`MutableList`, `MutableMap`, ..., their implementations, and arrays, which are mutable
  * collections too), as well as mutable bounds on type parameters.
- * [Sharing mutable state](https://kotlinlang.org/docs/api-guidelines-predictability.html#avoid-exposing-mutable-state)
+ * [Sharing a mutable collection](https://kotlinlang.org/docs/api-guidelines-predictability.html#avoid-exposing-mutable-state)
  * across the API boundary makes it unclear whether client-side and library-side mutations affect
- * each other. Apply this annotation to suppress the warning when sharing mutable state is an
- * intended part of the API contract. On a function, a property, or a constructor it covers the
+ * each other. Apply this annotation to suppress the warning when sharing the mutable collection
+ * is an intended part of the API contract. On a function, a property, or a constructor it covers the
  * whole signature; on a single parameter or type parameter it covers just that parameter; on a
  * type usage (`List<@IntentionallyMutableCollection MutableList<Int>>`) it covers the annotated
  * type and everything nested in it.
