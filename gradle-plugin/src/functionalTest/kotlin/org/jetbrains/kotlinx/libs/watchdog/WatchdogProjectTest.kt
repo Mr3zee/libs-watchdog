@@ -22,6 +22,7 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("e: ", "has no KDoc")
         result.assertDiagnosticReported("e: ", "abbreviates a function type")
         result.assertDiagnosticReported("e: ", "bakes its constructor property list")
+        result.assertDiagnosticReported("e: ", "neither declares nor inherits a `toString`")
         result.assertDiagnosticReported("e: ", "exposes the mutable collection type")
         result.assertDiagnosticReported("e: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("e: ", "declares no explicit @Target")
@@ -38,6 +39,7 @@ class WatchdogProjectTest {
                     undocumentedPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     functionTypeAliasPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dataClassPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    statefulClassWithoutToString.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     mutableCollectionPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTarget.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerWithoutExplicitTargets.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
@@ -54,6 +56,7 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("w: ", "has no KDoc")
         result.assertDiagnosticReported("w: ", "abbreviates a function type")
         result.assertDiagnosticReported("w: ", "bakes its constructor property list")
+        result.assertDiagnosticReported("w: ", "neither declares nor inherits a `toString`")
         result.assertDiagnosticReported("w: ", "exposes the mutable collection type")
         result.assertDiagnosticReported("w: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("w: ", "declares no explicit @Target")
@@ -79,6 +82,28 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("e: ", "can be subclassed outside the library without restriction")
         result.assertDiagnosticReported("e: ", "can be matched exhaustively by clients")
         result.assertDiagnosticReported("w: ", "has no KDoc")
+    }
+
+    @Test
+    fun disabledDiagnosticsAreNotReported() {
+        val project = object : WatchdogProject(
+            extraBuildScript = """
+                libsWatchdog {
+                    undocumentedPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.NONE)
+                    statefulClassWithoutToString.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.NONE)
+                }
+            """.trimIndent(),
+        ) {
+            override fun sources() = listOf(source(unacknowledgedFile))
+        }.gradleProject
+
+        val result = buildAndFail(project.rootDir, "build")
+        // The remaining diagnostics still fail the build...
+        result.assertDiagnosticReported("e: ", "can be subclassed outside the library without restriction")
+        result.assertDiagnosticReported("e: ", "can be matched exhaustively by clients")
+        // ...while the disabled ones are not reported at all.
+        assertFalse(result.output.contains("has no KDoc"))
+        assertFalse(result.output.contains("neither declares nor inherits a `toString`"))
     }
 
     @Test
@@ -112,6 +137,7 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("has no KDoc"))
         assertFalse(result.output.contains("abbreviates a function type"))
         assertFalse(result.output.contains("bakes its constructor property list"))
+        assertFalse(result.output.contains("neither declares nor inherits a `toString`"))
         assertFalse(result.output.contains("exposes the mutable collection type"))
         assertFalse(result.output.contains("DSL marker"))
     }
@@ -128,6 +154,7 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("has no KDoc"))
         assertFalse(result.output.contains("abbreviates a function type"))
         assertFalse(result.output.contains("bakes its constructor property list"))
+        assertFalse(result.output.contains("neither declares nor inherits a `toString`"))
         assertFalse(result.output.contains("exposes the mutable collection type"))
         assertFalse(result.output.contains("DSL marker"))
     }
@@ -186,6 +213,13 @@ private val unacknowledgedFile = """
      * @param x the only coordinate.
      */
     public data class UnmarkedData(val x: Int)
+
+    /**
+     * A stateful session relying on the opaque default toString.
+     *
+     * @param id the session identifier.
+     */
+    public class UnrenderedSession(public val id: Int)
 
     /** A function handing out the library's mutable state. */
     public fun leakState(): MutableList<String> = mutableListOf()
@@ -276,6 +310,14 @@ private val acknowledgedFile = """
      */
     @IntentionallyDataClass(reason = ExemptionReason.API_DESIGN)
     public data class DeliberateData(val x: Int)
+
+    /**
+     * A deliberately opaque credentials holder.
+     *
+     * @param token the secret that must not leak into logs.
+     */
+    @IntentionallyWithoutToString(reason = ExemptionReason.API_DESIGN, description = "The token must not leak into logs.")
+    public class OpaqueCredentials(public val token: String)
 
     /** A deliberately shared mutable buffer. */
     @IntentionallyMutableCollection(reason = ExemptionReason.API_DESIGN)

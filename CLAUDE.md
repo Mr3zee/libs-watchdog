@@ -44,11 +44,13 @@ bootstrap/dev repositories configured in `settings.gradle.kts`.
 
 - `:compiler-plugin` — FIR frontend checkers only, no IR/codegen.
     - Entry points: `WatchdogCompilerPluginRegistrar` and `WatchdogCommandLineProcessor` (single repeatable option
-      `diagnosticSeverity=<DIAGNOSTIC_NAME>:error|warning`).
+      `diagnosticSeverity=<DIAGNOSTIC_NAME>:error|warning|none`, where `none` disables the check).
     - `fir/WatchdogFirCheckers` registers the checkers, and only when explicit API mode is enabled.
     - `fir/WatchdogDiagnostics` — a diagnostic factory bakes its severity in at construction, so each configurable
       diagnostic is a `ConfigurableWatchdogDiagnostic` holding an error+warning factory pair under one name; checkers
-      pick the factory at report time via `WatchdogDiagnosticSeverities` (default: everything is an error).
+      pick the factory at report time via `WatchdogDiagnosticSeverities` (default: everything is an error). A
+      diagnostic configured to `WatchdogSeverity.NONE` resolves to no factory, and `WatchdogFirCheckers` skips
+      registering a checker whose diagnostics are all disabled, so a disabled check performs no work.
       `EXEMPTION_WITHOUT_EXPLANATION` is deliberately not configurable — always an error.
     - `fir/WatchdogCheckerUtils.isWatchedPublicApi()` is the shared gate for API-surface checks: real source,
       public/protected effective visibility (or `@PublishedApi`), and not under an annotation whose class carries

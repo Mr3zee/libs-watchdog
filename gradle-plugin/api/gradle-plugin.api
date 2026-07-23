@@ -8,12 +8,14 @@ public class org/jetbrains/kotlinx/libs/watchdog/WatchdogGradleExtension {
 	public final fun getFunctionTypeAliasPublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getMutableCollectionPublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getOpenApiWithoutSubclassOptIn ()Lorg/gradle/api/provider/Property;
+	public final fun getStatefulClassWithoutToString ()Lorg/gradle/api/provider/Property;
 	public final fun getSubclassOptInWithoutMarkers ()Lorg/gradle/api/provider/Property;
 	public final fun getUndocumentedPublicApi ()Lorg/gradle/api/provider/Property;
 }
 
 public final class org/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity : java/lang/Enum {
 	public static final field ERROR Lorg/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity;
+	public static final field NONE Lorg/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity;
 	public static final field WARNING Lorg/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lorg/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity;

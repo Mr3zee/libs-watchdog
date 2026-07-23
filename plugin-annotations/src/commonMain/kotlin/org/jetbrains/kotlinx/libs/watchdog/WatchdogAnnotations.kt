@@ -148,6 +148,28 @@ public annotation class IntentionallyDataClass(
 )
 
 /**
+ * Acknowledges that the annotated class deliberately provides no `toString` implementation.
+ *
+ * The libs-watchdog compiler plugin warns about publicly visible stateful classes — classes with
+ * at least one property backed by a field — that neither declare nor inherit a `toString`
+ * implementation, because their instances render as the opaque default class-name-with-hash-code,
+ * which makes logs and debugger output meaningless. Apply this annotation to suppress the warning
+ * when the opaque rendering is intended (for example, when the state is sensitive and must not
+ * leak into logs).
+ *
+ * @param reason why the class deliberately has no `toString`.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyWithoutToString(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
  * Acknowledges that the annotated declaration deliberately exposes a mutable collection type in
  * the public API.
  *

@@ -22,6 +22,8 @@ internal class FunctionTypeAliasChecker(
 ) : FirTypeAliasChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirTypeAlias) {
+        val factory = severities[WatchdogDiagnostics.FUNCTION_TYPE_ALIAS_PUBLIC_API] ?: return
+
         if (!declaration.isWatchedPublicApi()) {
             return
         }
@@ -40,7 +42,7 @@ internal class FunctionTypeAliasChecker(
 
         reporter.reportOn(
             source = declaration.source,
-            factory = severities[WatchdogDiagnostics.FUNCTION_TYPE_ALIAS_PUBLIC_API],
+            factory = factory,
             a = declaration.name,
         )
     }

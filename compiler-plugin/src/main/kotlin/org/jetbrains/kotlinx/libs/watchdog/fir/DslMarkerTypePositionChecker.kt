@@ -44,6 +44,8 @@ internal class DslMarkerTypePositionChecker(
 ) : FirCallableDeclarationChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirCallableDeclaration) {
+        val factory = severities[WatchdogDiagnostics.DSL_MARKER_NOOP_TYPE_POSITION] ?: return
+
         // `val`/`var` constructor parameters also produce a property with a fake source pointing
         // at the same parameter text; skipping fake sources keeps the report single.
         if (declaration.source?.kind != KtRealSourceElementKind) {
@@ -80,7 +82,7 @@ internal class DslMarkerTypePositionChecker(
             val markerName = annotation.annotationClassSymbol(session)?.name ?: continue
             reporter.reportOn(
                 source = annotation.source,
-                factory = severities[WatchdogDiagnostics.DSL_MARKER_NOOP_TYPE_POSITION],
+                factory = factory,
                 a = markerName,
                 b = position,
             )

@@ -39,6 +39,11 @@ public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/I
 	public abstract fun reason ()Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
 }
 
+public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyWithoutToString : java/lang/annotation/Annotation {
+	public abstract fun description ()Ljava/lang/String;
+	public abstract fun reason ()Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+}
+
 public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility : java/lang/annotation/Annotation {
 	public abstract fun description ()Ljava/lang/String;
 }

@@ -25,6 +25,8 @@ internal class DataClassChecker(
 ) : FirClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirClass) {
+        val factory = severities[WatchdogDiagnostics.DATA_CLASS_PUBLIC_API] ?: return
+
         if (declaration !is FirRegularClass || !declaration.isWatchedPublicApi()) {
             return
         }
@@ -39,7 +41,7 @@ internal class DataClassChecker(
 
         reporter.reportOn(
             source = declaration.source,
-            factory = severities[WatchdogDiagnostics.DATA_CLASS_PUBLIC_API],
+            factory = factory,
             a = declaration.name,
         )
     }

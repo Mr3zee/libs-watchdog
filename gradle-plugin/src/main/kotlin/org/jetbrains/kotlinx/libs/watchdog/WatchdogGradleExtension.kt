@@ -5,11 +5,12 @@ import org.gradle.api.provider.Property
 
 /**
  * Configures the severity of each watchdog diagnostic. Every diagnostic is reported as an error
- * unless demoted to [WatchdogSeverity.WARNING] here:
+ * unless demoted to [WatchdogSeverity.WARNING] or disabled with [WatchdogSeverity.NONE] here:
  *
  * ```kotlin
  * libsWatchdog {
  *     undocumentedPublicApi.set(WatchdogSeverity.WARNING)
+ *     dataClassPublicApi.set(WatchdogSeverity.NONE)
  * }
  * ```
  */
@@ -32,6 +33,9 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
     /** Severity of `DATA_CLASS_PUBLIC_API`: data classes in the public API. */
     public val dataClassPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
+    /** Severity of `STATEFUL_CLASS_WITHOUT_TO_STRING`: stateful classes without a `toString` implementation. */
+    public val statefulClassWithoutToString: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
     /** Severity of `MUTABLE_COLLECTION_PUBLIC_API`: mutable collections and arrays in public signatures. */
     public val mutableCollectionPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
@@ -51,6 +55,7 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
         "UNDOCUMENTED_PUBLIC_API" to undocumentedPublicApi,
         "FUNCTION_TYPE_ALIAS_PUBLIC_API" to functionTypeAliasPublicApi,
         "DATA_CLASS_PUBLIC_API" to dataClassPublicApi,
+        "STATEFUL_CLASS_WITHOUT_TO_STRING" to statefulClassWithoutToString,
         "MUTABLE_COLLECTION_PUBLIC_API" to mutableCollectionPublicApi,
         "DSL_MARKER_NOOP_TARGET" to dslMarkerNoopTarget,
         "DSL_MARKER_WITHOUT_EXPLICIT_TARGETS" to dslMarkerWithoutExplicitTargets,

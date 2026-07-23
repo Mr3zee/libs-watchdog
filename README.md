@@ -66,6 +66,19 @@ annotation class documents the internal API surface itself.
   clients. Declare a regular class and implement `equals`/`hashCode`/`toString` explicitly, or
   acknowledge the contract with `@IntentionallyDataClass`. `data object`s are exempt: without
   constructor properties none of the hazardous members are generated.
+- `STATEFUL_CLASS_WITHOUT_TO_STRING` — reports
+  [stateful classes](https://kotlinlang.org/docs/api-guidelines-debuggability.html#provide-a-tostring-method-for-stateful-types)
+  — classes with at least one property that stores its value in a backing field — that neither
+  declare nor inherit a `toString` implementation: their instances render as the opaque
+  class-name-with-hash-code default, which reveals nothing in logs and debugger output. A
+  `toString` inherited from any supertype other than `kotlin.Any` counts as provided. Only
+  regular classes are checked: data and value classes receive a compiler-generated `toString`,
+  enum entries render their name, interfaces and annotation classes cannot hold backing fields,
+  and objects typically hold constants rather than per-instance state; delegated properties store
+  their value in the delegate, so they do not make a class stateful. Override `toString` to
+  render the current state, or acknowledge the opaque rendering with
+  `@IntentionallyWithoutToString` (for example, when the state is sensitive and must not leak
+  into logs).
 - `MUTABLE_COLLECTION_PUBLIC_API` — reports
   [mutable collection types](https://kotlinlang.org/docs/api-guidelines-predictability.html#avoid-exposing-mutable-state)
   in public signatures: return types, property types, value parameter types, and type parameter
@@ -117,9 +130,10 @@ annotation class documents the internal API surface itself.
 
 ## Configuring severities
 
-Every diagnostic is reported as a compilation **error** by default. Each one can be demoted to a
-warning individually through the `libsWatchdog` extension — except
-`EXEMPTION_WITHOUT_EXPLANATION`, which is always an error:
+Every diagnostic is reported as a compilation **error** by default. Each one can individually be
+demoted to a warning (`WatchdogSeverity.WARNING`) or disabled entirely (`WatchdogSeverity.NONE`)
+through the `libsWatchdog` extension — except `EXEMPTION_WITHOUT_EXPLANATION`, which is always an
+error:
 
 ```kotlin
 import org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity
@@ -128,9 +142,10 @@ libsWatchdog {
     openApiWithoutSubclassOptIn.set(WatchdogSeverity.WARNING)
     subclassOptInWithoutMarkers.set(WatchdogSeverity.WARNING)
     exhaustivePublicApi.set(WatchdogSeverity.WARNING)
-    undocumentedPublicApi.set(WatchdogSeverity.WARNING)
+    undocumentedPublicApi.set(WatchdogSeverity.NONE)
     functionTypeAliasPublicApi.set(WatchdogSeverity.WARNING)
     dataClassPublicApi.set(WatchdogSeverity.WARNING)
+    statefulClassWithoutToString.set(WatchdogSeverity.WARNING)
     mutableCollectionPublicApi.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTarget.set(WatchdogSeverity.WARNING)
     dslMarkerWithoutExplicitTargets.set(WatchdogSeverity.WARNING)
@@ -139,7 +154,8 @@ libsWatchdog {
 ```
 
 When invoking the compiler directly, the same configuration is available as a repeatable plugin
-option: `-P plugin:org.jetbrains.kotlinx.libs.watchdog:diagnosticSeverity=UNDOCUMENTED_PUBLIC_API:warning`.
+option taking `error`, `warning`, or `none`:
+`-P plugin:org.jetbrains.kotlinx.libs.watchdog:diagnosticSeverity=UNDOCUMENTED_PUBLIC_API:warning`.
 
 Note that the Kotlin compiler hides regular warnings when a compilation fails with errors, so
 demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
@@ -149,7 +165,7 @@ demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
 - [`:compiler-plugin`](compiler-plugin/src) — the compiler plugin (FIR checkers).
 - [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) — `@IntentionallyOpen`,
   `@IntentionallyExhaustive`, `@IntentionallyUndocumented`, `@IntentionallyFunctionTypeAlias`,
-  `@IntentionallyDataClass`, `@IntentionallyMutableCollection`,
+  `@IntentionallyDataClass`, `@IntentionallyWithoutToString`, `@IntentionallyMutableCollection`,
   `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`, `@InternalAnnotationMarker`,
   and the `ExemptionReason` enum.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations

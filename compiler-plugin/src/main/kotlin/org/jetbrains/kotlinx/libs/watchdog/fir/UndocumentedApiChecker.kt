@@ -57,6 +57,8 @@ internal class UndocumentedApiChecker(
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirDeclaration) {
+        val factory = severities[WatchdogDiagnostics.UNDOCUMENTED_PUBLIC_API] ?: return
+
         if (declaration !is FirMemberDeclaration) {
             return
         }
@@ -80,7 +82,7 @@ internal class UndocumentedApiChecker(
 
         reporter.reportOn(
             source = declaration.source,
-            factory = severities[WatchdogDiagnostics.UNDOCUMENTED_PUBLIC_API],
+            factory = factory,
             a = kind,
             b = name,
         )

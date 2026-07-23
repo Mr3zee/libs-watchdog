@@ -194,9 +194,10 @@ internal class MutableCollectionChecker(
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun report(typeRef: FirTypeRef, kind: String, name: Name, mutableType: Name, declaration: FirDeclaration) {
+        val factory = severities[WatchdogDiagnostics.MUTABLE_COLLECTION_PUBLIC_API] ?: return
         reporter.reportOn(
             source = typeRef.source ?: declaration.source,
-            factory = severities[WatchdogDiagnostics.MUTABLE_COLLECTION_PUBLIC_API],
+            factory = factory,
             a = kind,
             b = name,
             c = mutableType,

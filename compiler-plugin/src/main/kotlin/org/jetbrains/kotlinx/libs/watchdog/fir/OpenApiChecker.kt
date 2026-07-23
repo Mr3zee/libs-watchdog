@@ -75,10 +75,11 @@ internal class OpenApiChecker(
         )
 
         if (subclassOptIn != null) {
-            if (!subclassOptIn.hasMarkerClasses()) {
+            val markersFactory = severities[WatchdogDiagnostics.SUBCLASS_OPT_IN_WITHOUT_MARKERS]
+            if (markersFactory != null && !subclassOptIn.hasMarkerClasses()) {
                 reporter.reportOn(
                     source = subclassOptIn.source,
-                    factory = severities[WatchdogDiagnostics.SUBCLASS_OPT_IN_WITHOUT_MARKERS],
+                    factory = markersFactory,
                 )
             }
             return
@@ -86,7 +87,7 @@ internal class OpenApiChecker(
 
         if (declaration.hasAnnotation(WatchdogClassIds.IntentionallyOpen, session)) return
 
-        val factory = severities[WatchdogDiagnostics.OPEN_API_WITHOUT_SUBCLASS_OPT_IN]
+        val factory = severities[WatchdogDiagnostics.OPEN_API_WITHOUT_SUBCLASS_OPT_IN] ?: return
         val hasPublicPrimaryConstructor = accessibleConstructors.any {
             it.isPrimary && it.visibility == Visibilities.Public
         }

@@ -22,6 +22,8 @@ internal class ExhaustiveApiChecker(
 ) : FirClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirClass) {
+        val factory = severities[WatchdogDiagnostics.EXHAUSTIVE_PUBLIC_API] ?: return
+
         if (declaration !is FirRegularClass || !declaration.isWatchedPublicApi()) {
             return
         }
@@ -39,7 +41,7 @@ internal class ExhaustiveApiChecker(
 
         reporter.reportOn(
             source = declaration.source,
-            factory = severities[WatchdogDiagnostics.EXHAUSTIVE_PUBLIC_API],
+            factory = factory,
             a = declaration.classKind,
             b = declaration.name,
             c = declaration.classKind,

@@ -60,6 +60,15 @@ open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumen
         final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented.reason.<get-reason>|<get-reason>(){}[0]
 }
 
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutToString : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutToString|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutToString.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutToString.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutToString.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutToString.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutToString.reason.<get-reason>|<get-reason>(){}[0]
+}
+
 open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility|null[0]
     constructor <init>(kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility.<init>|<init>(kotlin.String){}[0]
 

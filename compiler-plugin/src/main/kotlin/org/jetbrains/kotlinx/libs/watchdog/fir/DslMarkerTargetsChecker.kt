@@ -62,14 +62,16 @@ internal class DslMarkerTargetsChecker(
 
         val targetAnnotation = declaration.getTargetAnnotation(session)
         if (targetAnnotation == null) {
+            val factory = severities[WatchdogDiagnostics.DSL_MARKER_WITHOUT_EXPLICIT_TARGETS] ?: return
             reporter.reportOn(
                 source = declaration.source,
-                factory = severities[WatchdogDiagnostics.DSL_MARKER_WITHOUT_EXPLICIT_TARGETS],
+                factory = factory,
                 a = declaration.name,
             )
             return
         }
 
+        val noopTargetFactory = severities[WatchdogDiagnostics.DSL_MARKER_NOOP_TARGET] ?: return
         val allowedTargets = targetAnnotation
             .findArgumentByName(StandardClassIds.Annotations.ParameterNames.targetAllowedTargets)
             ?.unwrapAndFlattenArgument(flattenArrays = true)
@@ -81,7 +83,7 @@ internal class DslMarkerTargetsChecker(
             if (target !in effectiveDslMarkerTargets) {
                 reporter.reportOn(
                     source = argument.source,
-                    factory = severities[WatchdogDiagnostics.DSL_MARKER_NOOP_TARGET],
+                    factory = noopTargetFactory,
                     a = declaration.name,
                     b = target.name,
                 )

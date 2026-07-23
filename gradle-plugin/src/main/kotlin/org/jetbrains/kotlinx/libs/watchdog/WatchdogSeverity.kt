@@ -7,4 +7,7 @@ public enum class WatchdogSeverity {
 
     /** The diagnostic is reported as a compiler warning. */
     WARNING,
+
+    /** The diagnostic is not reported at all: its check is disabled. */
+    NONE,
 }

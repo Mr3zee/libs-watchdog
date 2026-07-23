@@ -30,10 +30,17 @@ import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtTypeAlias
 
+/** Severity with which a configurable watchdog diagnostic is reported, or [NONE] to disable it. */
+enum class WatchdogSeverity {
+    ERROR,
+    WARNING,
+    NONE,
+}
+
 /**
  * A diagnostic whose severity is chosen per compilation. A diagnostic factory bakes its severity
  * in at construction, so each configurable diagnostic keeps an [error] and a [warning] factory
- * under the same diagnostic name and the checkers pick one of them at report time.
+ * under the same diagnostic name and the checkers pick one of them — or none — at report time.
  */
 class ConfigurableWatchdogDiagnostic<out F : AbstractKtDiagnosticFactory>(
     val error: F,
@@ -41,14 +48,25 @@ class ConfigurableWatchdogDiagnostic<out F : AbstractKtDiagnosticFactory>(
 ) {
     val name: String get() = error.name
 
-    fun withSeverity(severity: Severity): F =
-        if (severity == Severity.WARNING) warning else error
+    /** The factory reporting with [severity], or null when the diagnostic is disabled. */
+    fun withSeverity(severity: WatchdogSeverity): F? = when (severity) {
+        WatchdogSeverity.ERROR -> error
+        WatchdogSeverity.WARNING -> warning
+        WatchdogSeverity.NONE -> null
+    }
 }
 
-/** Per-compilation severity overrides keyed by diagnostic name; unlisted diagnostics are errors. */
-class WatchdogDiagnosticSeverities(private val overrides: Map<String, Severity>) {
-    operator fun <F : AbstractKtDiagnosticFactory> get(diagnostic: ConfigurableWatchdogDiagnostic<F>): F =
-        diagnostic.withSeverity(overrides[diagnostic.name] ?: Severity.ERROR)
+/**
+ * Per-compilation severity overrides keyed by diagnostic name; unlisted diagnostics are errors.
+ * Returns null for diagnostics overridden to [WatchdogSeverity.NONE]: their check is disabled,
+ * and [WatchdogFirCheckers] does not even register a checker all of whose diagnostics are
+ * disabled.
+ */
+class WatchdogDiagnosticSeverities(private val overrides: Map<String, WatchdogSeverity>) {
+    operator fun <F : AbstractKtDiagnosticFactory> get(diagnostic: ConfigurableWatchdogDiagnostic<F>): F? =
+        diagnostic.withSeverity(overrides[diagnostic.name] ?: WatchdogSeverity.ERROR)
+
+    fun isEnabled(diagnostic: ConfigurableWatchdogDiagnostic<*>): Boolean = this[diagnostic] != null
 
     companion object {
         /** Every diagnostic reported with its default severity, an error. */
@@ -81,6 +99,9 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
 
     /** Parameter: the class name. */
     val DATA_CLASS_PUBLIC_API by configurable1<KtClassOrObject, Name>(NAME_IDENTIFIER)
+
+    /** Parameter: the class name. */
+    val STATEFUL_CLASS_WITHOUT_TO_STRING by configurable1<KtClassOrObject, Name>(NAME_IDENTIFIER)
 
     /**
      * Parameters: declaration kind in words, declaration name, the mutable type's name. Reported
@@ -200,6 +221,16 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "`equals`/`hashCode`/`toString` explicitly, or mark the class with " +
                     "@IntentionallyDataClass if this property list is an intended, stable part " +
                     "of the API.",
+            rendererA = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.STATEFUL_CLASS_WITHOUT_TO_STRING,
+            message = "The class ''{0}'' holds state — at least one property with a backing " +
+                    "field — but neither declares nor inherits a `toString` implementation, so " +
+                    "instances render as the opaque class-name-with-hash-code default and reveal " +
+                    "nothing in logs and debugger output. Override `toString` to render the " +
+                    "current state, or mark the class with @IntentionallyWithoutToString if the " +
+                    "opaque rendering is intended.",
             rendererA = NAME,
         )
         map.put(

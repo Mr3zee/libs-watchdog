@@ -7,12 +7,15 @@ import org.jetbrains.kotlin.compiler.plugin.devkit.DevKitCLP
 import org.jetbrains.kotlin.compiler.plugin.devkit.DevKitCommandLineProcessor
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
-import org.jetbrains.kotlin.diagnostics.Severity
 import org.jetbrains.kotlinx.libs.watchdog.fir.WatchdogDiagnostics
+import org.jetbrains.kotlinx.libs.watchdog.fir.WatchdogSeverity
 
 object WatchdogConfigurationKeys {
-    /** Severity overrides keyed by diagnostic name; diagnostics not listed here are errors. */
-    val DIAGNOSTIC_SEVERITIES: CompilerConfigurationKey<Map<String, Severity>> =
+    /**
+     * Severity overrides keyed by diagnostic name; diagnostics not listed here are errors, and
+     * [WatchdogSeverity.NONE] disables a diagnostic entirely.
+     */
+    val DIAGNOSTIC_SEVERITIES: CompilerConfigurationKey<Map<String, WatchdogSeverity>> =
         CompilerConfigurationKey.create("watchdog diagnostic severities")
 }
 
@@ -23,8 +26,9 @@ class WatchdogCommandLineProcessor : DevKitCommandLineProcessor(WatchdogCLP::cla
     companion object {
         val DIAGNOSTIC_SEVERITY_OPTION: CliOption = CliOption(
             optionName = "diagnosticSeverity",
-            valueDescription = "<diagnostic name>:error|warning",
-            description = "Report the named watchdog diagnostic with the given severity. " +
+            valueDescription = "<diagnostic name>:error|warning|none",
+            description = "Report the named watchdog diagnostic with the given severity, " +
+                    "or disable its check with 'none'. " +
                     "Every diagnostic not mentioned is reported as an error.",
             required = false,
             allowMultipleOccurrences = true,
@@ -44,7 +48,7 @@ class WatchdogCLP : DevKitCLP {
         }
     }
 
-    private fun parseDiagnosticSeverity(value: String): Pair<String, Severity> {
+    private fun parseDiagnosticSeverity(value: String): Pair<String, WatchdogSeverity> {
         val diagnosticName = value.substringBefore(':')
         val diagnostic = WatchdogDiagnostics.allDiagnostics.find { it.name == diagnosticName }
             ?: throw CliOptionProcessingException(
@@ -53,11 +57,12 @@ class WatchdogCLP : DevKitCLP {
             )
         val level = value.substringAfter(':', missingDelimiterValue = "")
         val severity = when (level.lowercase()) {
-            "error" -> Severity.ERROR
-            "warning" -> Severity.WARNING
+            "error" -> WatchdogSeverity.ERROR
+            "warning" -> WatchdogSeverity.WARNING
+            "none" -> WatchdogSeverity.NONE
             else -> throw CliOptionProcessingException(
                 "Invalid severity '$level' for watchdog diagnostic '$diagnosticName': " +
-                        "expected 'error' or 'warning'.",
+                        "expected 'error', 'warning', or 'none'.",
             )
         }
         return diagnostic.name to severity
