@@ -220,7 +220,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "which makes it hard to evolve. Mark it with @SubclassOptInRequired to control " +
                     "external subclassing, or with @IntentionallyOpen if unrestricted subclassing " +
                     "is intended. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-predictability.html#prevent-unwanted-and-invalid-extensions " +
+                    "https://mr3zee.github.io/libs-api-watchdog/open-api-without-subclass-opt-in.html " +
                     "for details.",
             rendererA = CLASS_KIND,
             rendererB = NAME,
@@ -230,7 +230,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "@SubclassOptInRequired lists no marker classes, so it does not restrict " +
                     "external subclassing. Pass at least one opt-in marker class " +
                     "with a description of why the subclassing is restricted. See " +
-                    "https://kotlinlang.org/docs/opt-in-requirements.html#require-opt-in-to-extend-api " +
+                    "https://mr3zee.github.io/libs-api-watchdog/subclass-opt-in-without-markers.html " +
                     "for details.",
         )
         map.put(
@@ -238,7 +238,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "The {0} ''{1}'' can be matched exhaustively by clients, so adding {2} later is " +
                     "a breaking change. Mark it with @IntentionallyExhaustive if this " +
                     "exhaustive shape is an intended part of the API. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-predictability.html#prevent-unwanted-and-invalid-extensions " +
+                    "https://mr3zee.github.io/libs-api-watchdog/exhaustive-public-api.html " +
                     "for details.",
             rendererA = CLASS_KIND,
             rendererB = NAME,
@@ -249,7 +249,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "The {0} ''{1}'' is part of the public API but has no KDoc. Document it " +
                     "so clients do not have to guess its purpose and usage contract, or mark it " +
                     "with @IntentionallyUndocumented if leaving it undocumented is intended. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-informative-documentation.html#thoroughly-document-your-api " +
+                    "https://mr3zee.github.io/libs-api-watchdog/undocumented-public-api.html " +
                     "for details.",
             rendererA = STRING,
             rendererB = NAME,
@@ -261,7 +261,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "evolve into a richer abstraction later. Declare a `fun interface` instead to " +
                     "keep lambda ergonomics behind a stable nominal type, or mark the alias with " +
                     "@IntentionallyFunctionTypeAlias if exposing the function type is intended. See " +
-                    "https://kotlinlang.org/docs/fun-interfaces.html#functional-interfaces-vs-type-aliases " +
+                    "https://mr3zee.github.io/libs-api-watchdog/function-type-alias-public-api.html " +
                     "for details.",
             rendererA = NAME,
         )
@@ -274,7 +274,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "`equals`/`hashCode`/`toString` explicitly, or mark the class with " +
                     "@IntentionallyDataClass if this property list is an intended, stable part " +
                     "of the API. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-backward-compatibility.html#avoid-using-data-classes-in-your-api " +
+                    "https://mr3zee.github.io/libs-api-watchdog/data-class-public-api.html " +
                     "for details.",
             rendererA = NAME,
         )
@@ -286,7 +286,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "nothing in logs and debugger output. Override `toString` to render the " +
                     "current state, or mark the class with @IntentionallyWithoutToString if the " +
                     "opaque rendering is intended. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-debuggability.html#provide-a-tostring-method-for-stateful-types " +
+                    "https://mr3zee.github.io/libs-api-watchdog/stateful-class-without-to-string.html " +
                     "for details.",
             rendererA = NAME,
         )
@@ -299,7 +299,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "types instead (arrays count as mutable collections too), handing out " +
                     "defensive copies where needed, or mark the declaration with " +
                     "@IntentionallyMutableCollection if sharing mutable state is intended. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-predictability.html#avoid-exposing-mutable-state " +
+                    "https://mr3zee.github.io/libs-api-watchdog/mutable-collection-public-api.html " +
                     "for details.",
             rendererA = STRING,
             rendererB = NAME,
@@ -314,7 +314,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "clients. Declare a small class with descriptively named properties " +
                     "instead, or mark the declaration with @IntentionallyPairOrTriple if " +
                     "exposing the tuple is intended. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-consistency.html#use-object-oriented-design-for-data-and-state " +
+                    "https://mr3zee.github.io/libs-api-watchdog/pair-or-triple-public-api.html " +
                     "for details.",
             rendererA = STRING,
             rendererB = NAME,
@@ -329,7 +329,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "parameters - last. Move the required parameter in front of the optional " +
                     "ones, or mark the declaration with @IntentionallyRequiredParameterAfterOptional " +
                     "if this order is intended. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-consistency.html#preserve-parameter-order-naming-and-usage " +
+                    "https://mr3zee.github.io/libs-api-watchdog/required-parameter-after-optional.html " +
                     "for details.",
             rendererA = NAME,
             rendererB = NAME,
@@ -342,7 +342,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "silently swapped arguments. Keep shared parameters in the same relative " +
                     "order across overloads, or mark the declaration with " +
                     "@IntentionallyInconsistentParameterOrder if the differing order is intended. " +
-                    "See https://kotlinlang.org/docs/api-guidelines-consistency.html#preserve-parameter-order-naming-and-usage " +
+                    "See https://mr3zee.github.io/libs-api-watchdog/inconsistent-parameter-order-in-overloads.html " +
                     "for details.",
             rendererA = NAME,
             rendererB = NAME,
@@ -356,7 +356,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "separate, descriptively named functions for each mode, or replace the " +
                     "parameter with an enum class, or mark it with " +
                     "@IntentionallyBooleanParameter if the Boolean parameter is intended. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-readability.html#avoid-using-the-boolean-type-as-an-argument " +
+                    "https://mr3zee.github.io/libs-api-watchdog/boolean-parameter-public-api.html " +
                     "for details.",
             rendererA = NAME,
             rendererB = NAME,
@@ -369,7 +369,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "Replace it with an enum class naming all three states, or drop the third " +
                     "state, or mark the declaration with @IntentionallyNullableBoolean if the " +
                     "nullable Boolean is intended. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-readability.html#avoid-using-the-boolean-type-as-an-argument " +
+                    "https://mr3zee.github.io/libs-api-watchdog/nullable-boolean-public-api.html " +
                     "for details.",
             rendererA = STRING,
             rendererB = NAME,
@@ -383,7 +383,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "into a non-inline function (@PublishedApi internal if it should stay out " +
                     "of the public API) and delegate to it, or mark the declaration with " +
                     "@IntentionallyInlinedLogic if inlining the logic is intended. See " +
-                    "https://kotlinlang.org/docs/api-guidelines-backward-compatibility.html#considerations-for-using-the-publishedapi-annotation " +
+                    "https://mr3zee.github.io/libs-api-watchdog/inline-function-with-logic.html " +
                     "for details.",
             rendererA = STRING,
             rendererB = NAME,
@@ -393,7 +393,9 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             "The @{0} exemption does not explain why it is applied: the {1} reason does not " +
                     "speak for itself, and the description is empty. Pass a self-explanatory " +
                     "reason (FOR_BACKWARDS_COMPATIBILITY, API_DESIGN), or describe the " +
-                    "motivation in the description argument.",
+                    "motivation in the description argument. See " +
+                    "https://mr3zee.github.io/libs-api-watchdog/exemption-without-explanation.html " +
+                    "for details.",
             NAME,
             NAME,
         )
@@ -406,7 +408,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "control. Remove the target from @Target, or mark the marker with " +
                     "@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility if the target " +
                     "must stay for compatibility with existing clients. See " +
-                    "https://kotlinlang.org/docs/type-safe-builders.html#scope-control-dslmarker " +
+                    "https://mr3zee.github.io/libs-api-watchdog/dsl-marker-noop-target.html " +
                     "for details.",
             rendererA = NAME,
             rendererB = STRING,
@@ -419,7 +421,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "unavailable. Declare @Target(CLASS, TYPE, TYPEALIAS) or a subset of it, or " +
                     "mark the marker with @IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility " +
                     "if the default targets must stay for compatibility with existing clients. " +
-                    "See https://kotlinlang.org/docs/type-safe-builders.html#scope-control-dslmarker " +
+                    "See https://mr3zee.github.io/libs-api-watchdog/dsl-marker-without-explicit-targets.html " +
                     "for details.",
             rendererA = NAME,
         )
@@ -430,7 +432,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "parameter type, or a function type with such implicit values. A named value " +
                     "is always accessed explicitly, so the marker restricts nothing here. Move it " +
                     "to the class or to a receiver position, or remove it. See " +
-                    "https://kotlinlang.org/docs/type-safe-builders.html#scope-control-dslmarker " +
+                    "https://mr3zee.github.io/libs-api-watchdog/dsl-marker-noop-type-position.html " +
                     "for details.",
             rendererA = NAME,
             rendererB = STRING,
@@ -444,7 +446,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "(@get:JvmName/@set:JvmName on property accessors) or with @JvmExposeBoxed, " +
                     "or mark the declaration with @IntentionallyMangledJvmName if Java callers " +
                     "are not supported. See " +
-                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html#inline-value-classes " +
+                    "https://mr3zee.github.io/libs-api-watchdog/mangled-jvm-name-public-api.html " +
                     "for details.",
             rendererA = STRING,
             rendererB = NAME,
@@ -459,7 +461,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "for a suspend function, a `fun interface` parameter in place of a Kotlin " +
                     "function type - or mark the function with @IntentionallyKotlinOnlyApi if " +
                     "leaving the shape visible to Java is intended. See " +
-                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html for details.",
+                    "https://mr3zee.github.io/libs-api-watchdog/kotlin-only-api-without-jvm-synthetic.html for details.",
             rendererA = NAME,
             rendererB = STRING,
         )
@@ -472,7 +474,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "are unaffected - or hide it from Java with @JvmSynthetic, or mark it with " +
                     "@IntentionallyNonStaticCompanionApi if the companion-instance access path " +
                     "is intended. See " +
-                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html#static-methods " +
+                    "https://mr3zee.github.io/libs-api-watchdog/companion-api-without-jvm-static.html " +
                     "for details.",
             rendererA = NAME,
             rendererB = NAME,
@@ -487,7 +489,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "from Java with @get:JvmSynthetic, or mark it with " +
                     "@IntentionallyNonStaticCompanionApi if the companion-instance access path " +
                     "is intended. See " +
-                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html#static-fields " +
+                    "https://mr3zee.github.io/libs-api-watchdog/companion-constant-without-jvm-field.html " +
                     "for details.",
             rendererA = NAME,
             rendererB = NAME,
@@ -500,7 +502,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "to Kotlin callers - renames the facade and breaks Java callers. Choose and " +
                     "pin the facade name deliberately with @file:JvmName, or mark the file with " +
                     "@file:IntentionallyDefaultFacadeName if the derived name is intended. See " +
-                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html#package-level-functions " +
+                    "https://mr3zee.github.io/libs-api-watchdog/top-level-api-without-jvm-name.html " +
                     "for details. " +
                     "Reported once per file, on its first public top-level function or property.",
             rendererA = STRING,
@@ -516,7 +518,7 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "incompatible either way - or mark the {0} with " +
                     "@IntentionallyWithoutJvmOverloads if serving Java callers the full " +
                     "signature only is intended. See " +
-                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html#overloads-generation " +
+                    "https://mr3zee.github.io/libs-api-watchdog/default-parameters-without-jvm-overloads.html " +
                     "for details.",
             rendererA = STRING,
             rendererB = NAME,

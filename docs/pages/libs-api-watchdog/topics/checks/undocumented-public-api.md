@@ -1,0 +1,117 @@
+# Undocumented public API
+
+`UNDOCUMENTED_PUBLIC_API` reports public declarations that have no KDoc.
+
+| | |
+|---|---|
+| Diagnostic | `UNDOCUMENTED_PUBLIC_API` |
+| Default severity | Error |
+| Gradle property | [`undocumentedPublicApi`](gradle-plugin.md) |
+| Exemption | [`@IntentionallyUndocumented`](exemptions.md) |
+
+## What it reports
+
+Every publicly visible declaration a client can reference - classes, interfaces, objects, enum
+classes, annotation classes, type aliases, functions, properties, secondary constructors, and enum
+entries - is flagged when it carries no KDoc. Only the presence of a KDoc is checked, not its
+content:
+
+```kotlin
+// UNDOCUMENTED_PUBLIC_API
+public class Cache
+```
+
+## Rationale
+
+A KDoc is the contract a client can rely on. Without one, callers can only guess intent from the
+implementation, and any later change - even a bug fix - risks breaking a usage nobody wrote down as
+supported. Writing the contract down first is what lets the library author change the
+implementation later without guessing what clients depend on. See the
+[Kotlin API guidelines on documenting your API](https://kotlinlang.org/docs/api-guidelines-informative-documentation.html#thoroughly-document-your-api).
+
+## Don't
+
+```kotlin
+// UNDOCUMENTED_PUBLIC_API
+public class Cache {
+    // UNDOCUMENTED_PUBLIC_API
+    public fun get(key: String): String? = store[key]
+  
+    private val store: MutableMap<String, String> = mutableMapOf()
+}
+```
+
+## Do
+
+```kotlin
+/** An in-memory string cache keyed by an opaque key. */
+public class Cache {
+    /** Returns the cached value for [key], or null when nothing is cached under it. */
+    public fun get(key: String): String? = store[key]
+
+    private val store: MutableMap<String, String> = mutableMapOf()
+}
+```
+
+A class KDoc alone does not document its constructor properties; each one still needs a matching
+`@property` tag (or `@param` for a `val`/`var` declared in the primary constructor):
+
+```kotlin
+/** A user profile. */
+public class Profile(
+    // UNDOCUMENTED_PUBLIC_API
+    public val name: String,
+    // UNDOCUMENTED_PUBLIC_API
+    public val age: Int,
+) 
+```
+
+```kotlin
+/**
+ * A user profile.
+ *
+ * @property name the user's display name.
+ * @property age the user's age in years.
+ */
+public class Profile(
+  public val name: String, 
+  public val age: Int,
+)
+```
+
+Notable exceptions the checker applies on its own, so no annotation is needed:
+
+- Overrides and `actual` declarations inherit the KDoc of the declaration they implement.
+- Compiler-generated members (data class `copy`/`componentN`, enum `values`/`valueOf`/`entries`)
+  have no source of their own and are never reported.
+- A plain `//` or `/* */` comment does not count; only a KDoc block (`/** ... */`) satisfies the
+  check.
+
+## When to exempt
+
+Apply `@IntentionallyUndocumented` directly on the class, type alias, function, property,
+constructor, or enum entry that stays undocumented; it does not cover nested or member
+declarations:
+
+```kotlin
+@IntentionallyUndocumented(description = "Self-explanatory one-line getter.")
+public fun currentTimestamp(): Long = System.currentTimeMillis()
+```
+
+## Configuration
+
+```kotlin
+libsApiWatchdog {
+    undocumentedPublicApi.set(WatchdogSeverity.WARNING)
+}
+```
+
+With direct compiler invocation:
+```
+-P plugin:org.jetbrains.kotlinx.libs.api.watchdog:diagnosticSeverity=UNDOCUMENTED_PUBLIC_API:warning
+```
+
+## See also
+
+- [Kotlin API guidelines: thoroughly document your API](https://kotlinlang.org/docs/api-guidelines-informative-documentation.html#thoroughly-document-your-api)
+- [Exemptions and internal API](exemptions.md)
