@@ -96,7 +96,7 @@ warning individually through the `libsWatchdog` extension — except
 `EXEMPTION_WITHOUT_EXPLANATION`, which is always an error:
 
 ```kotlin
-import org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity
+import org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity
 
 libsWatchdog {
     openApiWithoutSubclassOptIn.set(WatchdogSeverity.WARNING)
@@ -111,7 +111,7 @@ libsWatchdog {
 ```
 
 When invoking the compiler directly, the same configuration is available as a repeatable plugin
-option: `-P plugin:org.jetbrains.kotlin.libs.watchdog:diagnosticSeverity=UNDOCUMENTED_PUBLIC_API:warning`.
+option: `-P plugin:org.jetbrains.kotlinx.libs.watchdog:diagnosticSeverity=UNDOCUMENTED_PUBLIC_API:warning`.
 
 Note that the Kotlin compiler hides regular warnings when a compilation fails with errors, so
 demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
@@ -124,7 +124,7 @@ demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
   `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`, `@InternalAnnotationMarker`,
   and the `ExemptionReason` enum.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations
-  dependency to a Kotlin project (plugin id `org.jetbrains.kotlin.libs.watchdog`).
+  dependency to a Kotlin project (plugin id `org.jetbrains.kotlinx.libs.watchdog`).
 
 ## Prerequisites
 

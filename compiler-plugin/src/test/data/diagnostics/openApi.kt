@@ -4,7 +4,7 @@
 
 package foo.bar
 
-import org.jetbrains.kotlin.libs.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyOpen
 
 @RequiresOptIn
 public annotation class ExperimentalFooApi

@@ -4,7 +4,7 @@
 
 package foo.bar
 
-import org.jetbrains.kotlin.libs.watchdog.IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility
 
 // A no-op target in an explicit @Target: should warn on that target.
 // This is the shape that broke Ktor's @KtorDsl (KTOR-8901).

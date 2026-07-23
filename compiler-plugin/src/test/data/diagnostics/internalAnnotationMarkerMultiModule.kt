@@ -8,7 +8,7 @@
 // FILE: markers.kt
 package lib.api
 
-import org.jetbrains.kotlin.libs.watchdog.InternalAnnotationMarker
+import org.jetbrains.kotlinx.libs.watchdog.InternalAnnotationMarker
 
 /** Flags declarations that are public for technical reasons but are not supported API. */
 @InternalAnnotationMarker

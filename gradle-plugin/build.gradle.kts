@@ -25,7 +25,7 @@ gradlePlugin {
             displayName = "LibsWatchdog"
             description =
                 "Warns Kotlin library authors about public API declarations that are hard to evolve"
-            implementationClass = "org.jetbrains.kotlin.libs.watchdog.WatchdogSupportPlugin"
+            implementationClass = "org.jetbrains.kotlinx.libs.watchdog.WatchdogSupportPlugin"
         }
     }
 }

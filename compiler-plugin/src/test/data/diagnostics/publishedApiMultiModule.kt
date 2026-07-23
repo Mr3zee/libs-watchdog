@@ -11,9 +11,9 @@
 
 package libapi
 
-import org.jetbrains.kotlin.libs.watchdog.ExemptionReason
-import org.jetbrains.kotlin.libs.watchdog.IntentionallyOpen
-import org.jetbrains.kotlin.libs.watchdog.IntentionallyUndocumented
+import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyUndocumented
 
 /** Documented published class. */
 @PublishedApi

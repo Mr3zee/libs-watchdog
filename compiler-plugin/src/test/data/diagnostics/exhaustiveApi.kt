@@ -4,7 +4,7 @@
 
 package foo.bar
 
-import org.jetbrains.kotlin.libs.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyExhaustive
 
 // Unacknowledged exhaustive API: should warn.
 

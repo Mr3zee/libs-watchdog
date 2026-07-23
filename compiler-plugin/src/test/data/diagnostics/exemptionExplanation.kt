@@ -4,12 +4,12 @@
 
 package foo.bar
 
-import org.jetbrains.kotlin.libs.watchdog.ExemptionReason
-import org.jetbrains.kotlin.libs.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlin.libs.watchdog.IntentionallyFunctionTypeAlias
-import org.jetbrains.kotlin.libs.watchdog.IntentionallyOpen
-import org.jetbrains.kotlin.libs.watchdog.IntentionallyUndocumented
-import org.jetbrains.kotlin.libs.watchdog.InternalAnnotationMarker
+import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyFunctionTypeAlias
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyUndocumented
+import org.jetbrains.kotlinx.libs.watchdog.InternalAnnotationMarker
 
 // A bare exemption defaults to reason = OTHER with an empty description, which explains
 // nothing: should warn.
