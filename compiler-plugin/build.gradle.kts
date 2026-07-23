@@ -2,8 +2,8 @@ plugins {
     kotlin("compiler.plugin.devkit.compiler-plugin")
 }
 
-dependencies {
-    defaultRuntimeLibraries(project(":plugin-annotations"))
+pluginDevKit {
+    testDataLibraries { common(project(":plugin-annotations")) }
 }
 
 tasks.named("animalsnifferMain") {
