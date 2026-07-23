@@ -31,6 +31,15 @@ public enum class ExemptionReason {
     EXTERNAL_CONTRACT,
 
     /**
+     * The exempted declaration deliberately ignores Java interoperability. This reason marks the
+     * handful of spots where Java ergonomics are knowingly sacrificed — a library that does not
+     * support Java callers at all disables the Java-interop diagnostics wholesale in its build
+     * configuration instead. Why this particular declaration gets to ignore Java callers is not
+     * obvious from the entry alone, so the `description` must still explain it.
+     */
+    IGNORE_JAVA_INTEROP,
+
+    /**
      * None of the other entries fits. This is the default, and it explains nothing by itself,
      * so the exemption annotation must spell the motivation out in its `description`.
      */
@@ -407,6 +416,106 @@ public annotation class IntentionallyInlinedLogic(
 )
 @Retention(AnnotationRetention.BINARY)
 public annotation class IntentionallyMangledJvmName(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
+ * Acknowledges that the annotated function — or every function inside the annotated class — is
+ * deliberately Kotlin-only API left visible to Java sources.
+ *
+ * The libs-watchdog compiler plugin warns, in JVM compilations, about publicly visible functions
+ * whose shape only Kotlin callers can use idiomatically: `suspend` functions (Java sees a
+ * trailing `Continuation` parameter it cannot provide idiomatically), `inline` functions with a
+ * `reified` type parameter (calling the compiled method from Java fails at runtime), and
+ * functions taking a Kotlin-specific function type — a suspend function type, a function type
+ * with receiver, or a `Unit`-returning function type. Prefer hiding such members from Java with
+ * `@JvmSynthetic`, or provide a Java-friendly alternative alongside (a blocking or
+ * `CompletableFuture`-returning bridge, a `fun interface` parameter), and apply this annotation
+ * to suppress the warning when leaving the Kotlin-only shape visible to Java is intended. On a
+ * class it covers every function declared inside.
+ *
+ * @param reason why the Kotlin-only shape deliberately stays visible to Java.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyKotlinOnlyApi(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
+ * Acknowledges that the annotated companion object member — or every member inside the
+ * annotated companion object or class — is deliberately reachable from Java only through the
+ * companion instance.
+ *
+ * The libs-watchdog compiler plugin warns, in JVM compilations, about publicly visible companion
+ * object functions without `@JvmStatic` and constant-shaped companion `val`s without `@JvmField`:
+ * both compile to members of the nested `Companion` class, so Java callers have to go through
+ * `Outer.Companion`. Prefer exposing such members on the outer class itself (`@JvmStatic`,
+ * `@JvmField`, `const val`) or hiding them from Java (`@JvmSynthetic`), and apply this
+ * annotation to suppress the warnings when the companion-instance access path is intended. On a
+ * class — the companion object itself or its outer class — it covers every member inside.
+ *
+ * @param reason why the companion-instance access path is intended.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyNonStaticCompanionApi(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
+ * Acknowledges that the annotated file deliberately keeps the file facade class name derived
+ * from the file name.
+ *
+ * The libs-watchdog compiler plugin warns, in JVM compilations, about files whose public
+ * top-level functions or properties compile into a facade class without an explicit
+ * `@file:JvmName`: the derived name (`foo.kt` → `FooKt`) leaks the file name into the Java API
+ * surface, and renaming the file — invisible to Kotlin callers — renames the facade and breaks
+ * Java clients. Prefer choosing and pinning the facade name with `@file:JvmName`, and apply
+ * this annotation — as `@file:IntentionallyDefaultFacadeName(...)` — to suppress the warning
+ * when keeping the derived name is intended.
+ *
+ * @param reason why the derived facade name is intended.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(AnnotationTarget.FILE)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyDefaultFacadeName(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
+ * Acknowledges that the annotated function or constructor deliberately keeps its default
+ * parameter values invisible to Java callers.
+ *
+ * The libs-watchdog compiler plugin warns, in JVM compilations, about publicly visible functions
+ * and constructors that declare default parameter values without `@JvmOverloads`: only the full
+ * signature is compiled, so for Java callers the defaults do not exist and every argument must
+ * be spelled out. Prefer `@JvmOverloads`, which additionally compiles the overloads that omit
+ * defaulted parameters from the right, and apply this annotation to suppress the warning when
+ * serving Java callers the full signature only is intended (for example, when the defaulted
+ * parameters make no sense without Kotlin's named arguments).
+ *
+ * @param reason why the defaults deliberately stay invisible to Java callers.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyWithoutJvmOverloads(
     val reason: ExemptionReason = ExemptionReason.OTHER,
     val description: String = "",
 )

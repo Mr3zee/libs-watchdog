@@ -1,5 +1,6 @@
 // RUN_PIPELINE_TILL: FRONTEND
 // EXPLICIT_API_MODE: WARNING
+// DIAGNOSTICS: -TOP_LEVEL_API_WITHOUT_JVM_NAME -KOTLIN_ONLY_API_WITHOUT_JVM_SYNTHETIC
 
 // Published declarations are watched in every module of a multimodule compilation. The
 // dependency module keeps its published API documented and acknowledged, so it compiles into a
@@ -8,6 +9,7 @@
 
 // MODULE: lib
 // FILE: lib.kt
+@file:JvmName("LibApi")
 
 package libapi
 
@@ -35,9 +37,8 @@ internal fun libPublishedHelper(): Int = 0
 
 /** Documented; the inlined logic exists to exercise the published declarations above. */
 @IntentionallyInlinedLogic(reason = ExemptionReason.API_DESIGN)
-public inline fun libInlineApi(block: () -> Unit): Int {
-    block()
-    return libPublishedHelper()
+public inline fun libInlineApi(block: () -> Int): Int {
+    return block() + libPublishedHelper()
 }
 
 // MODULE: main(lib)
@@ -69,7 +70,6 @@ internal fun mainPublishedHelper(): Int = 0
 
 /** Documented; the inlined logic exists to exercise the published declarations above. */
 @IntentionallyInlinedLogic(reason = ExemptionReason.API_DESIGN)
-public inline fun mainInlineApi(block: () -> Unit): Int {
-    block()
+public inline fun mainInlineApi(block: () -> Int): Int {
     return libInlineApi(block) + mainPublishedHelper()
 }

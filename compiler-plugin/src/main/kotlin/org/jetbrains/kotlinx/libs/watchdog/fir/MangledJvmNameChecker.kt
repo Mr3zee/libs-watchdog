@@ -17,15 +17,8 @@ import org.jetbrains.kotlin.fir.declarations.utils.correspondingValueParameterFr
 import org.jetbrains.kotlin.fir.declarations.utils.isOverride
 import org.jetbrains.kotlin.fir.declarations.utils.isSuspend
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
-import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
-import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
-import org.jetbrains.kotlin.fir.types.ConeClassLikeType
-import org.jetbrains.kotlin.fir.types.ConeKotlinType
-import org.jetbrains.kotlin.fir.types.ConeTypeParameterType
 import org.jetbrains.kotlin.fir.types.coneType
-import org.jetbrains.kotlin.fir.types.upperBoundIfFlexible
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.JvmStandardClassIds
 import org.jetbrains.kotlin.name.Name
@@ -90,11 +83,7 @@ internal class MangledJvmNameChecker(
             return
         }
 
-        val valueClass = declaration.receiverParameter?.typeRef?.coneType?.mangledValueClass()
-            ?: declaration.contextParameters.firstNotNullOfOrNull { it.returnTypeRef.coneType.mangledValueClass() }
-            ?: declaration.valueParameters.firstNotNullOfOrNull { it.returnTypeRef.coneType.mangledValueClass() }
-            ?: declaration.returnValueClassIfMember()
-            ?: return
+        val valueClass = declaration.mangledValueClassInSignature() ?: return
         report(declaration, "function", declaration.name, valueClass)
     }
 
@@ -136,14 +125,6 @@ internal class MangledJvmNameChecker(
         val className = declaration.reportedName() ?: return
         report(declaration, "constructor", className, valueClass)
     }
-
-    /**
-     * Return types only mangle members: a dispatch receiver is what distinguishes `give()` — a
-     * top-level function keeping its JVM name — from `member-aWk8GsU()`.
-     */
-    context(context: CheckerContext)
-    private fun FirCallableDeclaration.returnValueClassIfMember(): Name? =
-        if (dispatchReceiverType != null) returnTypeRef.coneType.mangledValueClass() else null
 
     context(context: CheckerContext)
     private fun FirCallableDeclaration.isWatchedForMangling(): Boolean {
@@ -222,34 +203,6 @@ internal class MangledJvmNameChecker(
             classId == JvmStandardClassIds.Annotations.JvmName ||
                     classId == JvmStandardClassIds.JVM_SYNTHETIC_ANNOTATION_CLASS_ID
         }
-
-    /**
-     * The name of the value class that mangles a JVM signature mentioning this type, or null.
-     * Only the classifier itself counts — a value class inside a type argument is boxed and
-     * leaves the name intact. Type aliases are expanded, and a type parameter erases to its
-     * first upper bound, so `<T : UserId> f(t: T)` mangles like a direct mention. The visited
-     * set guards against cyclic bounds in erroneous code.
-     */
-    context(context: CheckerContext)
-    private fun ConeKotlinType.mangledValueClass(): Name? {
-        var type: ConeKotlinType = upperBoundIfFlexible()
-        val visitedTypeParameters = mutableSetOf<FirTypeParameterSymbol>()
-        while (type is ConeTypeParameterType) {
-            val typeParameter = type.lookupTag.typeParameterSymbol
-            if (!visitedTypeParameters.add(typeParameter)) {
-                return null
-            }
-            type = typeParameter.resolvedBounds.firstOrNull()?.coneType?.upperBoundIfFlexible() ?: return null
-        }
-
-        val classLike = (type as? ConeClassLikeType)?.fullyExpandedType() ?: return null
-        val symbol = classLike.toClassSymbol() ?: return null
-        return symbol.classId.shortClassName.takeIf { symbol.isValueClass() }
-    }
-
-    /** `value class` sets the `isValue` status flag; `isInline` covers the legacy `inline class`. */
-    private fun FirClassSymbol<*>.isValueClass(): Boolean =
-        resolvedStatus.let { it.isValue || it.isInline }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun report(declaration: FirCallableDeclaration, kind: String, name: Name, valueClass: Name) {

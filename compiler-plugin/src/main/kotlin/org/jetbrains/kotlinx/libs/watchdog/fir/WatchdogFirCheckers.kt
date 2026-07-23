@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirBasicDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirCallableDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFileChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirTypeAliasChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
@@ -32,6 +33,10 @@ class WatchdogFirCheckers(
 
         private fun <C : Any> C.unlessDisabled(vararg diagnostics: ConfigurableWatchdogDiagnostic<*>): C? =
             takeIf { enabled && diagnostics.any(severities::isEnabled) }
+
+        // The Java-interop checks guard how the compiled API looks to Java sources — a concern
+        // with no counterpart on other backends, so they only register for JVM compilations.
+        private fun <C : Any> C.onlyOnJvm(): C? = takeIf { session.moduleData.platform.isJvm() }
 
         override val classCheckers: Set<FirClassChecker> = setOfNotNull(
             OpenApiChecker(severities)
@@ -69,6 +74,18 @@ class WatchdogFirCheckers(
                 .unlessDisabled(WatchdogDiagnostics.REQUIRED_PARAMETER_AFTER_OPTIONAL),
             OverloadParameterOrderChecker(severities)
                 .unlessDisabled(WatchdogDiagnostics.INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS),
+            KotlinOnlyApiChecker(severities)
+                .onlyOnJvm()
+                ?.unlessDisabled(WatchdogDiagnostics.KOTLIN_ONLY_API_WITHOUT_JVM_SYNTHETIC),
+            JvmOverloadsChecker(severities)
+                .onlyOnJvm()
+                ?.unlessDisabled(WatchdogDiagnostics.DEFAULT_PARAMETERS_WITHOUT_JVM_OVERLOADS),
+        )
+
+        override val fileCheckers: Set<FirFileChecker> = setOfNotNull(
+            TopLevelJvmNameChecker(severities)
+                .onlyOnJvm()
+                ?.unlessDisabled(WatchdogDiagnostics.TOP_LEVEL_API_WITHOUT_JVM_NAME),
         )
 
         override val typeAliasCheckers: Set<FirTypeAliasChecker> = setOfNotNull(
@@ -81,11 +98,15 @@ class WatchdogFirCheckers(
             // Watches properties besides functions: inline accessors are inlined the same way.
             InlineFunctionLogicChecker(severities)
                 .unlessDisabled(WatchdogDiagnostics.INLINE_FUNCTION_WITH_LOGIC),
-            // Name mangling is a JVM-ABI concern with no counterpart on other backends, so the
-            // checker only registers for JVM compilations.
             MangledJvmNameChecker(severities)
-                .takeIf { session.moduleData.platform.isJvm() }
+                .onlyOnJvm()
                 ?.unlessDisabled(WatchdogDiagnostics.MANGLED_JVM_NAME_PUBLIC_API),
+            CompanionJvmExposureChecker(severities)
+                .onlyOnJvm()
+                ?.unlessDisabled(
+                    WatchdogDiagnostics.COMPANION_API_WITHOUT_JVM_STATIC,
+                    WatchdogDiagnostics.COMPANION_CONSTANT_WITHOUT_JVM_FIELD,
+                ),
         )
     }
 }

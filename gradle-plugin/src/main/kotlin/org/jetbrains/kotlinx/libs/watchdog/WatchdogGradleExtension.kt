@@ -1,7 +1,10 @@
 package org.jetbrains.kotlinx.libs.watchdog
 
+import javax.inject.Inject
+import org.gradle.api.Action
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 
 /**
  * Configures the severity of each watchdog diagnostic. Every diagnostic is reported as an error
@@ -11,6 +14,18 @@ import org.gradle.api.provider.Property
  * libsWatchdog {
  *     undocumentedPublicApi.set(WatchdogSeverity.WARNING)
  *     dataClassPublicApi.set(WatchdogSeverity.NONE)
+ * }
+ * ```
+ *
+ * The Java-interop diagnostics live in the [javaInterop] group. They only pay off for libraries
+ * with Java consumers, so the group has one off-switch — a Kotlin-only library disables all of
+ * them at once, no matter what the individual severities say:
+ *
+ * ```kotlin
+ * libsWatchdog {
+ *     javaInterop {
+ *         enabled = false
+ *     }
  * }
  * ```
  */
@@ -57,9 +72,6 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
     /** Severity of `INLINE_FUNCTION_WITH_LOGIC`: inline functions and accessors doing more than delegating. */
     public val inlineFunctionWithLogic: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
-    /** Severity of `MANGLED_JVM_NAME_PUBLIC_API`: value classes mangling public JVM signatures. */
-    public val mangledJvmNamePublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
-
     /** Severity of `DSL_MARKER_NOOP_TARGET`: DSL marker targets without scope-control effect. */
     public val dslMarkerNoopTarget: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
@@ -69,7 +81,16 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
     /** Severity of `DSL_MARKER_NOOP_TYPE_POSITION`: DSL markers on type positions without effect. */
     public val dslMarkerNoopTypePosition: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
-    internal fun diagnosticSeverities(): Map<String, Property<WatchdogSeverity>> = mapOf(
+    /** The Java-interop diagnostic group: its off-switch and the individual severities. */
+    public val javaInterop: WatchdogJavaInteropExtension =
+        objectFactory.newInstance(WatchdogJavaInteropExtension::class.java)
+
+    /** Configures the [javaInterop] diagnostic group. */
+    public fun javaInterop(action: Action<WatchdogJavaInteropExtension>) {
+        action.execute(javaInterop)
+    }
+
+    internal fun diagnosticSeverities(): Map<String, Provider<WatchdogSeverity>> = mapOf(
         "OPEN_API_WITHOUT_SUBCLASS_OPT_IN" to openApiWithoutSubclassOptIn,
         "SUBCLASS_OPT_IN_WITHOUT_MARKERS" to subclassOptInWithoutMarkers,
         "EXHAUSTIVE_PUBLIC_API" to exhaustivePublicApi,
@@ -84,11 +105,54 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
         "REQUIRED_PARAMETER_AFTER_OPTIONAL" to requiredParameterAfterOptional,
         "INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS" to inconsistentParameterOrderInOverloads,
         "INLINE_FUNCTION_WITH_LOGIC" to inlineFunctionWithLogic,
-        "MANGLED_JVM_NAME_PUBLIC_API" to mangledJvmNamePublicApi,
+        "MANGLED_JVM_NAME_PUBLIC_API" to javaInterop.effectiveSeverity { mangledJvmNamePublicApi },
+        "KOTLIN_ONLY_API_WITHOUT_JVM_SYNTHETIC" to javaInterop.effectiveSeverity { kotlinOnlyApiWithoutJvmSynthetic },
+        "COMPANION_API_WITHOUT_JVM_STATIC" to javaInterop.effectiveSeverity { companionApiWithoutJvmStatic },
+        "COMPANION_CONSTANT_WITHOUT_JVM_FIELD" to javaInterop.effectiveSeverity { companionConstantWithoutJvmField },
+        "TOP_LEVEL_API_WITHOUT_JVM_NAME" to javaInterop.effectiveSeverity { topLevelApiWithoutJvmName },
+        "DEFAULT_PARAMETERS_WITHOUT_JVM_OVERLOADS" to javaInterop.effectiveSeverity { defaultParametersWithoutJvmOverloads },
         "DSL_MARKER_NOOP_TARGET" to dslMarkerNoopTarget,
         "DSL_MARKER_WITHOUT_EXPLICIT_TARGETS" to dslMarkerWithoutExplicitTargets,
         "DSL_MARKER_NOOP_TYPE_POSITION" to dslMarkerNoopTypePosition,
     )
+}
+
+/**
+ * The Java-interop diagnostic group of [WatchdogGradleExtension]. The [enabled] off-switch
+ * disables every diagnostic of the group at once, regardless of the individual severities.
+ */
+public open class WatchdogJavaInteropExtension @Inject constructor(objectFactory: ObjectFactory) {
+    /**
+     * Whether the Java-interop diagnostics run at all. `true` by default; a library with a
+     * Kotlin-only audience sets it to `false` instead of disabling the six diagnostics one by
+     * one — the switch wins over the individual severities.
+     */
+    public val enabled: Property<Boolean> = objectFactory.property(Boolean::class.java).convention(true)
+
+    /** Severity of `MANGLED_JVM_NAME_PUBLIC_API`: value classes mangling public JVM signatures. */
+    public val mangledJvmNamePublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** Severity of `KOTLIN_ONLY_API_WITHOUT_JVM_SYNTHETIC`: Kotlin-only shapes visible to Java. */
+    public val kotlinOnlyApiWithoutJvmSynthetic: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** Severity of `COMPANION_API_WITHOUT_JVM_STATIC`: companion functions Java reaches through the instance. */
+    public val companionApiWithoutJvmStatic: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** Severity of `COMPANION_CONSTANT_WITHOUT_JVM_FIELD`: companion constants Java reads through the instance. */
+    public val companionConstantWithoutJvmField: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** Severity of `TOP_LEVEL_API_WITHOUT_JVM_NAME`: file facades leaking the file name to Java. */
+    public val topLevelApiWithoutJvmName: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** Severity of `DEFAULT_PARAMETERS_WITHOUT_JVM_OVERLOADS`: defaults that do not exist for Java callers. */
+    public val defaultParametersWithoutJvmOverloads: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** The severity the compiler plugin sees: the diagnostic's own, or NONE when switched off. */
+    internal fun effectiveSeverity(
+        severity: WatchdogJavaInteropExtension.() -> Property<WatchdogSeverity>,
+    ): Provider<WatchdogSeverity> = enabled.zip(severity()) { on, configured ->
+        if (on) configured else WatchdogSeverity.NONE
+    }
 }
 
 private fun ObjectFactory.severityProperty(): Property<WatchdogSeverity> =

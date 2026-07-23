@@ -29,6 +29,10 @@ open class WatchdogProject(
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyInconsistentParameterOrder",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyInlinedLogic",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyMangledJvmName",
+        "org.jetbrains.kotlinx.libs.watchdog.IntentionallyKotlinOnlyApi",
+        "org.jetbrains.kotlinx.libs.watchdog.IntentionallyNonStaticCompanionApi",
+        "org.jetbrains.kotlinx.libs.watchdog.IntentionallyDefaultFacadeName",
+        "org.jetbrains.kotlinx.libs.watchdog.IntentionallyWithoutJvmOverloads",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility",
         "org.jetbrains.kotlinx.libs.watchdog.InternalAnnotationMarker",
     )

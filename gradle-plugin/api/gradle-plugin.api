@@ -9,7 +9,7 @@ public class org/jetbrains/kotlinx/libs/watchdog/WatchdogGradleExtension {
 	public final fun getFunctionTypeAliasPublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getInconsistentParameterOrderInOverloads ()Lorg/gradle/api/provider/Property;
 	public final fun getInlineFunctionWithLogic ()Lorg/gradle/api/provider/Property;
-	public final fun getMangledJvmNamePublicApi ()Lorg/gradle/api/provider/Property;
+	public final fun getJavaInterop ()Lorg/jetbrains/kotlinx/libs/watchdog/WatchdogJavaInteropExtension;
 	public final fun getMutableCollectionPublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getNullableBooleanPublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getOpenApiWithoutSubclassOptIn ()Lorg/gradle/api/provider/Property;
@@ -18,6 +18,18 @@ public class org/jetbrains/kotlinx/libs/watchdog/WatchdogGradleExtension {
 	public final fun getStatefulClassWithoutToString ()Lorg/gradle/api/provider/Property;
 	public final fun getSubclassOptInWithoutMarkers ()Lorg/gradle/api/provider/Property;
 	public final fun getUndocumentedPublicApi ()Lorg/gradle/api/provider/Property;
+	public final fun javaInterop (Lorg/gradle/api/Action;)V
+}
+
+public class org/jetbrains/kotlinx/libs/watchdog/WatchdogJavaInteropExtension {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun getCompanionApiWithoutJvmStatic ()Lorg/gradle/api/provider/Property;
+	public final fun getCompanionConstantWithoutJvmField ()Lorg/gradle/api/provider/Property;
+	public final fun getDefaultParametersWithoutJvmOverloads ()Lorg/gradle/api/provider/Property;
+	public final fun getEnabled ()Lorg/gradle/api/provider/Property;
+	public final fun getKotlinOnlyApiWithoutJvmSynthetic ()Lorg/gradle/api/provider/Property;
+	public final fun getMangledJvmNamePublicApi ()Lorg/gradle/api/provider/Property;
+	public final fun getTopLevelApiWithoutJvmName ()Lorg/gradle/api/provider/Property;
 }
 
 public final class org/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity : java/lang/Enum {

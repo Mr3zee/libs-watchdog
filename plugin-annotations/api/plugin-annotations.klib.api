@@ -24,6 +24,15 @@ open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyDataClass
         final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyDataClass.reason.<get-reason>|<get-reason>(){}[0]
 }
 
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyDefaultFacadeName : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyDefaultFacadeName|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyDefaultFacadeName.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyDefaultFacadeName.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyDefaultFacadeName.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyDefaultFacadeName.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyDefaultFacadeName.reason.<get-reason>|<get-reason>(){}[0]
+}
+
 open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyExhaustive : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyExhaustive|null[0]
     constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyExhaustive.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
 
@@ -60,6 +69,15 @@ open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyInlinedLo
         final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyInlinedLogic.reason.<get-reason>|<get-reason>(){}[0]
 }
 
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyKotlinOnlyApi : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyKotlinOnlyApi|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyKotlinOnlyApi.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyKotlinOnlyApi.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyKotlinOnlyApi.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyKotlinOnlyApi.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyKotlinOnlyApi.reason.<get-reason>|<get-reason>(){}[0]
+}
+
 open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyMangledJvmName : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyMangledJvmName|null[0]
     constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyMangledJvmName.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
 
@@ -76,6 +94,15 @@ open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyMutableCo
         final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyMutableCollection.description.<get-description>|<get-description>(){}[0]
     final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyMutableCollection.reason|{}reason[0]
         final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyMutableCollection.reason.<get-reason>|<get-reason>(){}[0]
+}
+
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyNonStaticCompanionApi : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyNonStaticCompanionApi|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyNonStaticCompanionApi.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyNonStaticCompanionApi.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyNonStaticCompanionApi.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyNonStaticCompanionApi.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyNonStaticCompanionApi.reason.<get-reason>|<get-reason>(){}[0]
 }
 
 open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyNullableBoolean : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyNullableBoolean|null[0]
@@ -123,6 +150,15 @@ open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumen
         final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented.reason.<get-reason>|<get-reason>(){}[0]
 }
 
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutJvmOverloads : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutJvmOverloads|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutJvmOverloads.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutJvmOverloads.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutJvmOverloads.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutJvmOverloads.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutJvmOverloads.reason.<get-reason>|<get-reason>(){}[0]
+}
+
 open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutToString : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutToString|null[0]
     constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWithoutToString.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
 
@@ -147,6 +183,7 @@ final enum class org.jetbrains.kotlinx.libs.watchdog/ExemptionReason : kotlin/En
     enum entry API_DESIGN // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.API_DESIGN|null[0]
     enum entry EXTERNAL_CONTRACT // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.EXTERNAL_CONTRACT|null[0]
     enum entry FOR_BACKWARDS_COMPATIBILITY // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.FOR_BACKWARDS_COMPATIBILITY|null[0]
+    enum entry IGNORE_JAVA_INTEROP // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.IGNORE_JAVA_INTEROP|null[0]
     enum entry INTEROP // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.INTEROP|null[0]
     enum entry OTHER // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.OTHER|null[0]
 

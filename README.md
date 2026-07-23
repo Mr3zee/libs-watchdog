@@ -27,12 +27,13 @@ public class ReflectionHelper
 
 Every `@Intentionally*` exemption annotation must explain why it is applied, in two forms: a
 `reason` from the `ExemptionReason` enum (`FOR_BACKWARDS_COMPATIBILITY`, `API_DESIGN`,
-`INTEROP`, `EXTERNAL_CONTRACT`, `OTHER`) and a free-form `description` string. Both default to
-an explanation-free value (`OTHER` and `""`), so a bare exemption is rejected. Only
-`FOR_BACKWARDS_COMPATIBILITY` and `API_DESIGN` explain an exemption on their own; `INTEROP` and
-`EXTERNAL_CONTRACT` merely categorize it (which interop constraint or external contract applies
-is not obvious from the entry alone), so they — like `OTHER` — still require a non-empty
-`description`. `@InternalAnnotationMarker` is exempt from this requirement: the marked
+`INTEROP`, `EXTERNAL_CONTRACT`, `IGNORE_JAVA_INTEROP`, `OTHER`) and a free-form `description`
+string. Both default to an explanation-free value (`OTHER` and `""`), so a bare exemption is
+rejected. Only `FOR_BACKWARDS_COMPATIBILITY` and `API_DESIGN` explain an exemption on their own;
+`INTEROP`, `EXTERNAL_CONTRACT`, and `IGNORE_JAVA_INTEROP` merely categorize it (which interop
+constraint or external contract applies, or why this particular declaration gets to ignore Java
+callers, is not obvious from the entry alone), so they — like `OTHER` — still require a
+non-empty `description`. `@InternalAnnotationMarker` is exempt from this requirement: the marked
 annotation class documents the internal API surface itself.
 
 - `OPEN_API_WITHOUT_SUBCLASS_OPT_IN` — reports open/abstract classes and interfaces that can
@@ -207,6 +208,80 @@ annotation class documents the internal API surface itself.
   choice — `@JvmName` is not even applicable inside), `suspend` functions (not Java-friendly
   regardless of the name), overrides (their signature is fixed by the overridden declaration and
   reported there), and `@JvmSynthetic` declarations (hidden from Java on purpose).
+- `KOTLIN_ONLY_API_WITHOUT_JVM_SYNTHETIC` — reports public functions whose shape only Kotlin
+  callers can use idiomatically while the function still lands in the API surface Java sources
+  see: `suspend` functions (Java sees a trailing
+  [`Continuation` parameter](https://kotlinlang.org/docs/java-to-kotlin-interop.html) it cannot
+  provide idiomatically), `inline` functions with a `reified` type parameter (only inlining
+  Kotlin call sites can substitute it — calling the compiled method from Java fails at runtime),
+  and functions taking a Kotlin-specific function type: a suspend function type (no Java lambda
+  can implement it), a function type with receiver (a Java lambda has to take the receiver as an
+  explicit first argument), or a `Unit`-returning function type (a Java lambda has to return the
+  `Unit.INSTANCE` token explicitly). Hide the Kotlin-only shape from Java with `@JvmSynthetic`,
+  or provide a Java-friendly alternative alongside — a blocking or `CompletableFuture`-returning
+  bridge for a suspend function, a `fun interface` parameter in place of a Kotlin function
+  type — or acknowledge the Java-visible Kotlin-only shape with `@IntentionallyKotlinOnlyApi`,
+  on the function or on a class, where it covers every function inside.
+  Deliberate exceptions: abstract and interface members (`@JvmSynthetic` cannot hide a member
+  that implementations must provide, so there is no non-breaking fix to suggest), overrides
+  (reported on the base declaration), constructors (`@JvmSynthetic` is not applicable to them),
+  and signatures already invisible to Java — mangled by a value class or declared inside one,
+  which `MANGLED_JVM_NAME_PUBLIC_API` reports with fitting fixes.
+- `COMPANION_API_WITHOUT_JVM_STATIC` — reports public companion object functions without
+  [`@JvmStatic`](https://kotlinlang.org/docs/java-to-kotlin-interop.html#static-methods): a
+  companion member compiles to an instance method on the nested `Companion` class, so Java
+  callers have to reach it as `Outer.Companion.member(...)`. `@JvmStatic` additionally compiles
+  a static `Outer.member(...)` entry point — Kotlin call sites are unaffected — and
+  `@JvmSynthetic` hides the member from Java instead; acknowledge a deliberately
+  companion-instance-only access path with `@IntentionallyNonStaticCompanionApi` — on the
+  member, or on a class (the companion object itself or its outer class), where it covers every
+  member inside. `suspend` companion functions are exempt
+  (not Java-callable regardless of placement; `KOTLIN_ONLY_API_WITHOUT_JVM_SYNTHETIC` reports
+  them with the fitting fix), and so are overrides (their Java-facing shape is fixed by the
+  overridden declaration).
+- `COMPANION_CONSTANT_WITHOUT_JVM_FIELD` — reports public constant-shaped companion object
+  properties — a final `val` initialized in place with the default getter, neither `const` nor
+  delegated — that Java can only read through the companion instance getter. Expose the value
+  on the outer class itself: as a
+  [static field with `@JvmField`](https://kotlinlang.org/docs/java-to-kotlin-interop.html#static-fields),
+  as a compile-time constant with `const val` (primitives and strings), or as a static getter
+  with `@JvmStatic` — or hide the property from Java with `@get:JvmSynthetic`, or acknowledge
+  the companion-instance access path with `@IntentionallyNonStaticCompanionApi`. `var`
+  properties and properties with custom accessors or delegates expose behavior rather than a
+  constant and are not checked.
+- `TOP_LEVEL_API_WITHOUT_JVM_NAME` — reports files whose public top-level functions or
+  properties compile into a
+  [file facade class](https://kotlinlang.org/docs/java-to-kotlin-interop.html#package-level-functions)
+  without an explicit `@file:JvmName`. The facade name is derived from the file name
+  (`foo.kt` → `FooKt`), so the file name leaks into the Java API surface, and renaming the
+  file — invisible to Kotlin callers — renames the facade and breaks Java sources and binaries
+  compiled against it. Choose and pin the facade name deliberately with `@file:JvmName`, or
+  acknowledge the derived name with `@file:IntentionallyDefaultFacadeName`. The
+  diagnostic fires once per file, anchored on its first public top-level function or property;
+  files exposing only classifiers, and files whose every top-level callable is hidden with
+  `@JvmSynthetic`, produce no facade worth naming and stay silent.
+- `DEFAULT_PARAMETERS_WITHOUT_JVM_OVERLOADS` — reports public functions and constructors that
+  declare default parameter values without
+  [`@JvmOverloads`](https://kotlinlang.org/docs/java-to-kotlin-interop.html#overloads-generation):
+  defaults are a Kotlin-frontend feature, so only the full signature is compiled and Java
+  callers must spell out every argument. `@JvmOverloads` additionally compiles the overloads
+  that omit defaulted parameters from the right. The recommendation is honest about its limits:
+  only right-truncated overloads are generated — a defaulted parameter in the middle of the
+  list still cannot be skipped from Java (which is why `REQUIRED_PARAMETER_AFTER_OPTIONAL`
+  pushes optional parameters to the end) — and `@JvmOverloads` only improves Java call sites;
+  it does not make adding a parameter later binary compatible for Kotlin callers. Acknowledge
+  deliberately Kotlin-only defaults with `@IntentionallyWithoutJvmOverloads`. Deliberate
+  exceptions: abstract and interface members and annotation class constructors (`@JvmOverloads`
+  is not applicable there), `suspend` functions and value class members (not Java-callable
+  regardless of overloads), overrides (they cannot re-declare defaults), and `@JvmSynthetic`
+  functions (hidden from Java on purpose).
+
+  The six Java-interop checks — `MANGLED_JVM_NAME_PUBLIC_API` through
+  `DEFAULT_PARAMETERS_WITHOUT_JVM_OVERLOADS` — only run in JVM compilations, and they only pay
+  off for libraries that support Java consumers: a library with a Kotlin-only audience disables
+  the whole group with `javaInterop { enabled = false }`. Individual declarations
+  that deliberately sacrifice Java ergonomics are acknowledged in place with the matching
+  `@Intentionally*` annotation and the `IGNORE_JAVA_INTEROP` reason.
 - `EXEMPTION_WITHOUT_EXPLANATION` — reports `@Intentionally*` exemption annotations whose `reason` is `OTHER`
   (the default) while the `description` is empty: such an exemption explains nothing. Fires on
   every usage of the exemption annotations, regardless of the annotated declaration's
@@ -262,10 +337,20 @@ libsWatchdog {
     requiredParameterAfterOptional.set(WatchdogSeverity.WARNING)
     inconsistentParameterOrderInOverloads.set(WatchdogSeverity.WARNING)
     inlineFunctionWithLogic.set(WatchdogSeverity.WARNING)
-    mangledJvmNamePublicApi.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTarget.set(WatchdogSeverity.WARNING)
     dslMarkerWithoutExplicitTargets.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTypePosition.set(WatchdogSeverity.WARNING)
+
+    javaInterop {
+        // One switch for the whole Java-interop group; it wins over the severities below.
+        enabled = true
+        mangledJvmNamePublicApi.set(WatchdogSeverity.WARNING)
+        kotlinOnlyApiWithoutJvmSynthetic.set(WatchdogSeverity.WARNING)
+        companionApiWithoutJvmStatic.set(WatchdogSeverity.WARNING)
+        companionConstantWithoutJvmField.set(WatchdogSeverity.WARNING)
+        topLevelApiWithoutJvmName.set(WatchdogSeverity.WARNING)
+        defaultParametersWithoutJvmOverloads.set(WatchdogSeverity.WARNING)
+    }
 }
 ```
 
@@ -285,6 +370,9 @@ demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
   `@IntentionallyPairOrTriple`, `@IntentionallyBooleanParameter`, `@IntentionallyNullableBoolean`,
   `@IntentionallyRequiredParameterAfterOptional`,
   `@IntentionallyInconsistentParameterOrder`, `@IntentionallyInlinedLogic`,
+  `@IntentionallyMangledJvmName`, `@IntentionallyKotlinOnlyApi`,
+  `@IntentionallyNonStaticCompanionApi`, `@IntentionallyDefaultFacadeName`,
+  `@IntentionallyWithoutJvmOverloads`,
   `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`, `@InternalAnnotationMarker`,
   and the `ExemptionReason` enum.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations

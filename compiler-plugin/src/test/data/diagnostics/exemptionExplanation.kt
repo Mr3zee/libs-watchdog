@@ -1,6 +1,6 @@
 // RUN_PIPELINE_TILL: FRONTEND
 // EXPLICIT_API_MODE: WARNING
-// DIAGNOSTICS: -STATEFUL_CLASS_WITHOUT_TO_STRING -UNDOCUMENTED_PUBLIC_API
+// DIAGNOSTICS: -STATEFUL_CLASS_WITHOUT_TO_STRING -UNDOCUMENTED_PUBLIC_API -TOP_LEVEL_API_WITHOUT_JVM_NAME
 
 package foo.bar
 
@@ -8,6 +8,7 @@ import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyDataClass
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyExhaustive
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyFunctionTypeAlias
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyKotlinOnlyApi
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyMutableCollection
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyOpen
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyUndocumented
@@ -80,6 +81,15 @@ public open class InteropWithDescription
 
 @IntentionallyExhaustive(reason = ExemptionReason.EXTERNAL_CONTRACT, description = "Mirrors ISO 4217.")
 public enum class ExternalContractWithDescription { ENTRY }
+
+// IGNORE_JAVA_INTEROP categorizes the same way: why this particular declaration gets to ignore
+// Java callers is not obvious from the entry alone, so it still requires a description.
+
+<!EXEMPTION_WITHOUT_EXPLANATION!>@IntentionallyKotlinOnlyApi(reason = ExemptionReason.IGNORE_JAVA_INTEROP)<!>
+public suspend fun ignoredInteropWithoutDescription(): Int = 0
+
+@IntentionallyKotlinOnlyApi(reason = ExemptionReason.IGNORE_JAVA_INTEROP, description = "Coroutine-first API; Java gets the blocking facade.")
+public suspend fun ignoredInteropWithDescription(): Int = 0
 
 // Exemptions on properties from constructor parameters are validated once, on the property.
 

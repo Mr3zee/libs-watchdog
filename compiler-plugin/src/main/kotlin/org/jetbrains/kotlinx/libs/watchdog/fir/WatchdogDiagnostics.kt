@@ -137,6 +137,21 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
     /** Parameters: declaration kind in words, declaration name, the value class's name. */
     val MANGLED_JVM_NAME_PUBLIC_API by configurable3<KtDeclaration, String, Name, Name>(NAME_IDENTIFIER)
 
+    /** Parameters: the function name, what makes its shape Kotlin-only, in words. */
+    val KOTLIN_ONLY_API_WITHOUT_JVM_SYNTHETIC by configurable2<KtDeclaration, Name, String>(NAME_IDENTIFIER)
+
+    /** Parameters: the outer class name, the function name. */
+    val COMPANION_API_WITHOUT_JVM_STATIC by configurable2<KtDeclaration, Name, Name>(NAME_IDENTIFIER)
+
+    /** Parameters: the outer class name, the property name. */
+    val COMPANION_CONSTANT_WITHOUT_JVM_FIELD by configurable2<KtDeclaration, Name, Name>(NAME_IDENTIFIER)
+
+    /** Parameter: the facade class name. Reported once per file, on its first facade member. */
+    val TOP_LEVEL_API_WITHOUT_JVM_NAME by configurable1<KtDeclaration, String>(NAME_IDENTIFIER)
+
+    /** Parameters: declaration kind in words, declaration name. */
+    val DEFAULT_PARAMETERS_WITHOUT_JVM_OVERLOADS by configurable2<KtDeclaration, String, Name>(NAME_IDENTIFIER)
+
     /**
      * Parameters: the exemption annotation name, the reason that needs a description. Reported
      * on the annotation entry. Deliberately not configurable, unlike the other diagnostics: the
@@ -398,6 +413,68 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             rendererA = STRING,
             rendererB = NAME,
             rendererC = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.KOTLIN_ONLY_API_WITHOUT_JVM_SYNTHETIC,
+            message = "The function ''{0}'' {1}. Kotlin callers see the intended shape, but the " +
+                    "function still lands in the API surface Java sources see. Hide the " +
+                    "Kotlin-only shape from Java with @JvmSynthetic, or provide a Java-friendly " +
+                    "alternative alongside — a blocking or CompletableFuture-returning bridge " +
+                    "for a suspend function, a `fun interface` parameter in place of a Kotlin " +
+                    "function type — or mark the function with @IntentionallyKotlinOnlyApi if " +
+                    "leaving the shape visible to Java is intended.",
+            rendererA = NAME,
+            rendererB = STRING,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.COMPANION_API_WITHOUT_JVM_STATIC,
+            message = "The companion object function ''{1}'' compiles to an instance method on " +
+                    "the nested Companion class, so Java callers have to reach it as " +
+                    "''{0}.Companion.{1}(...)''. Mark it with @JvmStatic to additionally compile " +
+                    "a static ''{0}.{1}(...)'' entry point for Java callers — Kotlin call sites " +
+                    "are unaffected — or hide it from Java with @JvmSynthetic, or mark it with " +
+                    "@IntentionallyNonStaticCompanionApi if the companion-instance access path " +
+                    "is intended.",
+            rendererA = NAME,
+            rendererB = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.COMPANION_CONSTANT_WITHOUT_JVM_FIELD,
+            message = "The companion object property ''{1}'' compiles to an instance getter on " +
+                    "the nested Companion class, so Java callers have to read it through " +
+                    "''{0}.Companion''. Expose the value on ''{0}'' itself: as a static field " +
+                    "with @JvmField, as a compile-time constant with `const val` (primitives " +
+                    "and strings), or as a static getter with @JvmStatic — or hide the property " +
+                    "from Java with @get:JvmSynthetic, or mark it with " +
+                    "@IntentionallyNonStaticCompanionApi if the companion-instance access path " +
+                    "is intended.",
+            rendererA = NAME,
+            rendererB = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.TOP_LEVEL_API_WITHOUT_JVM_NAME,
+            message = "This file''s public top-level functions and properties compile into the " +
+                    "facade class ''{0}'', a name derived from the file name: it reads as an " +
+                    "implementation detail at Java call sites, and renaming the file — invisible " +
+                    "to Kotlin callers — renames the facade and breaks Java callers. Choose and " +
+                    "pin the facade name deliberately with @file:JvmName, or mark the file with " +
+                    "@file:IntentionallyDefaultFacadeName if the derived name is intended. " +
+                    "Reported once per file, on its first public top-level function or property.",
+            rendererA = STRING,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.DEFAULT_PARAMETERS_WITHOUT_JVM_OVERLOADS,
+            message = "The {0} ''{1}'' declares default parameter values, but for Java callers " +
+                    "the defaults do not exist: only the full signature is compiled, and every " +
+                    "argument must be spelled out. Mark the {0} with @JvmOverloads to also " +
+                    "compile the overloads that let Java callers omit defaulted parameters — " +
+                    "trailing ones only: a defaulted parameter in the middle of the list still " +
+                    "cannot be skipped from Java, and adding a parameter later stays binary " +
+                    "incompatible either way — or mark the {0} with " +
+                    "@IntentionallyWithoutJvmOverloads if serving Java callers the full " +
+                    "signature only is intended.",
+            rendererA = STRING,
+            rendererB = NAME,
         )
     }
 

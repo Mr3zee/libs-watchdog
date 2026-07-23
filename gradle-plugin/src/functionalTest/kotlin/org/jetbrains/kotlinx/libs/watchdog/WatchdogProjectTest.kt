@@ -2,6 +2,7 @@ package org.jetbrains.kotlinx.libs.watchdog
 
 import com.autonomousapps.kit.GradleBuilder.build
 import com.autonomousapps.kit.GradleBuilder.buildAndFail
+import com.autonomousapps.kit.Source
 import com.autonomousapps.kit.gradle.Dependency.Companion.implementation
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -31,6 +32,11 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("e: ", "appear in the opposite order in another overload")
         result.assertDiagnosticReported("e: ", "does more than delegate to a non-inline function")
         result.assertDiagnosticReported("e: ", "compiled JVM name is mangled")
+        result.assertDiagnosticReported("e: ", "still lands in the API surface Java sources see")
+        result.assertDiagnosticReported("e: ", "compiles to an instance method on the nested Companion class")
+        result.assertDiagnosticReported("e: ", "compiles to an instance getter on the nested Companion class")
+        result.assertDiagnosticReported("e: ", "compile into the facade class")
+        result.assertDiagnosticReported("e: ", "declares default parameter values")
         result.assertDiagnosticReported("e: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("e: ", "declares no explicit @Target")
         result.assertDiagnosticReported("e: ", "has no effect on this parameter type")
@@ -54,10 +60,17 @@ class WatchdogProjectTest {
                     requiredParameterAfterOptional.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     inconsistentParameterOrderInOverloads.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     inlineFunctionWithLogic.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
-                    mangledJvmNamePublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTarget.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerWithoutExplicitTargets.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTypePosition.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    javaInterop {
+                        mangledJvmNamePublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                        kotlinOnlyApiWithoutJvmSynthetic.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                        companionApiWithoutJvmStatic.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                        companionConstantWithoutJvmField.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                        topLevelApiWithoutJvmName.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                        defaultParametersWithoutJvmOverloads.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    }
                 }
             """.trimIndent(),
         ) {
@@ -79,6 +92,11 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("w: ", "appear in the opposite order in another overload")
         result.assertDiagnosticReported("w: ", "does more than delegate to a non-inline function")
         result.assertDiagnosticReported("w: ", "compiled JVM name is mangled")
+        result.assertDiagnosticReported("w: ", "still lands in the API surface Java sources see")
+        result.assertDiagnosticReported("w: ", "compiles to an instance method on the nested Companion class")
+        result.assertDiagnosticReported("w: ", "compiles to an instance getter on the nested Companion class")
+        result.assertDiagnosticReported("w: ", "compile into the facade class")
+        result.assertDiagnosticReported("w: ", "declares default parameter values")
         result.assertDiagnosticReported("w: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("w: ", "declares no explicit @Target")
         result.assertDiagnosticReported("w: ", "has no effect on this parameter type")
@@ -103,6 +121,34 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("e: ", "can be subclassed outside the library without restriction")
         result.assertDiagnosticReported("e: ", "can be matched exhaustively by clients")
         result.assertDiagnosticReported("w: ", "has no KDoc")
+    }
+
+    @Test
+    fun disabledJavaInteropGroupSilencesAllItsDiagnostics() {
+        // The off-switch silences every Java-interop diagnostic at once and wins over the
+        // individual severities inside the group.
+        val project = object : WatchdogProject(
+            extraBuildScript = """
+                libsWatchdog {
+                    javaInterop {
+                        enabled = false
+                        companionApiWithoutJvmStatic.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.ERROR)
+                    }
+                }
+            """.trimIndent(),
+        ) {
+            override fun sources() = listOf(source(unacknowledgedFile))
+        }.gradleProject
+
+        val result = buildAndFail(project.rootDir, "build")
+        // The non-interop diagnostics still fail the build...
+        result.assertDiagnosticReported("e: ", "has no KDoc")
+        // ...while the whole group is off, the explicitly set severity included.
+        assertFalse(result.output.contains("compiled JVM name is mangled"))
+        assertFalse(result.output.contains("still lands in the API surface Java sources see"))
+        assertFalse(result.output.contains("nested Companion class"))
+        assertFalse(result.output.contains("compile into the facade class"))
+        assertFalse(result.output.contains("declares default parameter values"))
     }
 
     @Test
@@ -148,8 +194,21 @@ class WatchdogProjectTest {
 
     @Test
     fun acknowledgedApiCompilesWithoutDiagnostics() {
+        // The source() helper always leads with the package statement, so the file-level facade
+        // exemption is prepended by assembling the source file by hand.
         val project = object : WatchdogProject() {
-            override fun sources() = listOf(source(acknowledgedFile))
+            override fun sources() = listOf(
+                Source.kotlin(
+                    buildString {
+                        appendLine("@file:IntentionallyDefaultFacadeName(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)")
+                        appendLine()
+                        appendLine("package test")
+                        defaultImports.forEach { appendLine("import $it") }
+                        appendLine()
+                        appendLine(acknowledgedFile)
+                    }
+                ).withPath("test", "acknowledged").build()
+            )
         }.gradleProject
 
         val result = build(project.rootDir, "build")
@@ -167,6 +226,10 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("appear in the opposite order in another overload"))
         assertFalse(result.output.contains("does more than delegate to a non-inline function"))
         assertFalse(result.output.contains("compiled JVM name is mangled"))
+        assertFalse(result.output.contains("still lands in the API surface Java sources see"))
+        assertFalse(result.output.contains("nested Companion class"))
+        assertFalse(result.output.contains("compile into the facade class"))
+        assertFalse(result.output.contains("declares default parameter values"))
         assertFalse(result.output.contains("DSL marker"))
     }
 
@@ -191,6 +254,10 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("appear in the opposite order in another overload"))
         assertFalse(result.output.contains("does more than delegate to a non-inline function"))
         assertFalse(result.output.contains("compiled JVM name is mangled"))
+        assertFalse(result.output.contains("still lands in the API surface Java sources see"))
+        assertFalse(result.output.contains("nested Companion class"))
+        assertFalse(result.output.contains("compile into the facade class"))
+        assertFalse(result.output.contains("declares default parameter values"))
         assertFalse(result.output.contains("DSL marker"))
     }
 
@@ -232,7 +299,7 @@ class WatchdogProjectTest {
     }
 }
 
-@Suppress("RedundantVisibilityModifier")
+@Suppress("RedundantVisibilityModifier", "RedundantSuspendModifier", "MayBeConstant")
 @Language("kotlin")
 private val unacknowledgedFile = """
     public open class UnprotectedOpenClass
@@ -308,6 +375,24 @@ private val unacknowledgedFile = """
 
     /** A lookup whose JVM name is mangled by the value class parameter. */
     public fun findUser(handle: UserHandle) {}
+
+    /** A coordinator whose companion members hide behind the Companion instance for Java. */
+    public class Coordinator {
+        /** The companion holding the factory and the default label. */
+        public companion object {
+            /** A factory Java callers reach only through the Companion instance. */
+            public fun instance(): Coordinator = Coordinator()
+
+            /** A constant Java callers read only through the Companion instance getter. */
+            public val DEFAULT_LABEL: String = "coordinator"
+        }
+    }
+
+    /** A suspend function left visible to Java sources. */
+    public suspend fun refreshState(): Int = 0
+
+    /** A function whose default parameter values do not exist for Java callers. */
+    public fun openPort(host: String, port: Int = 8080) {}
 """.trimIndent()
 
 @Suppress("RedundantVisibilityModifier")
@@ -347,7 +432,7 @@ private val markerConsumerFile = """
     public class WatchedClass
 """.trimIndent()
 
-@Suppress("RedundantVisibilityModifier")
+@Suppress("RedundantVisibilityModifier", "RedundantSuspendModifier", "MayBeConstant")
 @Language("kotlin")
 private val acknowledgedFile = """
     /** A deliberately open class. */
@@ -408,7 +493,25 @@ private val acknowledgedFile = """
 
     /** A legacy signature keeping its required parameter behind an optional one. */
     @IntentionallyRequiredParameterAfterOptional(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyWithoutJvmOverloads(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public fun legacyRetry(retries: Int = 3, host: String) {}
+
+    /** A deliberately Kotlin-only refresher left visible to Java. */
+    @IntentionallyKotlinOnlyApi(reason = ExemptionReason.IGNORE_JAVA_INTEROP, description = "Coroutine-first API; Java is served by a blocking facade.")
+    public suspend fun refreshAccounts(): Int = 0
+
+    /** A holder whose companion deliberately serves Java callers through the instance. */
+    public class KotlinFacingCoordinator {
+        /** The companion acknowledged as companion-instance-only for Java callers. */
+        @IntentionallyNonStaticCompanionApi(reason = ExemptionReason.API_DESIGN)
+        public companion object {
+            /** A factory reached through the Companion instance. */
+            public fun instance(): KotlinFacingCoordinator = KotlinFacingCoordinator()
+
+            /** A constant read through the Companion instance getter. */
+            public val DEFAULT_LABEL: String = "coordinator"
+        }
+    }
 
     /** An overload setting the parameter order convention. */
     public fun renderShape(x: Int, y: Int) {}
