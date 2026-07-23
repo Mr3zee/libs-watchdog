@@ -1,4 +1,4 @@
-# libs-watchdog
+# libs-watchdog <img src="logo.svg" width="48" align="right" alt="libs-watchdog logo"/>
 
 A Kotlin compiler plugin that helps library authors keep their public API easy to evolve. Built on
 top of the [compiler-plugin-dev-kit](../compiler-plugin-dev-kit) (consumed from `mavenLocal`).
