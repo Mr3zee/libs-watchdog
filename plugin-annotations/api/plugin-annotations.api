@@ -9,12 +9,22 @@ public final class org/jetbrains/kotlinx/libs/watchdog/ExemptionReason : java/la
 	public static fun values ()[Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
 }
 
+public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyDataClass : java/lang/annotation/Annotation {
+	public abstract fun description ()Ljava/lang/String;
+	public abstract fun reason ()Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+}
+
 public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyExhaustive : java/lang/annotation/Annotation {
 	public abstract fun description ()Ljava/lang/String;
 	public abstract fun reason ()Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
 }
 
 public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyFunctionTypeAlias : java/lang/annotation/Annotation {
+	public abstract fun description ()Ljava/lang/String;
+	public abstract fun reason ()Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+}
+
+public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyMutableCollection : java/lang/annotation/Annotation {
 	public abstract fun description ()Ljava/lang/String;
 	public abstract fun reason ()Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
 }

@@ -148,6 +148,40 @@ public annotation class IntentionallyDataClass(
 )
 
 /**
+ * Acknowledges that the annotated declaration deliberately exposes a mutable collection type in
+ * the public API.
+ *
+ * The libs-watchdog compiler plugin warns about public signatures — return types, property
+ * types, and parameter types, including their type arguments — that mention mutable collection
+ * types (`MutableList`, `MutableMap`, ..., their implementations, and arrays, which are mutable
+ * collections too), as well as mutable bounds on type parameters. Sharing mutable state across
+ * the API boundary makes it unclear whether client-side and library-side mutations affect each
+ * other. Apply this annotation to suppress the warning when sharing mutable state is an intended
+ * part of the API contract. On a function, a property, or a constructor it covers the whole
+ * signature; on a single parameter or type parameter it covers just that parameter; on a type
+ * usage (`List<@IntentionallyMutableCollection MutableList<Int>>`) it covers the annotated type
+ * and everything nested in it.
+ *
+ * @param reason why the declaration deliberately exposes a mutable collection.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.CONSTRUCTOR,
+    AnnotationTarget.VALUE_PARAMETER,
+    AnnotationTarget.TYPE_PARAMETER,
+    AnnotationTarget.TYPE,
+)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyMutableCollection(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
  * Acknowledges that the annotated DSL marker deliberately keeps a wrong target set — no-op
  * targets in its `@Target`, or no explicit `@Target` at all — because fixing it would break
  * existing clients.

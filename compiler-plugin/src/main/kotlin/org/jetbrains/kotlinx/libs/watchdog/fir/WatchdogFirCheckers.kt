@@ -36,10 +36,15 @@ class WatchdogFirCheckers(
                 emptySet()
             }
 
-        // These checkers watch every declaration kind, not just classes.
+        // These checkers watch every declaration kind, not just classes. MutableCollectionChecker
+        // is one of them because it also inspects class-level type parameter bounds.
         override val basicDeclarationCheckers: Set<FirBasicDeclarationChecker> =
             if (enabled) {
-                setOf(UndocumentedApiChecker(severities), ExemptionExplanationChecker())
+                setOf(
+                    UndocumentedApiChecker(severities),
+                    ExemptionExplanationChecker(),
+                    MutableCollectionChecker(severities),
+                )
             } else {
                 emptySet()
             }

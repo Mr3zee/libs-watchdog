@@ -22,6 +22,7 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("e: ", "has no KDoc")
         result.assertDiagnosticReported("e: ", "abbreviates a function type")
         result.assertDiagnosticReported("e: ", "bakes its constructor property list")
+        result.assertDiagnosticReported("e: ", "exposes the mutable collection type")
         result.assertDiagnosticReported("e: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("e: ", "declares no explicit @Target")
         result.assertDiagnosticReported("e: ", "has no effect on this parameter type")
@@ -37,6 +38,7 @@ class WatchdogProjectTest {
                     undocumentedPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     functionTypeAliasPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dataClassPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    mutableCollectionPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTarget.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerWithoutExplicitTargets.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTypePosition.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
@@ -52,6 +54,7 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("w: ", "has no KDoc")
         result.assertDiagnosticReported("w: ", "abbreviates a function type")
         result.assertDiagnosticReported("w: ", "bakes its constructor property list")
+        result.assertDiagnosticReported("w: ", "exposes the mutable collection type")
         result.assertDiagnosticReported("w: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("w: ", "declares no explicit @Target")
         result.assertDiagnosticReported("w: ", "has no effect on this parameter type")
@@ -109,6 +112,7 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("has no KDoc"))
         assertFalse(result.output.contains("abbreviates a function type"))
         assertFalse(result.output.contains("bakes its constructor property list"))
+        assertFalse(result.output.contains("exposes the mutable collection type"))
         assertFalse(result.output.contains("DSL marker"))
     }
 
@@ -124,6 +128,7 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("has no KDoc"))
         assertFalse(result.output.contains("abbreviates a function type"))
         assertFalse(result.output.contains("bakes its constructor property list"))
+        assertFalse(result.output.contains("exposes the mutable collection type"))
         assertFalse(result.output.contains("DSL marker"))
     }
 
@@ -181,6 +186,9 @@ private val unacknowledgedFile = """
      * @param x the only coordinate.
      */
     public data class UnmarkedData(val x: Int)
+
+    /** A function handing out the library's mutable state. */
+    public fun leakState(): MutableList<String> = mutableListOf()
 
     /** A DSL marker with a target on which it has no effect. */
     @DslMarker
@@ -268,6 +276,13 @@ private val acknowledgedFile = """
      */
     @IntentionallyDataClass(reason = ExemptionReason.API_DESIGN)
     public data class DeliberateData(val x: Int)
+
+    /** A deliberately shared mutable buffer. */
+    @IntentionallyMutableCollection(reason = ExemptionReason.API_DESIGN)
+    public fun sharedBuffer(): MutableList<String> = mutableListOf()
+
+    /** Deliberately shared mutable batches, acknowledged on the type usage. */
+    public fun sharedBatches(): List<@IntentionallyMutableCollection(reason = ExemptionReason.API_DESIGN) MutableList<String>> = emptyList()
 
     /** A DSL marker with only effective targets. */
     @DslMarker

@@ -147,6 +147,15 @@ FILE: exemptionExplanation.kt
             public get(): R|kotlin/Int|
 
     }
+    public final fun <@R|org/jetbrains/kotlinx/libs/watchdog/IntentionallyMutableCollection|() T : R|kotlin/collections/MutableList<kotlin/Int>|> bareBound(source: R|T|): R|kotlin/collections/List<kotlin/Int>| {
+        ^bareBound R|<local>/source|.R|kotlin/collections/toList|<R|kotlin/Int|>()
+    }
+    public final fun bareTypeUse(): R|@R|org/jetbrains/kotlinx/libs/watchdog/IntentionallyMutableCollection|()  kotlin/collections/MutableList<kotlin/Int>| {
+        ^bareTypeUse R|kotlin/collections/mutableListOf|<R|kotlin/Int|>()
+    }
+    public final fun explainedTypeUse(): R|@R|org/jetbrains/kotlinx/libs/watchdog/IntentionallyMutableCollection|(reason = Q|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason|.R|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason.API_DESIGN| [evaluated = Q|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason|.R|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason.API_DESIGN|])  kotlin/collections/MutableList<kotlin/Int>| {
+        ^explainedTypeUse R|kotlin/collections/mutableListOf|<R|kotlin/Int|>()
+    }
     @R|org/jetbrains/kotlinx/libs/watchdog/IntentionallyOpen|() internal open class InternalBareExemption : R|kotlin/Any| {
         public constructor(): R|foo/bar/InternalBareExemption| {
             super<R|kotlin/Any|>()

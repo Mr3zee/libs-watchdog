@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtDeclaration
+import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtTypeAlias
 
@@ -80,6 +81,12 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
 
     /** Parameter: the class name. */
     val DATA_CLASS_PUBLIC_API by configurable1<KtClassOrObject, Name>(NAME_IDENTIFIER)
+
+    /**
+     * Parameters: declaration kind in words, declaration name, the mutable type's name. Reported
+     * on the offending type reference.
+     */
+    val MUTABLE_COLLECTION_PUBLIC_API by configurable3<KtElement, String, Name, Name>()
 
     /**
      * Parameters: the exemption annotation name, the reason that needs a description. Reported
@@ -194,6 +201,19 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "@IntentionallyDataClass if this property list is an intended, stable part " +
                     "of the API.",
             rendererA = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.MUTABLE_COLLECTION_PUBLIC_API,
+            message = "The {0} ''{1}'' exposes the mutable collection type ''{2}''. Once mutable " +
+                    "state is shared across the API boundary, it is unclear whether client-side " +
+                    "and library-side mutations affect each other, and the library can no longer " +
+                    "evolve its internal representation freely. Accept and return read-only " +
+                    "types instead (arrays count as mutable collections too), handing out " +
+                    "defensive copies where needed, or mark the declaration with " +
+                    "@IntentionallyMutableCollection if sharing mutable state is intended.",
+            rendererA = STRING,
+            rendererB = NAME,
+            rendererC = NAME,
         )
         map.put(
             WatchdogDiagnostics.EXEMPTION_WITHOUT_EXPLANATION,

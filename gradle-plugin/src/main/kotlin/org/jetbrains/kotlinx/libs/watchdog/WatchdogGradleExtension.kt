@@ -32,6 +32,9 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
     /** Severity of `DATA_CLASS_PUBLIC_API`: data classes in the public API. */
     public val dataClassPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
+    /** Severity of `MUTABLE_COLLECTION_PUBLIC_API`: mutable collections and arrays in public signatures. */
+    public val mutableCollectionPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
     /** Severity of `DSL_MARKER_NOOP_TARGET`: DSL marker targets without scope-control effect. */
     public val dslMarkerNoopTarget: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
@@ -48,6 +51,7 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
         "UNDOCUMENTED_PUBLIC_API" to undocumentedPublicApi,
         "FUNCTION_TYPE_ALIAS_PUBLIC_API" to functionTypeAliasPublicApi,
         "DATA_CLASS_PUBLIC_API" to dataClassPublicApi,
+        "MUTABLE_COLLECTION_PUBLIC_API" to mutableCollectionPublicApi,
         "DSL_MARKER_NOOP_TARGET" to dslMarkerNoopTarget,
         "DSL_MARKER_WITHOUT_EXPLICIT_TARGETS" to dslMarkerWithoutExplicitTargets,
         "DSL_MARKER_NOOP_TYPE_POSITION" to dslMarkerNoopTypePosition,

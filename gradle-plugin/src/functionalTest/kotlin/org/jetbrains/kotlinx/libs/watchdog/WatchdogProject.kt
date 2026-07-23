@@ -20,6 +20,7 @@ open class WatchdogProject(
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyUndocumented",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyFunctionTypeAlias",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyDataClass",
+        "org.jetbrains.kotlinx.libs.watchdog.IntentionallyMutableCollection",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility",
         "org.jetbrains.kotlinx.libs.watchdog.InternalAnnotationMarker",
     )

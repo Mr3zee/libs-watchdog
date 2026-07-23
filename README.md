@@ -66,6 +66,25 @@ annotation class documents the internal API surface itself.
   clients. Declare a regular class and implement `equals`/`hashCode`/`toString` explicitly, or
   acknowledge the contract with `@IntentionallyDataClass`. `data object`s are exempt: without
   constructor properties none of the hazardous members are generated.
+- `MUTABLE_COLLECTION_PUBLIC_API` — reports
+  [mutable collection types](https://kotlinlang.org/docs/api-guidelines-predictability.html#avoid-exposing-mutable-state)
+  in public signatures: return types, property types, value parameter types, and type parameter
+  bounds (`<T : MutableList<Int>>` accepts the same mutable state as a plain `MutableList<Int>`
+  parameter), including their type arguments (`List<MutableList<Int>>` still hands out mutable
+  state). A type counts as mutable when it is one of the `kotlin.collections` mutable
+  interfaces, any classifier implementing them (`ArrayList`, a hand-written `MutableList`
+  subtype, ...), or an array — arrays are mutable collections too. Once mutable state is shared
+  across the API boundary, it is unclear whether client-side and library-side mutations affect
+  each other. Accept and return read-only types instead, handing out defensive copies where
+  needed, or acknowledge deliberate sharing with `@IntentionallyMutableCollection` — on the
+  whole declaration, on a single parameter or type parameter, or on a type usage
+  (`List<@IntentionallyMutableCollection MutableList<Int>>`), where it covers the annotated type
+  and everything nested in it. Deliberate exceptions: `vararg` parameters (the compiler already passes a
+  defensive copy of the array, so only the declared element type is checked), extension
+  receivers (an extension on a mutable collection serves values the client already holds, as in
+  `fun <T> MutableList<T>.sort()`), overrides (their signature is fixed by the overridden
+  declaration and reported there), and Java platform types (their mutability is not declared in
+  Kotlin sources).
 - `EXEMPTION_WITHOUT_EXPLANATION` — reports `@Intentionally*` exemption annotations whose `reason` is `OTHER`
   (the default) while the `description` is empty: such an exemption explains nothing. Fires on
   every usage of the exemption annotations, regardless of the annotated declaration's
@@ -112,6 +131,7 @@ libsWatchdog {
     undocumentedPublicApi.set(WatchdogSeverity.WARNING)
     functionTypeAliasPublicApi.set(WatchdogSeverity.WARNING)
     dataClassPublicApi.set(WatchdogSeverity.WARNING)
+    mutableCollectionPublicApi.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTarget.set(WatchdogSeverity.WARNING)
     dslMarkerWithoutExplicitTargets.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTypePosition.set(WatchdogSeverity.WARNING)
@@ -129,8 +149,9 @@ demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
 - [`:compiler-plugin`](compiler-plugin/src) — the compiler plugin (FIR checkers).
 - [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) — `@IntentionallyOpen`,
   `@IntentionallyExhaustive`, `@IntentionallyUndocumented`, `@IntentionallyFunctionTypeAlias`,
-  `@IntentionallyDataClass`, `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`,
-  `@InternalAnnotationMarker`, and the `ExemptionReason` enum.
+  `@IntentionallyDataClass`, `@IntentionallyMutableCollection`,
+  `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`, `@InternalAnnotationMarker`,
+  and the `ExemptionReason` enum.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations
   dependency to a Kotlin project (plugin id `org.jetbrains.kotlinx.libs.watchdog`).
 

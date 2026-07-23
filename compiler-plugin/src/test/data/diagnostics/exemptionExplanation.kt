@@ -8,6 +8,7 @@ import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyDataClass
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyExhaustive
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyFunctionTypeAlias
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyMutableCollection
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyOpen
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyUndocumented
 import org.jetbrains.kotlinx.libs.watchdog.InternalAnnotationMarker
@@ -87,6 +88,15 @@ public class Holder(
     <!EXEMPTION_WITHOUT_EXPLANATION!>@IntentionallyUndocumented<!> public val bare: Int,
     @IntentionallyUndocumented(reason = ExemptionReason.API_DESIGN) public val explained: Int,
 )
+
+// Exemptions on type parameters and type usages must explain themselves too. The type-use form
+// never reaches the declaration checker and is validated where it is honored.
+
+public fun <<!EXEMPTION_WITHOUT_EXPLANATION!>@IntentionallyMutableCollection<!> T : MutableList<Int>> bareBound(source: T): List<Int> = source.toList()
+
+public fun bareTypeUse(): <!EXEMPTION_WITHOUT_EXPLANATION!>@IntentionallyMutableCollection<!> MutableList<Int> = mutableListOf()
+
+public fun explainedTypeUse(): @IntentionallyMutableCollection(reason = ExemptionReason.API_DESIGN) MutableList<Int> = mutableListOf()
 
 // The check validates the annotation call itself, so it also fires on declarations that are
 // not watched public API: non-public declarations and internal API subtrees.

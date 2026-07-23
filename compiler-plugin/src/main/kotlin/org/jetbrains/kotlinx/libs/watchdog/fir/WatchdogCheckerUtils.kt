@@ -6,10 +6,13 @@ import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirMemberDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.extractEnumValueArgumentInfo
+import org.jetbrains.kotlin.fir.declarations.findArgumentByName
+import org.jetbrains.kotlin.fir.declarations.getStringArgument
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.declarations.toAnnotationClassLikeSymbol
+import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.declarations.utils.effectiveVisibility
-import org.jetbrains.kotlin.fir.declarations.utils.isLocal
 import org.jetbrains.kotlin.fir.declarations.utils.visibility
 import org.jetbrains.kotlin.fir.resolve.transformers.publishedApiEffectiveVisibility
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
@@ -26,6 +29,7 @@ internal object WatchdogClassIds {
     val IntentionallyUndocumented: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyUndocumented"))
     val IntentionallyFunctionTypeAlias: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyFunctionTypeAlias"))
     val IntentionallyDataClass: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyDataClass"))
+    val IntentionallyMutableCollection: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyMutableCollection"))
     val IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility"))
     val InternalAnnotationMarker: ClassId = ClassId(annotationsPackage, Name.identifier("InternalAnnotationMarker"))
 
@@ -42,6 +46,7 @@ internal object WatchdogClassIds {
         IntentionallyUndocumented,
         IntentionallyFunctionTypeAlias,
         IntentionallyDataClass,
+        IntentionallyMutableCollection,
     )
 }
 
@@ -90,3 +95,44 @@ private fun FirBasedSymbol<*>.hasInternalApiMarker(): Boolean =
         annotation.toAnnotationClassLikeSymbol(context.session)
             ?.hasAnnotation(WatchdogClassIds.InternalAnnotationMarker, context.session) == true
     }
+
+private val reasonParameter = Name.identifier("reason")
+private val descriptionParameter = Name.identifier("description")
+private val otherReason = Name.identifier("OTHER")
+
+/**
+ * The reasons that explain an exemption on their own. Every other entry — including ones a
+ * future annotations version may add — only categorizes the exemption and requires a
+ * non-empty description next to it.
+ */
+private val selfSufficientReasons = setOf(
+    Name.identifier("FOR_BACKWARDS_COMPATIBILITY"),
+    Name.identifier("API_DESIGN"),
+)
+
+/**
+ * The reason that fails to explain this exemption annotation on its own ([otherReason] when the
+ * argument is absent), or null when the exemption is explained — by a self-sufficient reason or
+ * by a non-blank description. Shared between [ExemptionExplanationChecker], which validates
+ * exemptions on declarations, and the checkers that honor exemptions in positions declaration
+ * checkers cannot see (type-use annotations).
+ */
+internal fun FirAnnotation.unexplainedExemptionReason(): Name? {
+    val reasonArgument = findArgumentByName(reasonParameter, returnFirstWhenNotFound = false)
+    val reason = if (reasonArgument == null) {
+        otherReason
+    } else {
+        // An argument that resolves to no enum entry is already a compilation error, so it
+        // is not reported again.
+        reasonArgument.extractEnumValueArgumentInfo()?.enumEntryName ?: return null
+    }
+    if (reason in selfSufficientReasons) {
+        return null
+    }
+
+    if (getStringArgument(descriptionParameter)?.isNotBlank() == true) {
+        return null
+    }
+
+    return reason
+}

@@ -6,6 +6,7 @@ public class org/jetbrains/kotlinx/libs/watchdog/WatchdogGradleExtension {
 	public final fun getDslMarkerWithoutExplicitTargets ()Lorg/gradle/api/provider/Property;
 	public final fun getExhaustivePublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getFunctionTypeAliasPublicApi ()Lorg/gradle/api/provider/Property;
+	public final fun getMutableCollectionPublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getOpenApiWithoutSubclassOptIn ()Lorg/gradle/api/provider/Property;
 	public final fun getSubclassOptInWithoutMarkers ()Lorg/gradle/api/provider/Property;
 	public final fun getUndocumentedPublicApi ()Lorg/gradle/api/provider/Property;
