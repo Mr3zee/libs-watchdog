@@ -1,6 +1,7 @@
 package org.jetbrains.kotlinx.libs.watchdog.fir
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
+import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory3
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -75,15 +76,9 @@ internal class OverloadParameterOrderChecker(
             }
 
             val siblingOrder = sibling.valueParameterSymbols.map { it.name }
-            val (first, second) = findSwappedPair(other = siblingOrder, current = ownOrder) ?: continue
-            reporter.reportOn(
-                source = declaration.source,
-                factory = factory,
-                a = first,
-                b = second,
-                c = callableName,
-            )
-            return
+            if (reportSwappedPair(declaration, factory, callableName, other = siblingOrder, current = ownOrder)) {
+                return
+            }
         }
     }
 
@@ -125,20 +120,37 @@ internal class OverloadParameterOrderChecker(
     }
 
     /**
-     * The first pair of names shared by both parameter lists whose relative order differs,
-     * in [current]'s order, or null when the shared names are ordered consistently.
+     * Reports the first pair of names shared by both parameter lists whose relative order
+     * differs, in [current]'s order, and returns true; returns false without reporting when
+     * the shared names are ordered consistently.
      */
-    private fun findSwappedPair(other: List<Name>, current: List<Name>): Pair<Name, Name>? {
-        val otherIndex = other.withIndex().associate { (index, name) -> name to index }
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun reportSwappedPair(
+        declaration: FirFunction,
+        factory: KtDiagnosticFactory3<Name, Name, Name>,
+        callableName: Name,
+        other: List<Name>,
+        current: List<Name>,
+    ): Boolean {
+        val otherIndex = buildMap {
+            other.forEachIndexed { index, name -> put(name, index) }
+        }
         val shared = current.filter { it in otherIndex }
         for (i in shared.indices) {
             for (j in i + 1 until shared.size) {
                 if (otherIndex.getValue(shared[i]) > otherIndex.getValue(shared[j])) {
-                    return shared[i] to shared[j]
+                    reporter.reportOn(
+                        source = declaration.source,
+                        factory = factory,
+                        a = shared[i],
+                        b = shared[j],
+                        c = callableName,
+                    )
+                    return true
                 }
             }
         }
-        return null
+        return false
     }
 
     /** The name reported for the callable: a constructor is named after its class. */

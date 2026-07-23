@@ -52,17 +52,17 @@ internal class DslMarkerTypePositionChecker(
             return
         }
 
-        val (typeRef, position) = when (declaration) {
+        val position = when (declaration) {
             is FirValueParameter -> {
                 // A context parameter is an implicit value, so a marker on its type is effective.
                 if (declaration.valueParameterKind != FirValueParameterKind.Regular) return
-                declaration.returnTypeRef to "parameter type"
+                "parameter type"
             }
-            is FirProperty -> declaration.returnTypeRef to
-                    if (declaration.isLocal) "variable type" else "property type"
-            is FirFunction -> declaration.returnTypeRef to "return type"
+            is FirProperty -> if (declaration.isLocal) "variable type" else "property type"
+            is FirFunction -> "return type"
             else -> return
         }
+        val typeRef = declaration.returnTypeRef
 
         val session = context.session
         val markers = typeRef.annotations.filter { it.isDslMarker(session) }
