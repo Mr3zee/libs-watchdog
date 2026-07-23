@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
 import org.jetbrains.kotlin.fir.declarations.utils.isOverride
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
@@ -92,7 +91,7 @@ internal class OverloadParameterOrderChecker(
      */
     context(context: CheckerContext)
     private fun FirFunction.overloadSiblings(): List<FirFunctionSymbol<*>> {
-        val containingClass = context.containingDeclarations.lastOrNull() as? FirClassSymbol<*>
+        val containingClass = context.containingClassSymbol
         return when {
             this is FirConstructor -> buildList {
                 containingClass?.processAllDeclarations(context.session) { member ->
@@ -151,15 +150,6 @@ internal class OverloadParameterOrderChecker(
             }
         }
         return false
-    }
-
-    /** The name reported for the callable: a constructor is named after its class. */
-    context(context: CheckerContext)
-    private fun FirFunction.reportedName(): Name? = when (this) {
-        is FirNamedFunction -> name
-        is FirConstructor -> (context.containingDeclarations.lastOrNull() as? FirClassSymbol<*>)
-            ?.classId?.shortClassName
-        else -> null
     }
 
     context(context: CheckerContext)

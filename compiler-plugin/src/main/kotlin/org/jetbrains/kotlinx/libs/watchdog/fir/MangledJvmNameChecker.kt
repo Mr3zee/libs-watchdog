@@ -133,9 +133,7 @@ internal class MangledJvmNameChecker(
         val valueClass = declaration.valueParameters
             .firstNotNullOfOrNull { it.returnTypeRef.coneType.mangledValueClass() }
             ?: return
-        val className = (context.containingDeclarations.lastOrNull() as? FirClassSymbol<*>)
-            ?.classId?.shortClassName
-            ?: return
+        val className = declaration.reportedName() ?: return
         report(declaration, "constructor", className, valueClass)
     }
 
@@ -155,7 +153,7 @@ internal class MangledJvmNameChecker(
 
         // Everything declared inside a value class is Java-hostile by construction, and @JvmName
         // is not applicable there: the public value class itself is the deliberate choice.
-        if ((context.containingDeclarations.lastOrNull() as? FirClassSymbol<*>)?.isValueClass() == true) {
+        if (context.containingClassSymbol?.isValueClass() == true) {
             return false
         }
 

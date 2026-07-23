@@ -4,7 +4,10 @@ import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtRealSourceElementKind
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirMemberDeclaration
+import org.jetbrains.kotlin.fir.declarations.FirNamedFunction
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.extractEnumValueArgumentInfo
 import org.jetbrains.kotlin.fir.declarations.findArgumentByName
@@ -17,6 +20,7 @@ import org.jetbrains.kotlin.fir.declarations.utils.visibility
 import org.jetbrains.kotlin.fir.resolve.transformers.publishedApiEffectiveVisibility
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -65,6 +69,18 @@ internal object WatchdogClassIds {
         IntentionallyInlinedLogic,
         IntentionallyMangledJvmName,
     )
+}
+
+/** The class the checked declaration is a member of, or null for a top-level declaration. */
+internal val CheckerContext.containingClassSymbol: FirClassSymbol<*>?
+    get() = containingDeclarations.lastOrNull() as? FirClassSymbol<*>
+
+/** The name a diagnostic reports for a callable: a constructor is named after its class. */
+context(context: CheckerContext)
+internal fun FirFunction.reportedName(): Name? = when (this) {
+    is FirNamedFunction -> name
+    is FirConstructor -> context.containingClassSymbol?.classId?.shortClassName
+    else -> null
 }
 
 /**

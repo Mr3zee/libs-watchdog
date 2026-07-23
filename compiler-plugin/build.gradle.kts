@@ -6,3 +6,7 @@ dependencies {
     defaultRuntimeLibraries(project(":plugin-annotations"))
 }
 
+tasks.named("animalsnifferMain") {
+    enabled = false
+}
+

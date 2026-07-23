@@ -21,7 +21,6 @@ import org.jetbrains.kotlin.fir.declarations.FirTypeAlias
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.declarations.utils.isActual
 import org.jetbrains.kotlin.fir.declarations.utils.isOverride
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.text
 
@@ -113,7 +112,7 @@ internal class UndocumentedApiChecker(
         this is FirProperty -> if (isOverride) null else "property" to name
         this is FirConstructor ->
             if (isPrimary) null
-            else "constructor" to (context.containingClass()?.classId?.shortClassName ?: symbol.name)
+            else "constructor" to (context.containingClassSymbol?.classId?.shortClassName ?: symbol.name)
         else -> null
     }
 
@@ -129,16 +128,13 @@ internal class UndocumentedApiChecker(
      * declared in the primary constructor.
      */
     private fun FirProperty.isCoveredByClassKdocTags(context: CheckerContext): Boolean {
-        val classSource = context.containingClass()?.source ?: return false
+        val classSource = context.containingClassSymbol?.source ?: return false
         val classKdoc = classSource.getChild(kdocElementTypes, index = 0, depth = 1, reverse = false)?.text
             ?: return false
         return classKdoc.documentsSubject("property", name) ||
             (source?.kind == KtFakeSourceElementKind.PropertyFromParameter &&
                 classKdoc.documentsSubject("param", name))
     }
-
-    private fun CheckerContext.containingClass(): FirClassSymbol<*>? =
-        containingDeclarations.lastOrNull() as? FirClassSymbol<*>
 
     /**
      * Whether this KDoc text contains a `@tag subject` block tag. KDoc stays a raw comment token

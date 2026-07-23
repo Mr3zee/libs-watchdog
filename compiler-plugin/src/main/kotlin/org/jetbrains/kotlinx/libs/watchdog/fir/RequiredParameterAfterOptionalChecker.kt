@@ -14,11 +14,9 @@ import org.jetbrains.kotlin.fir.declarations.utils.isFun
 import org.jetbrains.kotlin.fir.declarations.utils.isOverride
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.functionTypeKind
-import org.jetbrains.kotlin.name.Name
 
 /**
  * Reports required parameters of publicly visible functions and constructors that are declared
@@ -78,15 +76,6 @@ internal class RequiredParameterAfterOptionalChecker(
                 b = callableName,
             )
         }
-    }
-
-    /** The name reported for the callable: a constructor is named after its class. */
-    context(context: CheckerContext)
-    private fun FirFunction.reportedName(): Name? = when (this) {
-        is FirNamedFunction -> name
-        is FirConstructor ->
-            (context.containingDeclarations.lastOrNull() as? FirClassSymbol<*>)?.classId?.shortClassName
-        else -> null
     }
 
     /**
