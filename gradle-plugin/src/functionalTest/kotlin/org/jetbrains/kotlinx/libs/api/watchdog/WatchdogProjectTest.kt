@@ -371,6 +371,100 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("applies libs-api-watchdog but not Tapmoc"))
     }
 
+    @Test
+    fun suggestsAbiValidationWhenItIsNotEnabled() {
+        // The suggestion is logged during configuration, so `help` is enough to observe it.
+        val project = WatchdogProject().gradleProject
+
+        val result = build(project.rootDir, "help")
+        assertTrue(result.output.contains("but no binary compatibility validation is enabled"))
+        assertTrue(result.output.contains("abiValidation()"))
+        assertTrue(result.output.contains("https://kotlinlang.org/docs/gradle-binary-compatibility-validation.html"))
+        assertTrue(result.output.contains("https://github.com/Kotlin/binary-compatibility-validator"))
+        assertTrue(result.output.contains("suggestAbiValidation.set(false)"))
+    }
+
+    @Test
+    fun abiValidationSuggestionCanBeDisabled() {
+        val project = WatchdogProject(
+            extraBuildScript = """
+                libsApiWatchdog {
+                    suggestAbiValidation.set(false)
+                }
+            """.trimIndent(),
+        ).gradleProject
+
+        val result = build(project.rootDir, "help")
+        assertFalse(result.output.contains("but no binary compatibility validation is enabled"))
+    }
+
+    @Test
+    fun abiValidationSuggestionIsSilentWhenBuiltInAbiValidationIsEnabled() {
+        val project = WatchdogProject(
+            extraBuildScript = """
+                kotlin {
+                    @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+                    abiValidation()
+                }
+            """.trimIndent(),
+        ).gradleProject
+
+        val result = build(project.rootDir, "help")
+        assertFalse(result.output.contains("but no binary compatibility validation is enabled"))
+    }
+
+    @Test
+    fun abiValidationSuggestionIsSilentWhenStandaloneValidatorIsApplied() {
+        // A buildSrc stand-in registers the real Binary Compatibility Validator plugin id, so the
+        // check sees the plugin as applied without the test fetching the actual artifact.
+        val project = object : WatchdogProject(
+            extraBuildScript = """apply(plugin = "org.jetbrains.kotlinx.binary-compatibility-validator")""",
+        ) {
+            override fun buildGradleProject(): GradleProject =
+                newGradleProjectBuilder(GradleProject.DslKind.KOTLIN)
+                    .withRootProject {
+                        withBuildScript { applyDefaultBuildScript() }
+                        withDevKitSettings()
+                    }
+                    .withBuildSrc {
+                        withBuildScript {
+                            plugins(Plugin("java-gradle-plugin"))
+                            withKotlin(
+                                """
+                                    gradlePlugin {
+                                        plugins {
+                                            create("fakeBcv") {
+                                                id = "org.jetbrains.kotlinx.binary-compatibility-validator"
+                                                implementationClass = "test.FakeBcvPlugin"
+                                            }
+                                        }
+                                    }
+                                """.trimIndent()
+                            )
+                        }
+                        sources.add(
+                            Source.java(
+                                """
+                                    package test;
+
+                                    import org.gradle.api.Plugin;
+                                    import org.gradle.api.Project;
+
+                                    public class FakeBcvPlugin implements Plugin<Project> {
+                                        @Override
+                                        public void apply(Project project) {}
+                                    }
+                                """.trimIndent()
+                            ).withPath("test", "FakeBcvPlugin").build()
+                        )
+                    }
+                    .write()
+        }.gradleProject
+
+        val result = build(project.rootDir, "help")
+        assertFalse(result.output.contains("but no binary compatibility validation is enabled"))
+    }
+
     /** Asserts the message was reported with the given compiler severity prefix (`e: ` or `w: `). */
     private fun BuildResult.assertDiagnosticReported(severityPrefix: String, message: String) {
         assertTrue(

@@ -90,6 +90,18 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
      */
     public val suggestTapmoc: Property<Boolean> = objectFactory.property(Boolean::class.java).convention(true)
 
+    /**
+     * Whether to suggest enabling binary compatibility validation when neither the Kotlin Gradle
+     * plugin's built-in
+     * [ABI validation](https://kotlinlang.org/docs/gradle-binary-compatibility-validation.html)
+     * nor the standalone
+     * [Binary Compatibility Validator](https://github.com/Kotlin/binary-compatibility-validator)
+     * plugin is active. The watchdog reviews the shape of new API declarations, while binary
+     * compatibility validation guards the API that already shipped, so the plugin recommends it
+     * with a build warning. `true` by default; set to `false` to silence the suggestion.
+     */
+    public val suggestAbiValidation: Property<Boolean> = objectFactory.property(Boolean::class.java).convention(true)
+
     /** The Java-interop diagnostic group: its off-switch and the individual severities. */
     public val javaInterop: WatchdogJavaInteropExtension =
         objectFactory.newInstance(WatchdogJavaInteropExtension::class.java)
