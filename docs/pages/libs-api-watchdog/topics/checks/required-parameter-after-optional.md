@@ -51,14 +51,14 @@ public fun connect(retries: Int = 3, host: String): Unit = Unit
 public fun connect(host: String, retries: Int = 3): Unit = Unit
 ```
 
-## Don't
+## Don't {id="dont-2"}
 
 ```kotlin
 // REQUIRED_PARAMETER_AFTER_OPTIONAL
 public class Server(port: Int = 80, host: String)
 ```
 
-## Do
+## Do {id="do-2"}
 
 ```kotlin
 public class Server(host: String, port: Int = 80)

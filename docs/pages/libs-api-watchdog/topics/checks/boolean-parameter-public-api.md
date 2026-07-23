@@ -42,14 +42,14 @@ public fun enableLogging(): Unit {}
 public fun disableLogging(): Unit {}
 ```
 
-## Don't
+## Don't {id="dont-2"}
 
 ```kotlin
 // BOOLEAN_PARAMETER_PUBLIC_API
 public fun configure(vararg flags: Boolean): Unit {}
 ```
 
-## Do
+## Do {id="do-2"}
 
 ```kotlin
 public enum class Flag { FAST, VERBOSE }

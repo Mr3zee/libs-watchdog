@@ -50,7 +50,7 @@ public fun draw(x: Int, y: Int): Unit = Unit
 public fun draw(x: Int, y: Int, scale: Double): Unit = Unit
 ```
 
-## Don't
+## Don't {id="dont-2"}
 
 ```kotlin
 // INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS
@@ -60,7 +60,7 @@ public class Rect(width: Int, height: Int) {
 }
 ```
 
-## Do
+## Do {id="do-2"}
 
 ```kotlin
 public class Rect(width: Int, height: Int) {

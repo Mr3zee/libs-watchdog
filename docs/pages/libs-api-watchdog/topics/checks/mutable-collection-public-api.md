@@ -50,14 +50,14 @@ public class Holder(items: List<Int>) {
 }
 ```
 
-## Don't
+## Don't {id="dont-2"}
 
 ```kotlin
 // MUTABLE_COLLECTION_PUBLIC_API
 public fun consume(items: MutableSet<Int>): Unit = items.clear()
 ```
 
-## Do
+## Do {id="do-2"}
 
 ```kotlin
 public fun consume(items: Set<Int>): Unit = Unit // copy internally before mutating, if needed

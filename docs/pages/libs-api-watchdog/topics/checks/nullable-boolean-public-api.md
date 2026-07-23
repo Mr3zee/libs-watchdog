@@ -46,14 +46,14 @@ public enum class ConnectionState { CONNECTED, DISCONNECTED, UNKNOWN }
 public fun connectionState(): ConnectionState = ConnectionState.UNKNOWN
 ```
 
-## Don't
+## Don't {id="dont-2"}
 
 ```kotlin
 // NULLABLE_BOOLEAN_PUBLIC_API
 public class Holder(public val checked: Boolean?)
 ```
 
-## Do
+## Do {id="do-2"}
 
 ```kotlin
 public enum class CheckState { CHECKED, UNCHECKED, UNKNOWN }

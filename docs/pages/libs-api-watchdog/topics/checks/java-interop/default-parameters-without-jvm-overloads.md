@@ -49,13 +49,13 @@ public fun connect(host: String, port: Int = 80, timeout: Int = 30): Unit = Unit
 public fun connect(host: String, port: Int = 80, timeout: Int = 30): Unit = Unit
 ```
 
-## Don't
+## Don't {id="dont-2"}
 
 ```kotlin
 public class Connection(host: String, port: Int = 80)
 ```
 
-## Do
+## Do {id="do-2"}
 
 ```kotlin
 public class Connection @JvmOverloads constructor(host: String, port: Int = 80)

@@ -45,14 +45,14 @@ public fun interface Callback {
 }
 ```
 
-## Don't
+## Don't {id="dont-2"}
 
 ```kotlin
 // FUNCTION_TYPE_ALIAS_PUBLIC_API
 public typealias SuspendAction = suspend () -> Unit
 ```
 
-## Do
+## Do {id="do-2"}
 
 ```kotlin
 public fun interface SuspendAction {

@@ -53,14 +53,14 @@ public fun take(id: UserId): Unit = Unit
 public fun take(id: UserId): Unit = Unit
 ```
 
-## Don't
+## Don't {id="dont-2"}
 
 ```kotlin
 // The public constructor is replaced: a private one plus a synthetic marker-parameter overload.
 public class Wallet(public val id: UserId)
 ```
 
-## Do
+## Do {id="do-2"}
 
 ```kotlin
 @JvmExposeBoxed

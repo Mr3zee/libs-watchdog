@@ -55,7 +55,7 @@ public fun process(tag: @TreeDsl Tag): Unit = Unit
 public fun process(tag: Tag): Unit = Unit
 ```
 
-## Don't
+## Don't {id="dont-2"}
 
 ```kotlin
 // A function type without a receiver has no implicit value to propagate the marker to.
@@ -64,7 +64,7 @@ public fun process(tag: Tag): Unit = Unit
 public fun configure(block: @TreeDsl () -> Unit): Unit = block()
 ```
 
-## Do
+## Do {id="do-2"}
 
 ```kotlin
 // The marker on the function type now propagates to its receiver.

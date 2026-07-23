@@ -44,14 +44,14 @@ public class Connection(public val host: String) {
 }
 ```
 
-## Don't
+## Don't {id="dont-2"}
 
 ```kotlin
 // STATEFUL_CLASS_WITHOUT_TO_STRING
 public abstract class StatefulBase(public val id: Int)
 ```
 
-## Do
+## Do {id="do-2"}
 
 ```kotlin
 public abstract class StatefulBase(public val id: Int) {
