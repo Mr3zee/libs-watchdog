@@ -18,7 +18,7 @@ import org.gradle.api.provider.Provider
  * ```
  *
  * The Java-interop diagnostics live in the [javaInterop] group. They only pay off for libraries
- * with Java consumers, so the group has one off-switch — a Kotlin-only library disables all of
+ * with Java consumers, so the group has one off-switch - a Kotlin-only library disables all of
  * them at once, no matter what the individual severities say:
  *
  * ```kotlin
@@ -81,6 +81,15 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
     /** Severity of `DSL_MARKER_NOOP_TYPE_POSITION`: DSL markers on type positions without effect. */
     public val dslMarkerNoopTypePosition: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
+    /**
+     * Whether to suggest applying the [Tapmoc](https://gradleup.com/tapmoc/) Gradle plugin
+     * (`com.gradleup.tapmoc`) when it is missing. Tapmoc pins the Java and Kotlin compatibility
+     * levels a library is built against - the complement of watching the API shape - so the
+     * plugin recommends it with a build warning. `true` by default; set to `false` to silence
+     * the suggestion.
+     */
+    public val suggestTapmoc: Property<Boolean> = objectFactory.property(Boolean::class.java).convention(true)
+
     /** The Java-interop diagnostic group: its off-switch and the individual severities. */
     public val javaInterop: WatchdogJavaInteropExtension =
         objectFactory.newInstance(WatchdogJavaInteropExtension::class.java)
@@ -125,7 +134,7 @@ public open class WatchdogJavaInteropExtension @Inject constructor(objectFactory
     /**
      * Whether the Java-interop diagnostics run at all. `true` by default; a library with a
      * Kotlin-only audience sets it to `false` instead of disabling the six diagnostics one by
-     * one — the switch wins over the individual severities.
+     * one - the switch wins over the individual severities.
      */
     public val enabled: Property<Boolean> = objectFactory.property(Boolean::class.java).convention(true)
 

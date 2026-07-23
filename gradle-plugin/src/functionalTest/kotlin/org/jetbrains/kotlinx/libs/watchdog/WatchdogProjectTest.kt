@@ -2,8 +2,10 @@ package org.jetbrains.kotlinx.libs.watchdog
 
 import com.autonomousapps.kit.GradleBuilder.build
 import com.autonomousapps.kit.GradleBuilder.buildAndFail
+import com.autonomousapps.kit.GradleProject
 import com.autonomousapps.kit.Source
 import com.autonomousapps.kit.gradle.Dependency.Companion.implementation
+import com.autonomousapps.kit.gradle.Plugin
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.gradle.testkit.runner.BuildResult
@@ -288,6 +290,85 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("internalFunction"))
         assertFalse(result.output.contains("can be subclassed outside the library"))
         assertFalse(result.output.contains("can be matched exhaustively by clients"))
+    }
+
+    @Test
+    fun suggestsTapmocWhenItIsNotApplied() {
+        // The suggestion is logged during configuration, so `help` is enough to observe it.
+        val project = WatchdogProject().gradleProject
+
+        val result = build(project.rootDir, "help")
+        assertTrue(result.output.contains("applies libs-watchdog but not Tapmoc"))
+        assertTrue(result.output.contains("""id("com.gradleup.tapmoc") version "<version>""""))
+        assertTrue(result.output.contains("https://github.com/GradleUp/Tapmoc/releases/latest"))
+        assertTrue(result.output.contains("https://gradleup.com/tapmoc/"))
+        assertTrue(result.output.contains("suggestTapmoc.set(false)"))
+    }
+
+    @Test
+    fun tapmocSuggestionCanBeDisabled() {
+        val project = WatchdogProject(
+            extraBuildScript = """
+                libsWatchdog {
+                    suggestTapmoc.set(false)
+                }
+            """.trimIndent(),
+        ).gradleProject
+
+        val result = build(project.rootDir, "help")
+        assertFalse(result.output.contains("applies libs-watchdog but not Tapmoc"))
+    }
+
+    @Test
+    fun tapmocSuggestionIsSilentWhenTapmocIsApplied() {
+        // A buildSrc stand-in registers the real Tapmoc plugin id, so the check sees the plugin
+        // as applied without the test fetching the actual artifact.
+        val project = object : WatchdogProject(
+            extraBuildScript = """apply(plugin = "com.gradleup.tapmoc")""",
+        ) {
+            override fun buildGradleProject(): GradleProject =
+                newGradleProjectBuilder(GradleProject.DslKind.KOTLIN)
+                    .withRootProject {
+                        withBuildScript { applyDefaultBuildScript() }
+                        withDevKitSettings()
+                    }
+                    .withBuildSrc {
+                        withBuildScript {
+                            plugins(Plugin("java-gradle-plugin"))
+                            withKotlin(
+                                """
+                                    gradlePlugin {
+                                        plugins {
+                                            create("fakeTapmoc") {
+                                                id = "com.gradleup.tapmoc"
+                                                implementationClass = "test.FakeTapmocPlugin"
+                                            }
+                                        }
+                                    }
+                                """.trimIndent()
+                            )
+                        }
+                        sources.add(
+                            Source.java(
+                                """
+                                    package test;
+
+                                    import org.gradle.api.Plugin;
+                                    import org.gradle.api.Project;
+
+                                    public class FakeTapmocPlugin implements Plugin<Project> {
+                                        @Override
+                                        public void apply(Project project) {}
+                                    }
+                                """.trimIndent()
+                            ).withPath("test", "FakeTapmocPlugin").build()
+                        )
+                    }
+                    .write()
+        }.gradleProject
+
+        val result = build(project.rootDir, "help")
+        assertFalse(result.output.contains("applies libs-watchdog but not Tapmoc"))
     }
 
     /** Asserts the message was reported with the given compiler severity prefix (`e: ` or `w: `). */

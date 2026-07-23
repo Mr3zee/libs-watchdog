@@ -361,6 +361,38 @@ option taking `error`, `warning`, or `none`:
 Note that the Kotlin compiler hides regular warnings when a compilation fails with errors, so
 demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
 
+## Tapmoc suggestion
+
+Watching the API shape covers only half of library evolution - the artifacts also have to stay
+consumable from the oldest JDK and Kotlin versions the library supports. That part is covered by
+[Tapmoc](https://github.com/GradleUp/Tapmoc) (`com.gradleup.tapmoc`, formerly CompatPatrouille),
+which pins the Java and Kotlin compatibility levels a module is built against. The Gradle plugin
+checks that Tapmoc is applied alongside it and prints a build warning with a setup snippet when it
+is not:
+
+```kotlin
+plugins {
+    id("com.gradleup.tapmoc") version "<version>"
+}
+
+tapmoc {
+    java(17)        // oldest supported Java release
+    kotlin("2.1.0") // oldest supported Kotlin version
+}
+```
+
+Replace `<version>` with the
+[latest Tapmoc release](https://github.com/GradleUp/Tapmoc/releases/latest); the
+[Tapmoc documentation](https://gradleup.com/tapmoc/) has the full configuration reference.
+
+The suggestion can be turned off through the extension:
+
+```kotlin
+libsWatchdog {
+    suggestTapmoc.set(false)
+}
+```
+
 ## Modules
 
 - [`:compiler-plugin`](compiler-plugin/src) — the compiler plugin (FIR checkers).
