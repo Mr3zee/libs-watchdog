@@ -59,6 +59,13 @@ annotation class documents the internal API surface itself.
   ergonomics behind a stable nominal type, or acknowledge the alias with
   `@IntentionallyFunctionTypeAlias`. Aliases of `KFunction`/`KSuspendFunction` reflection types
   are exempt: a fun interface cannot replace them.
+- `DATA_CLASS_PUBLIC_API` — reports
+  [data classes](https://kotlinlang.org/docs/api-guidelines-backward-compatibility.html#avoid-using-data-classes-in-your-api):
+  the generated `copy` and `componentN` functions and the constructor bake the exact property
+  list into the compiled API, so adding, removing, or reordering a property later breaks
+  clients. Declare a regular class and implement `equals`/`hashCode`/`toString` explicitly, or
+  acknowledge the contract with `@IntentionallyDataClass`. `data object`s are exempt: without
+  constructor properties none of the hazardous members are generated.
 - `EXEMPTION_WITHOUT_EXPLANATION` — reports `@Intentionally*` exemption annotations whose `reason` is `OTHER`
   (the default) while the `description` is empty: such an exemption explains nothing. Fires on
   every usage of the exemption annotations, regardless of the annotated declaration's
@@ -104,6 +111,7 @@ libsWatchdog {
     exhaustivePublicApi.set(WatchdogSeverity.WARNING)
     undocumentedPublicApi.set(WatchdogSeverity.WARNING)
     functionTypeAliasPublicApi.set(WatchdogSeverity.WARNING)
+    dataClassPublicApi.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTarget.set(WatchdogSeverity.WARNING)
     dslMarkerWithoutExplicitTargets.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTypePosition.set(WatchdogSeverity.WARNING)
@@ -121,8 +129,8 @@ demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
 - [`:compiler-plugin`](compiler-plugin/src) — the compiler plugin (FIR checkers).
 - [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) — `@IntentionallyOpen`,
   `@IntentionallyExhaustive`, `@IntentionallyUndocumented`, `@IntentionallyFunctionTypeAlias`,
-  `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`, `@InternalAnnotationMarker`,
-  and the `ExemptionReason` enum.
+  `@IntentionallyDataClass`, `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`,
+  `@InternalAnnotationMarker`, and the `ExemptionReason` enum.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations
   dependency to a Kotlin project (plugin id `org.jetbrains.kotlinx.libs.watchdog`).
 

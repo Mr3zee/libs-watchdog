@@ -26,7 +26,12 @@ class WatchdogFirCheckers(
 
         override val classCheckers: Set<FirClassChecker> =
             if (enabled) {
-                setOf(OpenApiChecker(severities), ExhaustiveApiChecker(severities), DslMarkerTargetsChecker(severities))
+                setOf(
+                    OpenApiChecker(severities),
+                    ExhaustiveApiChecker(severities),
+                    DataClassChecker(severities),
+                    DslMarkerTargetsChecker(severities),
+                )
             } else {
                 emptySet()
             }

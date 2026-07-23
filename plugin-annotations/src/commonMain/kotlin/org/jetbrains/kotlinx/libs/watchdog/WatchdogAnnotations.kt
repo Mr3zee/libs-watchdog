@@ -127,6 +127,27 @@ public annotation class IntentionallyFunctionTypeAlias(
 )
 
 /**
+ * Acknowledges that the annotated data class is deliberately part of the public API.
+ *
+ * The libs-watchdog compiler plugin warns about publicly visible data classes, because the
+ * generated `copy` and `componentN` functions and the constructor bake the exact property list
+ * into the compiled API: adding, removing, or reordering a property later breaks clients. Apply
+ * this annotation to suppress the warning when the property list is an intended, stable part of
+ * the API contract.
+ *
+ * @param reason why the class is deliberately a data class.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyDataClass(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
  * Acknowledges that the annotated DSL marker deliberately keeps a wrong target set — no-op
  * targets in its `@Target`, or no explicit `@Target` at all — because fixing it would break
  * existing clients.

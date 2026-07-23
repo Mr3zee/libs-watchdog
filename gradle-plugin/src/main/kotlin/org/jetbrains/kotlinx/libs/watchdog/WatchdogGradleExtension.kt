@@ -29,6 +29,9 @@ open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
     /** Severity of `FUNCTION_TYPE_ALIAS_PUBLIC_API`: type aliases that abbreviate function types. */
     val functionTypeAliasPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
+    /** Severity of `DATA_CLASS_PUBLIC_API`: data classes in the public API. */
+    val dataClassPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
     /** Severity of `DSL_MARKER_NOOP_TARGET`: DSL marker targets without scope-control effect. */
     val dslMarkerNoopTarget: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
@@ -44,6 +47,7 @@ open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
         "EXHAUSTIVE_PUBLIC_API" to exhaustivePublicApi,
         "UNDOCUMENTED_PUBLIC_API" to undocumentedPublicApi,
         "FUNCTION_TYPE_ALIAS_PUBLIC_API" to functionTypeAliasPublicApi,
+        "DATA_CLASS_PUBLIC_API" to dataClassPublicApi,
         "DSL_MARKER_NOOP_TARGET" to dslMarkerNoopTarget,
         "DSL_MARKER_WITHOUT_EXPLICIT_TARGETS" to dslMarkerWithoutExplicitTargets,
         "DSL_MARKER_NOOP_TYPE_POSITION" to dslMarkerNoopTypePosition,

@@ -5,6 +5,7 @@
 package foo.bar
 
 import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyDataClass
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyExhaustive
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyFunctionTypeAlias
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyOpen
@@ -25,6 +26,9 @@ public class BareUndocumentedExemption
 
 <!EXEMPTION_WITHOUT_EXPLANATION!>@IntentionallyFunctionTypeAlias<!>
 public typealias BareAliasExemption = (Int) -> Unit
+
+<!EXEMPTION_WITHOUT_EXPLANATION!>@IntentionallyDataClass<!>
+public data class BareDataClassExemption(val x: Int)
 
 // @InternalAnnotationMarker needs no explanation: the marked annotation class documents the
 // internal API surface itself.

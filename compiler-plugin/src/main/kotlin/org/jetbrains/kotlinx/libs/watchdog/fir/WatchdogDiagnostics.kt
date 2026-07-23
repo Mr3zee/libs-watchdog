@@ -78,6 +78,9 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
     /** Parameter: the alias name. */
     val FUNCTION_TYPE_ALIAS_PUBLIC_API by configurable1<KtTypeAlias, Name>(NAME_IDENTIFIER)
 
+    /** Parameter: the class name. */
+    val DATA_CLASS_PUBLIC_API by configurable1<KtClassOrObject, Name>(NAME_IDENTIFIER)
+
     /**
      * Parameters: the exemption annotation name, the reason that needs a description. Reported
      * on the annotation entry. Deliberately not configurable, unlike the other diagnostics: the
@@ -179,6 +182,17 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "evolve into a richer abstraction later. Declare a `fun interface` instead to " +
                     "keep lambda ergonomics behind a stable nominal type, or mark the alias with " +
                     "@IntentionallyFunctionTypeAlias if exposing the function type is intended.",
+            rendererA = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.DATA_CLASS_PUBLIC_API,
+            message = "The data class ''{0}'' bakes its constructor property list into the " +
+                    "compiled API through the generated `copy` and `componentN` functions and the " +
+                    "constructor itself, so adding, removing, or reordering a property later is a " +
+                    "breaking change. Declare a regular class and implement " +
+                    "`equals`/`hashCode`/`toString` explicitly, or mark the class with " +
+                    "@IntentionallyDataClass if this property list is an intended, stable part " +
+                    "of the API.",
             rendererA = NAME,
         )
         map.put(

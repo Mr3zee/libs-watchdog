@@ -1,0 +1,128 @@
+FILE: dataClass.kt
+    package foo.bar
+
+    public final data class Coordinates : R|kotlin/Any| {
+        public constructor(x: R|kotlin/Int|, y: R|kotlin/Int|): R|foo/bar/Coordinates| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val x: R|kotlin/Int| = R|<local>/x|
+            public get(): R|kotlin/Int|
+
+        public final val y: R|kotlin/Int| = R|<local>/y|
+            public get(): R|kotlin/Int|
+
+        public final operator fun component1(): R|kotlin/Int|
+
+        public final operator fun component2(): R|kotlin/Int|
+
+        public final fun copy(x: R|kotlin/Int| = this@R|foo/bar/Coordinates|.R|foo/bar/Coordinates.x|, y: R|kotlin/Int| = this@R|foo/bar/Coordinates|.R|foo/bar/Coordinates.y|): R|foo/bar/Coordinates|
+
+    }
+    public final class Container : R|kotlin/Any| {
+        public constructor(): R|foo/bar/Container| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final data class Nested : R|kotlin/Any| {
+            public constructor(value: R|kotlin/Int|): R|foo/bar/Container.Nested| {
+                super<R|kotlin/Any|>()
+            }
+
+            public final val value: R|kotlin/Int| = R|<local>/value|
+                public get(): R|kotlin/Int|
+
+            public final operator fun component1(): R|kotlin/Int|
+
+            public final fun copy(value: R|kotlin/Int| = this@R|foo/bar/Container.Nested|.R|foo/bar/Container.Nested.value|): R|foo/bar/Container.Nested|
+
+        }
+
+    }
+    @R|kotlin/PublishedApi|() internal final data class PublishedPoint : R|kotlin/Any| {
+        public constructor(x: R|kotlin/Int|): R|foo/bar/PublishedPoint| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val x: R|kotlin/Int| = R|<local>/x|
+            public get(): R|kotlin/Int|
+
+        public final operator fun component1(): R|kotlin/Int|
+
+        public final fun copy(x: R|kotlin/Int| = this@R|foo/bar/PublishedPoint|.R|foo/bar/PublishedPoint.x|): R|foo/bar/PublishedPoint|
+
+    }
+    @R|org/jetbrains/kotlinx/libs/watchdog/IntentionallyDataClass|() public final data class MarkedData : R|kotlin/Any| {
+        public constructor(x: R|kotlin/Int|): R|foo/bar/MarkedData| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val x: R|kotlin/Int| = R|<local>/x|
+            public get(): R|kotlin/Int|
+
+        public final operator fun component1(): R|kotlin/Int|
+
+        public final fun copy(x: R|kotlin/Int| = this@R|foo/bar/MarkedData|.R|foo/bar/MarkedData.x|): R|foo/bar/MarkedData|
+
+    }
+    public final class RegularClass : R|kotlin/Any| {
+        public constructor(x: R|kotlin/Int|): R|foo/bar/RegularClass| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val x: R|kotlin/Int| = R|<local>/x|
+            public get(): R|kotlin/Int|
+
+    }
+    public final data object DataObject : R|kotlin/Any| {
+        private constructor(): R|foo/bar/DataObject| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    internal final data class InternalData : R|kotlin/Any| {
+        public constructor(x: R|kotlin/Int|): R|foo/bar/InternalData| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val x: R|kotlin/Int| = R|<local>/x|
+            public get(): R|kotlin/Int|
+
+        public final operator fun component1(): R|kotlin/Int|
+
+        public final fun copy(x: R|kotlin/Int| = this@R|foo/bar/InternalData|.R|foo/bar/InternalData.x|): R|foo/bar/InternalData|
+
+    }
+    private final data class PrivateData : R|kotlin/Any| {
+        public constructor(x: R|kotlin/Int|): R|foo/bar/PrivateData| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val x: R|kotlin/Int| = R|<local>/x|
+            public get(): R|kotlin/Int|
+
+        public final operator fun component1(): R|kotlin/Int|
+
+        public final fun copy(x: R|kotlin/Int| = this@R|foo/bar/PrivateData|.R|foo/bar/PrivateData.x|): R|foo/bar/PrivateData|
+
+    }
+    public final class Outer : R|kotlin/Any| {
+        public constructor(): R|foo/bar/Outer| {
+            super<R|kotlin/Any|>()
+        }
+
+        internal final data class Hidden : R|kotlin/Any| {
+            public constructor(x: R|kotlin/Int|): R|foo/bar/Outer.Hidden| {
+                super<R|kotlin/Any|>()
+            }
+
+            public final val x: R|kotlin/Int| = R|<local>/x|
+                public get(): R|kotlin/Int|
+
+            public final operator fun component1(): R|kotlin/Int|
+
+            public final fun copy(x: R|kotlin/Int| = this@R|foo/bar/Outer.Hidden|.R|foo/bar/Outer.Hidden.x|): R|foo/bar/Outer.Hidden|
+
+        }
+
+    }

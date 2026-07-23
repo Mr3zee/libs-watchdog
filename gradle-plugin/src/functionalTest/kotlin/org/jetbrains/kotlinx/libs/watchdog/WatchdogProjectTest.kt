@@ -21,6 +21,7 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("e: ", "can be matched exhaustively by clients")
         result.assertDiagnosticReported("e: ", "has no KDoc")
         result.assertDiagnosticReported("e: ", "abbreviates a function type")
+        result.assertDiagnosticReported("e: ", "bakes its constructor property list")
         result.assertDiagnosticReported("e: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("e: ", "declares no explicit @Target")
         result.assertDiagnosticReported("e: ", "has no effect on this parameter type")
@@ -35,6 +36,7 @@ class WatchdogProjectTest {
                     exhaustivePublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     undocumentedPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     functionTypeAliasPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    dataClassPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTarget.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerWithoutExplicitTargets.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTypePosition.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
@@ -49,6 +51,7 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("w: ", "can be matched exhaustively by clients")
         result.assertDiagnosticReported("w: ", "has no KDoc")
         result.assertDiagnosticReported("w: ", "abbreviates a function type")
+        result.assertDiagnosticReported("w: ", "bakes its constructor property list")
         result.assertDiagnosticReported("w: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("w: ", "declares no explicit @Target")
         result.assertDiagnosticReported("w: ", "has no effect on this parameter type")
@@ -105,6 +108,7 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("can be matched exhaustively by clients"))
         assertFalse(result.output.contains("has no KDoc"))
         assertFalse(result.output.contains("abbreviates a function type"))
+        assertFalse(result.output.contains("bakes its constructor property list"))
         assertFalse(result.output.contains("DSL marker"))
     }
 
@@ -119,6 +123,7 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("can be matched exhaustively by clients"))
         assertFalse(result.output.contains("has no KDoc"))
         assertFalse(result.output.contains("abbreviates a function type"))
+        assertFalse(result.output.contains("bakes its constructor property list"))
         assertFalse(result.output.contains("DSL marker"))
     }
 
@@ -169,6 +174,13 @@ private val unacknowledgedFile = """
 
     /** An unacknowledged function type alias. */
     public typealias UnacknowledgedCallback = (Int) -> Unit
+
+    /**
+     * An unacknowledged data class.
+     *
+     * @param x the only coordinate.
+     */
+    public data class UnmarkedData(val x: Int)
 
     /** A DSL marker with a target on which it has no effect. */
     @DslMarker
@@ -248,6 +260,14 @@ private val acknowledgedFile = """
     /** A deliberate function type alias. */
     @IntentionallyFunctionTypeAlias(reason = ExemptionReason.API_DESIGN)
     public typealias DeliberateCallback = (Int) -> Unit
+
+    /**
+     * A deliberately stable data holder.
+     *
+     * @param x the only coordinate.
+     */
+    @IntentionallyDataClass(reason = ExemptionReason.API_DESIGN)
+    public data class DeliberateData(val x: Int)
 
     /** A DSL marker with only effective targets. */
     @DslMarker
