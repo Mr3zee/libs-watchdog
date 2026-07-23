@@ -25,7 +25,22 @@ internal object WatchdogClassIds {
     val IntentionallyExhaustive: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyExhaustive"))
     val IntentionallyUndocumented: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyUndocumented"))
     val IntentionallyFunctionTypeAlias: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyFunctionTypeAlias"))
+    val IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility"))
     val InternalAnnotationMarker: ClassId = ClassId(annotationsPackage, Name.identifier("InternalAnnotationMarker"))
+
+    /**
+     * The annotations that exempt a declaration from a check and must explain why they do.
+     * [InternalAnnotationMarker] is deliberately not one of them: the marked annotation class
+     * documents the internal API surface itself. Neither is
+     * [IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility]: its only accepted reason is
+     * baked into its name, so its description may stay empty.
+     */
+    val exemptionAnnotations: Set<ClassId> = setOf(
+        IntentionallyOpen,
+        IntentionallyExhaustive,
+        IntentionallyUndocumented,
+        IntentionallyFunctionTypeAlias,
+    )
 }
 
 /**

@@ -4,6 +4,8 @@
 
 package foo.bar
 
+import org.jetbrains.kotlin.libs.watchdog.IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility
+
 // A no-op target in an explicit @Target: should warn on that target.
 // This is the shape that broke Ktor's @KtorDsl (KTOR-8901).
 
@@ -50,6 +52,18 @@ public annotation class ClassOnlyDsl
 @DslMarker
 @Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS)
 public annotation class MetaDsl
+
+// A legacy marker keeps its wrong target set for backwards compatibility: no warning. The
+// exemption's reason is baked into its name, so a bare usage needs no description either.
+
+@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility
+@DslMarker
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+public annotation class LegacyNoopTargetDsl
+
+@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility(description = "Published without targets in 1.0.")
+@DslMarker
+public annotation class LegacyDefaultTargetsDsl
 
 // Not a DSL marker: targets are not checked.
 

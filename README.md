@@ -25,6 +25,16 @@ public annotation class InternalMyLibraryApi
 public class ReflectionHelper
 ```
 
+Every `@Intentionally*` exemption annotation must explain why it is applied, in two forms: a
+`reason` from the `ExemptionReason` enum (`FOR_BACKWARDS_COMPATIBILITY`, `API_DESIGN`,
+`INTEROP`, `EXTERNAL_CONTRACT`, `OTHER`) and a free-form `description` string. Both default to
+an explanation-free value (`OTHER` and `""`), so a bare exemption is rejected. Only
+`FOR_BACKWARDS_COMPATIBILITY` and `API_DESIGN` explain an exemption on their own; `INTEROP` and
+`EXTERNAL_CONTRACT` merely categorize it (which interop constraint or external contract applies
+is not obvious from the entry alone), so they — like `OTHER` — still require a non-empty
+`description`. `@InternalAnnotationMarker` is exempt from this requirement: the marked
+annotation class documents the internal API surface itself.
+
 - `OPEN_API_WITHOUT_SUBCLASS_OPT_IN` — reports open/abstract classes and interfaces that can
   be subclassed outside the library without restriction. Suppress by gating subclassing with
   [`@SubclassOptInRequired`](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-subclass-opt-in-required/)
@@ -49,6 +59,10 @@ public class ReflectionHelper
   ergonomics behind a stable nominal type, or acknowledge the alias with
   `@IntentionallyFunctionTypeAlias`. Aliases of `KFunction`/`KSuspendFunction` reflection types
   are exempt: a fun interface cannot replace them.
+- `EXEMPTION_WITHOUT_EXPLANATION` — reports `@Intentionally*` exemption annotations whose `reason` is `OTHER`
+  (the default) while the `description` is empty: such an exemption explains nothing. Fires on
+  every usage of the exemption annotations, regardless of the annotated declaration's
+  visibility. Always an error — unlike the other diagnostics, its severity cannot be configured.
 - `DSL_MARKER_NOOP_TARGET` — reports annotation targets of a
   [`@DslMarker`](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-dsl-marker/) annotation on
   which the marker has no effect. Receiver scope control only reacts to markers on classifier
@@ -62,6 +76,11 @@ public class ReflectionHelper
 - `DSL_MARKER_WITHOUT_EXPLICIT_TARGETS` — reports `@DslMarker` annotations without an explicit
   `@Target`: the default target set allows nine such no-op targets while forbidding the effective
   `TYPE` and `TYPEALIAS` ones. Fix by declaring `@Target(CLASS, TYPE, TYPEALIAS)` or a subset.
+
+  For an already-published marker both fixes are breaking, so the two target checks can be
+  suppressed with `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility` on the marker.
+  Wrong marker targets are never good API design, so this exemption bakes its only accepted
+  reason into its name and takes just an optional `description`.
 - `DSL_MARKER_NOOP_TYPE_POSITION` — reports DSL markers written on type positions where they have
   no effect: a plain parameter type (`fun process(tag: @MyDsl Tag)`), a return type, or a
   property/variable type. Scope control only reacts to markers on the type of an implicit value —
@@ -73,7 +92,8 @@ public class ReflectionHelper
 ## Configuring severities
 
 Every diagnostic is reported as a compilation **error** by default. Each one can be demoted to a
-warning individually through the `libsWatchdog` extension:
+warning individually through the `libsWatchdog` extension — except
+`EXEMPTION_WITHOUT_EXPLANATION`, which is always an error:
 
 ```kotlin
 import org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity
@@ -101,7 +121,8 @@ demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
 - [`:compiler-plugin`](compiler-plugin/src) — the compiler plugin (FIR checkers).
 - [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) — `@IntentionallyOpen`,
   `@IntentionallyExhaustive`, `@IntentionallyUndocumented`, `@IntentionallyFunctionTypeAlias`,
-  and `@InternalAnnotationMarker`.
+  `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`, `@InternalAnnotationMarker`,
+  and the `ExemptionReason` enum.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations
   dependency to a Kotlin project (plugin id `org.jetbrains.kotlin.libs.watchdog`).
 

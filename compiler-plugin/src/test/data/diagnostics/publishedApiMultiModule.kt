@@ -11,6 +11,7 @@
 
 package libapi
 
+import org.jetbrains.kotlin.libs.watchdog.ExemptionReason
 import org.jetbrains.kotlin.libs.watchdog.IntentionallyOpen
 import org.jetbrains.kotlin.libs.watchdog.IntentionallyUndocumented
 
@@ -18,12 +19,12 @@ import org.jetbrains.kotlin.libs.watchdog.IntentionallyUndocumented
 @PublishedApi
 internal class LibPublishedClass
 
-@IntentionallyUndocumented
+@IntentionallyUndocumented(description = "Implementation detail of the inline API.")
 @PublishedApi
 internal class LibAcknowledgedClass
 
 /** Documented; unrestricted subclassing is acknowledged. */
-@IntentionallyOpen
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @PublishedApi
 internal open class LibPublishedOpenClass
 

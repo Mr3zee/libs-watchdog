@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.Severity
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies.NAME_IDENTIFIER
+import org.jetbrains.kotlin.diagnostics.error2
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.diagnostics.rendering.CommonRenderers.CLASS_KIND
 import org.jetbrains.kotlin.diagnostics.rendering.CommonRenderers.NAME
@@ -76,6 +77,13 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
 
     /** Parameter: the alias name. */
     val FUNCTION_TYPE_ALIAS_PUBLIC_API by configurable1<KtTypeAlias, Name>(NAME_IDENTIFIER)
+
+    /**
+     * Parameters: the exemption annotation name, the reason that needs a description. Reported
+     * on the annotation entry. Deliberately not configurable, unlike the other diagnostics: the
+     * explanation requirement is what keeps every exemption honest, so it is always an error.
+     */
+    val EXEMPTION_WITHOUT_EXPLANATION by error2<KtAnnotationEntry, Name, Name>()
 
     /** Parameters: the marker name, the no-op target name. Reported on the `@Target` argument. */
     val DSL_MARKER_NOOP_TARGET by configurable2<KtExpression, Name, String>()
@@ -174,12 +182,23 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             rendererA = NAME,
         )
         map.put(
+            WatchdogDiagnostics.EXEMPTION_WITHOUT_EXPLANATION,
+            "The @{0} exemption does not explain why it is applied: the {1} reason does not " +
+                    "speak for itself, and the description is empty. Pass a self-explanatory " +
+                    "reason (FOR_BACKWARDS_COMPATIBILITY, API_DESIGN), or describe the " +
+                    "motivation in the description argument.",
+            NAME,
+            NAME,
+        )
+        map.put(
             diagnostic = WatchdogDiagnostics.DSL_MARKER_NOOP_TARGET,
             message = "The DSL marker ''{0}'' allows the {1} annotation target, but a DSL marker " +
                     "only takes effect on classifier declarations (CLASS, ANNOTATION_CLASS), type " +
                     "usages (TYPE), and type aliases (TYPEALIAS). Applied to a {1} element the " +
                     "marker restricts nothing and only gives a false sense of receiver scope " +
-                    "control. Remove the target from @Target.",
+                    "control. Remove the target from @Target, or mark the marker with " +
+                    "@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility if the target " +
+                    "must stay for compatibility with existing clients.",
             rendererA = NAME,
             rendererB = STRING,
         )
@@ -188,7 +207,9 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "The DSL marker ''{0}'' declares no explicit @Target, so it defaults to " +
                     "targets like functions and properties where a DSL marker has no effect, while " +
                     "the effective type usage (TYPE) and type alias (TYPEALIAS) targets stay " +
-                    "unavailable. Declare @Target(CLASS, TYPE, TYPEALIAS) or a subset of it.",
+                    "unavailable. Declare @Target(CLASS, TYPE, TYPEALIAS) or a subset of it, or " +
+                    "mark the marker with @IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility " +
+                    "if the default targets must stay for compatibility with existing clients.",
             rendererA = NAME,
         )
         map.put(

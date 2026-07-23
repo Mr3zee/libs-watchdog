@@ -76,6 +76,25 @@ class WatchdogProjectTest {
     }
 
     @Test
+    fun unexplainedExemptionIsAlwaysAnError() {
+        // The only configurable diagnostic the file triggers is demoted, so the remaining error
+        // proves EXEMPTION_WITHOUT_EXPLANATION ignores severity configuration: the extension
+        // deliberately offers no property for it.
+        val project = object : WatchdogProject(
+            extraBuildScript = """
+                libsWatchdog {
+                    undocumentedPublicApi.set(org.jetbrains.kotlin.libs.watchdog.WatchdogSeverity.WARNING)
+                }
+            """.trimIndent(),
+        ) {
+            override fun sources() = listOf(source(unexplainedExemptionFile))
+        }.gradleProject
+
+        val result = buildAndFail(project.rootDir, "build")
+        result.assertDiagnosticReported("e: ", "exemption does not explain why it is applied")
+    }
+
+    @Test
     fun acknowledgedApiCompilesWithoutDiagnostics() {
         val project = object : WatchdogProject() {
             override fun sources() = listOf(source(acknowledgedFile))
@@ -171,6 +190,13 @@ private val unacknowledgedFile = """
 
 @Suppress("RedundantVisibilityModifier")
 @Language("kotlin")
+private val unexplainedExemptionFile = """
+    @IntentionallyUndocumented
+    public class UnexplainedExemption
+""".trimIndent()
+
+@Suppress("RedundantVisibilityModifier")
+@Language("kotlin")
 private val markerLibraryFile = """
     /** Flags declarations that are public for technical reasons but are not supported API. */
     @InternalAnnotationMarker
@@ -203,11 +229,11 @@ private val markerConsumerFile = """
 @Language("kotlin")
 private val acknowledgedFile = """
     /** A deliberately open class. */
-    @IntentionallyOpen
+    @IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
     public open class DeliberatelyOpenClass
 
     /** A deliberately exhaustive enum. */
-    @IntentionallyExhaustive
+    @IntentionallyExhaustive(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public enum class MarkedEnum {
         /** The first entry. */
         A,
@@ -216,15 +242,21 @@ private val acknowledgedFile = """
         B,
     }
 
-    @IntentionallyUndocumented
+    @IntentionallyUndocumented(description = "Self-explanatory.")
     public class DeliberatelyUndocumentedClass
 
     /** A deliberate function type alias. */
-    @IntentionallyFunctionTypeAlias
+    @IntentionallyFunctionTypeAlias(reason = ExemptionReason.API_DESIGN)
     public typealias DeliberateCallback = (Int) -> Unit
 
     /** A DSL marker with only effective targets. */
     @DslMarker
     @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE, AnnotationTarget.TYPEALIAS)
     public annotation class TidyDsl
+
+    /** A legacy DSL marker whose wrong target set is kept for backwards compatibility. */
+    @IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility
+    @DslMarker
+    @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+    public annotation class LegacyDsl
 """.trimIndent()

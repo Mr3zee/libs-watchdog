@@ -14,10 +14,12 @@ open class WatchdogProject(
     multiplatform = multiplatform,
 ) {
     override val defaultImports: List<String> = listOf(
+        "org.jetbrains.kotlin.libs.watchdog.ExemptionReason",
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyOpen",
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyExhaustive",
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyUndocumented",
         "org.jetbrains.kotlin.libs.watchdog.IntentionallyFunctionTypeAlias",
+        "org.jetbrains.kotlin.libs.watchdog.IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility",
         "org.jetbrains.kotlin.libs.watchdog.InternalAnnotationMarker",
     )
 

@@ -31,9 +31,13 @@ class WatchdogFirCheckers(
                 emptySet()
             }
 
-        // UndocumentedApiChecker watches every declaration kind, not just classes.
+        // These checkers watch every declaration kind, not just classes.
         override val basicDeclarationCheckers: Set<FirBasicDeclarationChecker> =
-            if (enabled) setOf(UndocumentedApiChecker(severities)) else emptySet()
+            if (enabled) {
+                setOf(UndocumentedApiChecker(severities), ExemptionExplanationChecker())
+            } else {
+                emptySet()
+            }
 
         override val typeAliasCheckers: Set<FirTypeAliasChecker> =
             if (enabled) setOf(FunctionTypeAliasChecker(severities)) else emptySet()

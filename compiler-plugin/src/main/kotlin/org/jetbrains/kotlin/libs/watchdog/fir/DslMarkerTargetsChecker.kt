@@ -30,6 +30,9 @@ import org.jetbrains.kotlin.name.StandardClassIds
  *
  * The marker's own visibility is irrelevant: even an internal or private marker is applied
  * across the library's — possibly public — DSL classes, so every marker is checked.
+ *
+ * For an already-published marker, fixing the target set is a breaking change, so authors
+ * acknowledge the legacy shape with `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`.
  */
 internal class DslMarkerTargetsChecker(
     private val severities: WatchdogDiagnosticSeverities,
@@ -46,6 +49,14 @@ internal class DslMarkerTargetsChecker(
 
         val session = context.session
         if (!declaration.hasAnnotation(StandardClassIds.Annotations.DslMarker, session)) {
+            return
+        }
+
+        if (declaration.hasAnnotation(
+                WatchdogClassIds.IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility,
+                session,
+            )
+        ) {
             return
         }
 
