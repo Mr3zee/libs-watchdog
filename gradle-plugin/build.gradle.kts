@@ -1,5 +1,15 @@
+@file:OptIn(ExperimentalAbiValidation::class)
+
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
+
 plugins {
     kotlin("compiler.plugin.devkit.gradle-plugin")
+}
+
+kotlin {
+    explicitApi()
+
+    abiValidation()
 }
 
 pluginDevKit {

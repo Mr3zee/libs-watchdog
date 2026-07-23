@@ -1,7 +1,7 @@
 package org.jetbrains.kotlinx.libs.watchdog
 
 /** Severity with which a watchdog diagnostic is reported. */
-enum class WatchdogSeverity {
+public enum class WatchdogSeverity {
     /** The diagnostic fails the compilation. */
     ERROR,
 

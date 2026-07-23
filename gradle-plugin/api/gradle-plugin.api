@@ -1,0 +1,28 @@
+public class org/jetbrains/kotlinx/libs/watchdog/WatchdogGradleExtension {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun getDataClassPublicApi ()Lorg/gradle/api/provider/Property;
+	public final fun getDslMarkerNoopTarget ()Lorg/gradle/api/provider/Property;
+	public final fun getDslMarkerNoopTypePosition ()Lorg/gradle/api/provider/Property;
+	public final fun getDslMarkerWithoutExplicitTargets ()Lorg/gradle/api/provider/Property;
+	public final fun getExhaustivePublicApi ()Lorg/gradle/api/provider/Property;
+	public final fun getFunctionTypeAliasPublicApi ()Lorg/gradle/api/provider/Property;
+	public final fun getOpenApiWithoutSubclassOptIn ()Lorg/gradle/api/provider/Property;
+	public final fun getSubclassOptInWithoutMarkers ()Lorg/gradle/api/provider/Property;
+	public final fun getUndocumentedPublicApi ()Lorg/gradle/api/provider/Property;
+}
+
+public final class org/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity : java/lang/Enum {
+	public static final field ERROR Lorg/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity;
+	public static final field WARNING Lorg/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lorg/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity;
+	public static fun values ()[Lorg/jetbrains/kotlinx/libs/watchdog/WatchdogSeverity;
+}
+
+public final class org/jetbrains/kotlinx/libs/watchdog/WatchdogSupportPlugin : org/jetbrains/kotlin/compiler/plugin/devkit/DevKitSupportPlugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+	public fun applyToCompilation (Lorg/gradle/api/Project;Lorg/jetbrains/kotlin/gradle/plugin/KotlinCompilation;)Lorg/gradle/api/provider/Provider;
+}
+
