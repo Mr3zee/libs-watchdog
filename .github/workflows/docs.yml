@@ -58,6 +58,7 @@ jobs:
         with:
           repository: Kotlin/compiler-plugin-dev-kit
           path: compiler-plugin-dev-kit
+          token: ${{ secrets.DEV_KIT_TOKEN }}
 
       - name: Publish compiler-plugin-dev-kit to Maven Local
         working-directory: compiler-plugin-dev-kit
