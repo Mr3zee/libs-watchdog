@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.declarations.utils.effectiveVisibility
 import org.jetbrains.kotlin.fir.declarations.utils.visibility
 import org.jetbrains.kotlin.fir.resolve.transformers.publishedApiEffectiveVisibility
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -31,6 +32,9 @@ internal object WatchdogClassIds {
     val IntentionallyDataClass: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyDataClass"))
     val IntentionallyWithoutToString: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyWithoutToString"))
     val IntentionallyMutableCollection: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyMutableCollection"))
+    val IntentionallyBooleanParameter: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyBooleanParameter"))
+    val IntentionallyRequiredParameterAfterOptional: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyRequiredParameterAfterOptional"))
+    val IntentionallyInconsistentParameterOrder: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyInconsistentParameterOrder"))
     val IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility"))
     val InternalAnnotationMarker: ClassId = ClassId(annotationsPackage, Name.identifier("InternalAnnotationMarker"))
 
@@ -49,6 +53,9 @@ internal object WatchdogClassIds {
         IntentionallyDataClass,
         IntentionallyWithoutToString,
         IntentionallyMutableCollection,
+        IntentionallyBooleanParameter,
+        IntentionallyRequiredParameterAfterOptional,
+        IntentionallyInconsistentParameterOrder,
     )
 }
 
@@ -97,6 +104,19 @@ private fun FirBasedSymbol<*>.hasInternalApiMarker(): Boolean =
         annotation.toAnnotationClassLikeSymbol(context.session)
             ?.hasAnnotation(WatchdogClassIds.InternalAnnotationMarker, context.session) == true
     }
+
+/**
+ * Symbol-based public API gate for overload siblings, which checkers only reach as symbols. The
+ * declaration under check shares the containers its own [isWatchedPublicApi] gate already vets —
+ * or, for an inherited sibling, subsumes them: a supertype visible in a public class's scope is
+ * itself reachable by clients. So only the sibling's own state matters here. Library symbols
+ * carry no real source, so dependencies never pass this gate.
+ */
+context(context: CheckerContext)
+internal fun FirCallableSymbol<*>.isWatchedPublicApiSibling(): Boolean =
+    source?.kind == KtRealSourceElementKind &&
+            (effectiveVisibility.publicApi || publishedApiEffectiveVisibility?.publicApi == true) &&
+            !hasInternalApiMarker()
 
 private val reasonParameter = Name.identifier("reason")
 private val descriptionParameter = Name.identifier("description")

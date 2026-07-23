@@ -6,6 +6,15 @@
 // - Show declarations: true
 
 // Library unique name: <org.jetbrains.kotlinx.libs.watchdog:plugin-annotations>
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyBooleanParameter : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyBooleanParameter|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyBooleanParameter.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyBooleanParameter.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyBooleanParameter.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyBooleanParameter.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyBooleanParameter.reason.<get-reason>|<get-reason>(){}[0]
+}
+
 open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyDataClass : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyDataClass|null[0]
     constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyDataClass.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
 
@@ -33,6 +42,15 @@ open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyFunctionT
         final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyFunctionTypeAlias.reason.<get-reason>|<get-reason>(){}[0]
 }
 
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyInconsistentParameterOrder : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyInconsistentParameterOrder|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyInconsistentParameterOrder.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyInconsistentParameterOrder.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyInconsistentParameterOrder.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyInconsistentParameterOrder.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyInconsistentParameterOrder.reason.<get-reason>|<get-reason>(){}[0]
+}
+
 open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyMutableCollection : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyMutableCollection|null[0]
     constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyMutableCollection.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
 
@@ -49,6 +67,15 @@ open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen : ko
         final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen.description.<get-description>|<get-description>(){}[0]
     final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen.reason|{}reason[0]
         final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen.reason.<get-reason>|<get-reason>(){}[0]
+}
+
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyRequiredParameterAfterOptional : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyRequiredParameterAfterOptional|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyRequiredParameterAfterOptional.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyRequiredParameterAfterOptional.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyRequiredParameterAfterOptional.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyRequiredParameterAfterOptional.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyRequiredParameterAfterOptional.reason.<get-reason>|<get-reason>(){}[0]
 }
 
 open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented|null[0]

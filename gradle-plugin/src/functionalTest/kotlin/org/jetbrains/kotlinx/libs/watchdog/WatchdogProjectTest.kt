@@ -24,6 +24,9 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("e: ", "bakes its constructor property list")
         result.assertDiagnosticReported("e: ", "neither declares nor inherits a `toString`")
         result.assertDiagnosticReported("e: ", "exposes the mutable collection type")
+        result.assertDiagnosticReported("e: ", "takes the Boolean parameter")
+        result.assertDiagnosticReported("e: ", "is required but declared after an optional parameter")
+        result.assertDiagnosticReported("e: ", "appear in the opposite order in another overload")
         result.assertDiagnosticReported("e: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("e: ", "declares no explicit @Target")
         result.assertDiagnosticReported("e: ", "has no effect on this parameter type")
@@ -41,6 +44,9 @@ class WatchdogProjectTest {
                     dataClassPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     statefulClassWithoutToString.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     mutableCollectionPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    booleanParameterPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    requiredParameterAfterOptional.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    inconsistentParameterOrderInOverloads.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTarget.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerWithoutExplicitTargets.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTypePosition.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
@@ -58,6 +64,9 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("w: ", "bakes its constructor property list")
         result.assertDiagnosticReported("w: ", "neither declares nor inherits a `toString`")
         result.assertDiagnosticReported("w: ", "exposes the mutable collection type")
+        result.assertDiagnosticReported("w: ", "takes the Boolean parameter")
+        result.assertDiagnosticReported("w: ", "is required but declared after an optional parameter")
+        result.assertDiagnosticReported("w: ", "appear in the opposite order in another overload")
         result.assertDiagnosticReported("w: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("w: ", "declares no explicit @Target")
         result.assertDiagnosticReported("w: ", "has no effect on this parameter type")
@@ -139,6 +148,9 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("bakes its constructor property list"))
         assertFalse(result.output.contains("neither declares nor inherits a `toString`"))
         assertFalse(result.output.contains("exposes the mutable collection type"))
+        assertFalse(result.output.contains("takes the Boolean parameter"))
+        assertFalse(result.output.contains("is required but declared after an optional parameter"))
+        assertFalse(result.output.contains("appear in the opposite order in another overload"))
         assertFalse(result.output.contains("DSL marker"))
     }
 
@@ -156,6 +168,9 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("bakes its constructor property list"))
         assertFalse(result.output.contains("neither declares nor inherits a `toString`"))
         assertFalse(result.output.contains("exposes the mutable collection type"))
+        assertFalse(result.output.contains("takes the Boolean parameter"))
+        assertFalse(result.output.contains("is required but declared after an optional parameter"))
+        assertFalse(result.output.contains("appear in the opposite order in another overload"))
         assertFalse(result.output.contains("DSL marker"))
     }
 
@@ -223,6 +238,18 @@ private val unacknowledgedFile = """
 
     /** A function handing out the library's mutable state. */
     public fun leakState(): MutableList<String> = mutableListOf()
+
+    /** A function switched by an opaque positional flag. */
+    public fun toggleWork(enabled: Boolean) {}
+
+    /** A function declaring a required parameter after an optional one. */
+    public fun retryWork(retries: Int = 3, host: String) {}
+
+    /** An overload setting the parameter order convention. */
+    public fun drawShape(x: Int, y: Int) {}
+
+    /** An overload breaking the parameter order convention. */
+    public fun drawShape(y: Int, x: Int, scale: Double) {}
 
     /** A DSL marker with a target on which it has no effect. */
     @DslMarker
@@ -325,6 +352,21 @@ private val acknowledgedFile = """
 
     /** Deliberately shared mutable batches, acknowledged on the type usage. */
     public fun sharedBatches(): List<@IntentionallyMutableCollection(reason = ExemptionReason.API_DESIGN) MutableList<String>> = emptyList()
+
+    /** A deliberately Boolean-switched toggle. */
+    @IntentionallyBooleanParameter(reason = ExemptionReason.API_DESIGN)
+    public fun setEnabled(enabled: Boolean) {}
+
+    /** A legacy signature keeping its required parameter behind an optional one. */
+    @IntentionallyRequiredParameterAfterOptional(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    public fun legacyRetry(retries: Int = 3, host: String) {}
+
+    /** An overload setting the parameter order convention. */
+    public fun renderShape(x: Int, y: Int) {}
+
+    /** An overload with a deliberately different parameter order. */
+    @IntentionallyInconsistentParameterOrder(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    public fun renderShape(y: Int, x: Int, alpha: Long) {}
 
     /** A DSL marker with only effective targets. */
     @DslMarker

@@ -39,6 +39,15 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
     /** Severity of `MUTABLE_COLLECTION_PUBLIC_API`: mutable collections and arrays in public signatures. */
     public val mutableCollectionPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
+    /** Severity of `BOOLEAN_PARAMETER_PUBLIC_API`: Boolean parameters of public functions. */
+    public val booleanParameterPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** Severity of `REQUIRED_PARAMETER_AFTER_OPTIONAL`: required parameters declared after optional ones. */
+    public val requiredParameterAfterOptional: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** Severity of `INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS`: overloads disagreeing on shared parameter order. */
+    public val inconsistentParameterOrderInOverloads: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
     /** Severity of `DSL_MARKER_NOOP_TARGET`: DSL marker targets without scope-control effect. */
     public val dslMarkerNoopTarget: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
@@ -57,6 +66,9 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
         "DATA_CLASS_PUBLIC_API" to dataClassPublicApi,
         "STATEFUL_CLASS_WITHOUT_TO_STRING" to statefulClassWithoutToString,
         "MUTABLE_COLLECTION_PUBLIC_API" to mutableCollectionPublicApi,
+        "BOOLEAN_PARAMETER_PUBLIC_API" to booleanParameterPublicApi,
+        "REQUIRED_PARAMETER_AFTER_OPTIONAL" to requiredParameterAfterOptional,
+        "INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS" to inconsistentParameterOrderInOverloads,
         "DSL_MARKER_NOOP_TARGET" to dslMarkerNoopTarget,
         "DSL_MARKER_WITHOUT_EXPLICIT_TARGETS" to dslMarkerWithoutExplicitTargets,
         "DSL_MARKER_NOOP_TYPE_POSITION" to dslMarkerNoopTypePosition,

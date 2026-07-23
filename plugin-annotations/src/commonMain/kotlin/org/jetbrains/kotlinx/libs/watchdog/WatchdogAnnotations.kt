@@ -204,6 +204,85 @@ public annotation class IntentionallyMutableCollection(
 )
 
 /**
+ * Acknowledges that the annotated function or parameter deliberately takes a Boolean argument.
+ *
+ * The libs-watchdog compiler plugin warns about
+ * [Boolean value parameters](https://kotlinlang.org/docs/api-guidelines-readability.html#avoid-using-the-boolean-type-as-an-argument)
+ * — including nullable and `vararg` ones — in publicly visible functions, because at the call
+ * site a positional `true`/`false` argument reveals nothing about its meaning, and clients
+ * cannot be forced to use named arguments. Prefer separate, descriptively named functions for
+ * each mode, or an enum class naming the modes. Constructors and constructor functions —
+ * factory functions named after the type they create — are not checked: a construction site
+ * stores data in the named type rather than switching an operation mode. Apply this annotation
+ * to suppress the warning when the Boolean parameter is intended (for example, when the
+ * parameter is unmistakable from the function name alone, as in `setEnabled(enabled: Boolean)`).
+ * On a function it covers every parameter; on a single parameter it covers just that parameter.
+ *
+ * @param reason why the Boolean parameter is intended.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.VALUE_PARAMETER,
+)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyBooleanParameter(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
+ * Acknowledges that the annotated function or constructor deliberately declares a required
+ * parameter after optional ones.
+ *
+ * The libs-watchdog compiler plugin warns about publicly visible functions and constructors that
+ * declare a required parameter — one without a default value — after an optional (defaulted or
+ * `vararg`) parameter, because
+ * [parameters should go from the general to the specific](https://kotlinlang.org/docs/api-guidelines-consistency.html#preserve-parameter-order-naming-and-usage):
+ * essential inputs first, optional inputs last. A required parameter behind optional ones cannot
+ * be passed positionally without re-stating the defaults in front of it. A required function-type
+ * (or `fun interface`) parameter in the last position is not reported: it keeps trailing-lambda
+ * call syntax available. Apply this annotation to suppress the warning when the order is intended
+ * (for example, when appending a parameter anywhere else would break existing clients).
+ *
+ * @param reason why the parameter order is intended.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyRequiredParameterAfterOptional(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
+ * Acknowledges that the annotated function or constructor deliberately orders its parameters
+ * differently from its other overloads.
+ *
+ * The libs-watchdog compiler plugin warns about publicly visible overloads that declare the same
+ * parameter names in a different relative order, because
+ * [clients transfer their expectations between overloads](https://kotlinlang.org/docs/api-guidelines-consistency.html#preserve-parameter-order-naming-and-usage):
+ * an inconsistent order of same-named parameters invites silently swapped arguments. Apply this
+ * annotation to suppress the warning when the differing order is intended; the annotated
+ * declaration is also no longer used as an ordering reference for other overloads.
+ *
+ * @param reason why the differing parameter order is intended.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyInconsistentParameterOrder(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
  * Acknowledges that the annotated DSL marker deliberately keeps a wrong target set — no-op
  * targets in its `@Target`, or no explicit `@Target` at all — because fixing it would break
  * existing clients.

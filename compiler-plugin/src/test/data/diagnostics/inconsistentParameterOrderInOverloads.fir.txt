@@ -1,0 +1,84 @@
+FILE: inconsistentParameterOrderInOverloads.kt
+    package foo.bar
+
+    public final fun draw(x: R|kotlin/Int|, y: R|kotlin/Int|): R|kotlin/Unit| {
+    }
+    public final fun draw(y: R|kotlin/Int|, x: R|kotlin/Int|, scale: R|kotlin/Double|): R|kotlin/Unit| {
+    }
+    public final fun move(x: R|kotlin/Int|, y: R|kotlin/Int|): R|kotlin/Unit| {
+    }
+    public final fun move(x: R|kotlin/Int|, y: R|kotlin/Int|, z: R|kotlin/Int|): R|kotlin/Unit| {
+    }
+    public final fun move(x: R|kotlin/Long|, y: R|kotlin/Long|): R|kotlin/Unit| {
+    }
+    public final fun log(message: R|kotlin/String|): R|kotlin/Unit| {
+    }
+    public final fun log(tag: R|kotlin/String|, code: R|kotlin/Int|): R|kotlin/Unit| {
+    }
+    public final class Canvas : R|kotlin/Any| {
+        public constructor(): R|foo/bar/Canvas| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final fun fill(startIndex: R|kotlin/Int|, endIndex: R|kotlin/Int|): R|kotlin/Unit| {
+        }
+
+        public final fun fill(endIndex: R|kotlin/Int|, startIndex: R|kotlin/Int|, color: R|kotlin/Long|): R|kotlin/Unit| {
+        }
+
+    }
+    public final class Rect : R|kotlin/Any| {
+        public constructor(width: R|kotlin/Int|, height: R|kotlin/Int|): R|foo/bar/Rect| {
+            super<R|kotlin/Any|>()
+        }
+
+        public constructor(height: R|kotlin/Int|, width: R|kotlin/Int|, scale: R|kotlin/Double|): R|foo/bar/Rect| {
+            this<R|foo/bar/Rect|>(R|<local>/width|, R|<local>/height|)
+        }
+
+    }
+    public final class Turtle : R|kotlin/Any| {
+        public constructor(): R|foo/bar/Turtle| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final fun draw(y: R|kotlin/Int|, x: R|kotlin/Int|): R|kotlin/Unit| {
+        }
+
+    }
+    public abstract interface Shape : R|kotlin/Any| {
+        public open fun place(x: R|kotlin/Int|, y: R|kotlin/Int|): R|kotlin/Unit| {
+        }
+
+    }
+    public final class Widget : R|foo/bar/Shape| {
+        public constructor(): R|foo/bar/Widget| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final fun place(y: R|kotlin/Int|, x: R|kotlin/Int|, scale: R|kotlin/Double|): R|kotlin/Unit| {
+        }
+
+    }
+    public final class Panel : R|foo/bar/Shape| {
+        public constructor(): R|foo/bar/Panel| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override fun place(x: R|kotlin/Int|, y: R|kotlin/Int|): R|kotlin/Unit| {
+        }
+
+        public final fun place(y: R|kotlin/Int|, x: R|kotlin/Int|, scale: R|kotlin/Double|): R|kotlin/Unit| {
+        }
+
+    }
+    public final fun render(x: R|kotlin/Int|, y: R|kotlin/Int|): R|kotlin/Unit| {
+    }
+    @R|org/jetbrains/kotlinx/libs/watchdog/IntentionallyInconsistentParameterOrder|(reason = Q|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason|.R|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason.FOR_BACKWARDS_COMPATIBILITY| [evaluated = Q|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason|.R|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason.FOR_BACKWARDS_COMPATIBILITY|]) public final fun render(y: R|kotlin/Int|, x: R|kotlin/Int|, alpha: R|kotlin/Long|): R|kotlin/Unit| {
+    }
+    public final fun render(x: R|kotlin/Int|, y: R|kotlin/Int|, scale: R|kotlin/Double|): R|kotlin/Unit| {
+    }
+    private final fun helper(first: R|kotlin/Int|, second: R|kotlin/Int|): R|kotlin/Unit| {
+    }
+    public final fun helper(second: R|kotlin/Int|, first: R|kotlin/Int|, extra: R|kotlin/Long|): R|kotlin/Unit| {
+    }

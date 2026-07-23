@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtTypeAlias
 
 /** Severity with which a configurable watchdog diagnostic is reported, or [NONE] to disable it. */
@@ -108,6 +109,15 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
      * on the offending type reference.
      */
     val MUTABLE_COLLECTION_PUBLIC_API by configurable3<KtElement, String, Name, Name>()
+
+    /** Parameters: the parameter name, the callable name. Reported on the parameter name. */
+    val REQUIRED_PARAMETER_AFTER_OPTIONAL by configurable2<KtParameter, Name, Name>(NAME_IDENTIFIER)
+
+    /** Parameters: the two swapped parameter names, the callable name. */
+    val INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS by configurable3<KtDeclaration, Name, Name, Name>(NAME_IDENTIFIER)
+
+    /** Parameters: the function name, the parameter name. Reported on the parameter name. */
+    val BOOLEAN_PARAMETER_PUBLIC_API by configurable2<KtParameter, Name, Name>(NAME_IDENTIFIER)
 
     /**
      * Parameters: the exemption annotation name, the reason that needs a description. Reported
@@ -245,6 +255,41 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             rendererA = STRING,
             rendererB = NAME,
             rendererC = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.REQUIRED_PARAMETER_AFTER_OPTIONAL,
+            message = "The parameter ''{0}'' of ''{1}'' is required but declared after an " +
+                    "optional parameter, so it cannot be passed positionally without re-stating " +
+                    "the defaults in front of it. Declare parameters from the general to the " +
+                    "specific: essential inputs first, optional inputs — defaulted and vararg " +
+                    "parameters — last. Move the required parameter in front of the optional " +
+                    "ones, or mark the declaration with @IntentionallyRequiredParameterAfterOptional " +
+                    "if this order is intended.",
+            rendererA = NAME,
+            rendererB = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS,
+            message = "The parameters ''{0}'' and ''{1}'' of ''{2}'' appear in the opposite " +
+                    "order in another overload. Clients transfer their expectations between " +
+                    "overloads, so an inconsistent order of same-named parameters invites " +
+                    "silently swapped arguments. Keep shared parameters in the same relative " +
+                    "order across overloads, or mark the declaration with " +
+                    "@IntentionallyInconsistentParameterOrder if the differing order is intended.",
+            rendererA = NAME,
+            rendererB = NAME,
+            rendererC = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.BOOLEAN_PARAMETER_PUBLIC_API,
+            message = "The function ''{0}'' takes the Boolean parameter ''{1}''. At the call " +
+                    "site a positional `true`/`false` argument reveals nothing about its " +
+                    "meaning, and clients cannot be forced to use named arguments. Introduce " +
+                    "separate, descriptively named functions for each mode, or replace the " +
+                    "parameter with an enum class, or mark it with " +
+                    "@IntentionallyBooleanParameter if the Boolean parameter is intended.",
+            rendererA = NAME,
+            rendererB = NAME,
         )
         map.put(
             WatchdogDiagnostics.EXEMPTION_WITHOUT_EXPLANATION,

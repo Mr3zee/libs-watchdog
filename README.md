@@ -98,6 +98,45 @@ annotation class documents the internal API surface itself.
   `fun <T> MutableList<T>.sort()`), overrides (their signature is fixed by the overridden
   declaration and reported there), and Java platform types (their mutability is not declared in
   Kotlin sources).
+- `BOOLEAN_PARAMETER_PUBLIC_API` — reports
+  [Boolean value parameters](https://kotlinlang.org/docs/api-guidelines-readability.html#avoid-using-the-boolean-type-as-an-argument)
+  of public functions, including nullable (`Boolean?` is a three-state flag) and `vararg` ones
+  (only the declared element type is checked there, not the array carrying it). At the call site
+  a positional `true`/`false` argument reveals nothing about its meaning, and clients cannot be
+  forced to use named arguments. Introduce separate, descriptively named functions for each
+  mode, or replace the parameter with an enum class, or acknowledge the parameter with
+  `@IntentionallyBooleanParameter` — on the whole function or on a single parameter. Boolean
+  results and properties are not arguments and stay exempt, and so do overrides (their signature
+  is fixed by the overridden declaration and reported there), constructors, and constructor
+  functions — factory functions named after the type they create, like
+  `fun Widget(visible: Boolean): Widget` — because a construction site stores data in the named
+  type rather than switching an operation mode.
+- `REQUIRED_PARAMETER_AFTER_OPTIONAL` — reports required parameters of public functions and
+  constructors that are declared after an optional (defaulted or `vararg`) parameter.
+  [Parameters should go from the general to the specific](https://kotlinlang.org/docs/api-guidelines-consistency.html#preserve-parameter-order-naming-and-usage):
+  essential inputs first, optional inputs last — a required parameter behind optional ones cannot
+  be passed positionally without re-stating the defaults in front of it. A required function-type
+  or `fun interface` parameter in the last position is exempt (keeping it last is what makes
+  trailing-lambda call syntax available), and so are overrides (they cannot declare defaults, and
+  their order is fixed by the overridden declaration). Move the required parameter in front of
+  the optional ones, or acknowledge the order with `@IntentionallyRequiredParameterAfterOptional`.
+- `INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS` — reports overloads whose same-named parameters
+  appear in a different relative order than in another overload, as in `fun draw(x: Int, y: Int)`
+  next to `fun draw(y: Int, x: Int, scale: Double)`.
+  [Clients transfer their expectations between overloads](https://kotlinlang.org/docs/api-guidelines-consistency.html#preserve-parameter-order-naming-and-usage),
+  so an inconsistent order of same-named parameters invites silently swapped arguments — while
+  same-named parameters with *different types* stay legal, since conversion overloads like
+  `BigDecimal(Int)`/`BigDecimal(String)` are the point of overloading. No overload is preferred
+  as the canonical order: every member of an inconsistent pair is reported, and reordering
+  either clears both. Overloads are compared as clients see them side by side — the members
+  visible in a class, inherited ones included (for an inheritance pair only the subtype's
+  declaration is reported: it is the new overload that strays from the established signature),
+  or the module's top-level functions of the same package, constructors of a class among each
+  other; dependencies are not compared. Overrides never report — their order is fixed by the
+  overridden declaration — but they still serve as ordering references for new overloads next
+  to them. Keep shared parameters in the same relative order, or acknowledge the difference
+  with `@IntentionallyInconsistentParameterOrder`, which also stops the declaration from serving
+  as an ordering reference.
 - `EXEMPTION_WITHOUT_EXPLANATION` — reports `@Intentionally*` exemption annotations whose `reason` is `OTHER`
   (the default) while the `description` is empty: such an exemption explains nothing. Fires on
   every usage of the exemption annotations, regardless of the annotated declaration's
@@ -147,6 +186,9 @@ libsWatchdog {
     dataClassPublicApi.set(WatchdogSeverity.WARNING)
     statefulClassWithoutToString.set(WatchdogSeverity.WARNING)
     mutableCollectionPublicApi.set(WatchdogSeverity.WARNING)
+    booleanParameterPublicApi.set(WatchdogSeverity.WARNING)
+    requiredParameterAfterOptional.set(WatchdogSeverity.WARNING)
+    inconsistentParameterOrderInOverloads.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTarget.set(WatchdogSeverity.WARNING)
     dslMarkerWithoutExplicitTargets.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTypePosition.set(WatchdogSeverity.WARNING)
@@ -166,6 +208,8 @@ demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
 - [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) — `@IntentionallyOpen`,
   `@IntentionallyExhaustive`, `@IntentionallyUndocumented`, `@IntentionallyFunctionTypeAlias`,
   `@IntentionallyDataClass`, `@IntentionallyWithoutToString`, `@IntentionallyMutableCollection`,
+  `@IntentionallyBooleanParameter`, `@IntentionallyRequiredParameterAfterOptional`,
+  `@IntentionallyInconsistentParameterOrder`,
   `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`, `@InternalAnnotationMarker`,
   and the `ExemptionReason` enum.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations

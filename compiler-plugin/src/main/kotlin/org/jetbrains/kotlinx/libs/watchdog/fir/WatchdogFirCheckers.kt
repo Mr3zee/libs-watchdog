@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirBasicDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirCallableDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirTypeAliasChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.languageVersionSettings
@@ -31,27 +32,37 @@ class WatchdogFirCheckers(
             takeIf { enabled && diagnostics.any(severities::isEnabled) }
 
         override val classCheckers: Set<FirClassChecker> = setOfNotNull(
-            OpenApiChecker(severities).unlessDisabled(
-                WatchdogDiagnostics.OPEN_API_WITHOUT_SUBCLASS_OPT_IN,
-                WatchdogDiagnostics.SUBCLASS_OPT_IN_WITHOUT_MARKERS,
-            ),
-            ExhaustiveApiChecker(severities).unlessDisabled(WatchdogDiagnostics.EXHAUSTIVE_PUBLIC_API),
-            DataClassChecker(severities).unlessDisabled(WatchdogDiagnostics.DATA_CLASS_PUBLIC_API),
+            OpenApiChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.OPEN_API_WITHOUT_SUBCLASS_OPT_IN, WatchdogDiagnostics.SUBCLASS_OPT_IN_WITHOUT_MARKERS),
+            ExhaustiveApiChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.EXHAUSTIVE_PUBLIC_API),
+            DataClassChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.DATA_CLASS_PUBLIC_API),
             StatefulClassWithoutToStringChecker(severities)
                 .unlessDisabled(WatchdogDiagnostics.STATEFUL_CLASS_WITHOUT_TO_STRING),
-            DslMarkerTargetsChecker(severities).unlessDisabled(
-                WatchdogDiagnostics.DSL_MARKER_NOOP_TARGET,
-                WatchdogDiagnostics.DSL_MARKER_WITHOUT_EXPLICIT_TARGETS,
-            ),
+            DslMarkerTargetsChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.DSL_MARKER_NOOP_TARGET, WatchdogDiagnostics.DSL_MARKER_WITHOUT_EXPLICIT_TARGETS),
         )
 
         // These checkers watch every declaration kind, not just classes. MutableCollectionChecker
         // is one of them because it also inspects class-level type parameter bounds.
         override val basicDeclarationCheckers: Set<FirBasicDeclarationChecker> = setOfNotNull(
-            UndocumentedApiChecker(severities).unlessDisabled(WatchdogDiagnostics.UNDOCUMENTED_PUBLIC_API),
-            // Not configurable: exemption explanations are enforced whenever the plugin runs.
-            ExemptionExplanationChecker().takeIf { enabled },
-            MutableCollectionChecker(severities).unlessDisabled(WatchdogDiagnostics.MUTABLE_COLLECTION_PUBLIC_API),
+            UndocumentedApiChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.UNDOCUMENTED_PUBLIC_API),
+            ExemptionExplanationChecker() // Not configurable: exemption explanations are enforced whenever the plugin runs.
+                .takeIf { enabled },
+            MutableCollectionChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.MUTABLE_COLLECTION_PUBLIC_API),
+        )
+
+        // Dispatched to named functions and constructors alike: both declare parameter lists.
+        override val functionCheckers: Set<FirFunctionChecker> = setOfNotNull(
+            BooleanParameterChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.BOOLEAN_PARAMETER_PUBLIC_API),
+            RequiredParameterAfterOptionalChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.REQUIRED_PARAMETER_AFTER_OPTIONAL),
+            OverloadParameterOrderChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS),
         )
 
         override val typeAliasCheckers: Set<FirTypeAliasChecker> = setOfNotNull(
