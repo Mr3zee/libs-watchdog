@@ -11,6 +11,20 @@ The plugin only runs in modules compiled with
 it the checkers are not registered at all. Unless noted otherwise, the checkers only look at
 declarations visible to library clients (public or protected API).
 
+Declarations that are public for technical reasons only can be excluded from all API-surface
+checks: annotate the library's internal-API marker annotation with `@InternalAnnotationMarker`,
+and every declaration carrying that marker — along with everything nested in it — is no longer
+watched:
+
+```kotlin
+@InternalAnnotationMarker
+@RequiresOptIn(level = RequiresOptIn.Level.ERROR)
+public annotation class InternalMyLibraryApi
+
+@InternalMyLibraryApi // Not watched: internal API despite the public visibility.
+public class ReflectionHelper
+```
+
 - `OPEN_API_WITHOUT_SUBCLASS_OPT_IN` — reports open/abstract classes and interfaces that can
   be subclassed outside the library without restriction. Suppress by gating subclassing with
   [`@SubclassOptInRequired`](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-subclass-opt-in-required/)
@@ -86,7 +100,8 @@ demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
 
 - [`:compiler-plugin`](compiler-plugin/src) — the compiler plugin (FIR checkers).
 - [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) — `@IntentionallyOpen`,
-  `@IntentionallyExhaustive`, `@IntentionallyUndocumented`, and `@IntentionallyFunctionTypeAlias`.
+  `@IntentionallyExhaustive`, `@IntentionallyUndocumented`, `@IntentionallyFunctionTypeAlias`,
+  and `@InternalAnnotationMarker`.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations
   dependency to a Kotlin project (plugin id `org.jetbrains.kotlin.libs.watchdog`).
 

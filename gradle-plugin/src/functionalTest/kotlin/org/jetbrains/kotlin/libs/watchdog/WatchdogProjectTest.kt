@@ -2,6 +2,7 @@ package org.jetbrains.kotlin.libs.watchdog
 
 import com.autonomousapps.kit.GradleBuilder.build
 import com.autonomousapps.kit.GradleBuilder.buildAndFail
+import com.autonomousapps.kit.gradle.Dependency.Companion.implementation
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.gradle.testkit.runner.BuildResult
@@ -102,6 +103,35 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("DSL marker"))
     }
 
+    @Test
+    fun internalAnnotationMarkerExemptsAcrossModules() {
+        // The marker annotation lives in `:lib`, so the consuming root module reads the
+        // @InternalAnnotationMarker meta-annotation from the compiled dependency.
+        val project = object : WatchdogProject() {
+            override fun buildGradleProject() = multiModuleProject {
+                root {
+                    sources(source(markerConsumerFile, "consumer", "test", true, "test.lib.InternalLibApi"))
+                    dependencies(implementation(":lib"))
+                }
+                subproject("lib") {
+                    sources(source(markerLibraryFile, "markers", "test.lib"))
+                }
+            }
+        }.gradleProject
+
+        val result = buildAndFail(project.rootDir, "build")
+        // The unmarked control declaration proves the checks ran in the consuming module...
+        result.assertDiagnosticReported("e: ", "'WatchedClass' is part of the public API but has no KDoc")
+        // ...while declarations marked with the dependency's marker annotation are exempt.
+        assertFalse(result.output.contains("InternalOpenClass"))
+        assertFalse(result.output.contains("memberOfInternal"))
+        assertFalse(result.output.contains("InternalEnum"))
+        assertFalse(result.output.contains("INTERNAL_ENTRY"))
+        assertFalse(result.output.contains("internalFunction"))
+        assertFalse(result.output.contains("can be subclassed outside the library"))
+        assertFalse(result.output.contains("can be matched exhaustively by clients"))
+    }
+
     /** Asserts the message was reported with the given compiler severity prefix (`e: ` or `w: `). */
     private fun BuildResult.assertDiagnosticReported(severityPrefix: String, message: String) {
         assertTrue(
@@ -137,6 +167,36 @@ private val unacknowledgedFile = """
 
     /** A parameter type carrying a DSL marker that restricts nothing. */
     public fun processTag(tag: @ScopedDsl UnprotectedOpenClass): Unit = Unit
+""".trimIndent()
+
+@Suppress("RedundantVisibilityModifier")
+@Language("kotlin")
+private val markerLibraryFile = """
+    /** Flags declarations that are public for technical reasons but are not supported API. */
+    @InternalAnnotationMarker
+    @Target(
+        AnnotationTarget.CLASS,
+        AnnotationTarget.FUNCTION,
+        AnnotationTarget.PROPERTY,
+    )
+    public annotation class InternalLibApi
+""".trimIndent()
+
+@Suppress("RedundantVisibilityModifier")
+@Language("kotlin")
+private val markerConsumerFile = """
+    @InternalLibApi
+    public open class InternalOpenClass {
+        public fun memberOfInternal() {}
+    }
+
+    @InternalLibApi
+    public enum class InternalEnum { INTERNAL_ENTRY }
+
+    @InternalLibApi
+    public fun internalFunction() {}
+
+    public class WatchedClass
 """.trimIndent()
 
 @Suppress("RedundantVisibilityModifier")

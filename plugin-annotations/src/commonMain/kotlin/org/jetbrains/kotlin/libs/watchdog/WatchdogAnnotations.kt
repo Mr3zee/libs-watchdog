@@ -56,3 +56,27 @@ public annotation class IntentionallyUndocumented
 @Target(AnnotationTarget.TYPEALIAS)
 @Retention(AnnotationRetention.BINARY)
 public annotation class IntentionallyFunctionTypeAlias
+
+/**
+ * Turns the annotated annotation class into an internal API marker: declarations annotated with
+ * the marked annotation, and everything nested in them, are exempt from all public API checks.
+ *
+ * Libraries sometimes expose declarations that are public for technical reasons but are not part
+ * of the supported API surface, and flag them with a dedicated annotation (usually one that also
+ * requires opt-in). Such declarations carry no compatibility contract, so the libs-watchdog
+ * compiler plugin should not demand documentation or evolution safeguards for them:
+ *
+ * ```
+ * @InternalAnnotationMarker
+ * @RequiresOptIn(level = RequiresOptIn.Level.ERROR)
+ * public annotation class InternalMyLibraryApi
+ *
+ * @InternalMyLibraryApi // Not watched: internal API despite the public visibility.
+ * public class ReflectionHelper
+ * ```
+ *
+ * The marker annotation class itself remains part of the public API surface and is still watched.
+ */
+@Target(AnnotationTarget.ANNOTATION_CLASS)
+@Retention(AnnotationRetention.BINARY)
+public annotation class InternalAnnotationMarker
