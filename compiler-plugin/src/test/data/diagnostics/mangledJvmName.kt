@@ -132,8 +132,8 @@ public class MapResolver : Resolver {
 @JvmSynthetic
 public fun hidden(id: UserId) {}
 
-// @JvmSynthetic without a use-site target lands on the backing field — it has no property
-// target — so the accessors stay visible to Java and still mangled: should warn.
+// @JvmSynthetic without a use-site target lands on the backing field - it has no property
+// target - so the accessors stay visible to Java and still mangled: should warn.
 @JvmSynthetic
 public var <!MANGLED_JVM_NAME_PUBLIC_API!>fieldOnlySynthetic<!>: UserId = UserId("x")
 

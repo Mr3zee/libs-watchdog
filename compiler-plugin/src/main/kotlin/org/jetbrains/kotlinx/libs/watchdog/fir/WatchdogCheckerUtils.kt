@@ -115,8 +115,8 @@ internal fun FirFunction.reportedName(): Name? = when (this) {
  * `@PublishedApi` declarations are internal in sources but belong to the published binary API:
  * public inline functions expose them to clients, so they are watched like public declarations.
  *
- * Declarations marked as internal API — annotated, directly or on an enclosing declaration, with
- * an annotation whose class carries `@InternalAnnotationMarker` — offer no compatibility contract
+ * Declarations marked as internal API - annotated, directly or on an enclosing declaration, with
+ * an annotation whose class carries `@InternalAnnotationMarker` - offer no compatibility contract
  * despite their visibility, so they are not watched either.
  */
 context(context: CheckerContext)
@@ -158,7 +158,7 @@ internal fun FirClassSymbol<*>.isValueClass(): Boolean =
 
 /**
  * The name of the value class that mangles a JVM signature mentioning this type, or null.
- * Only the classifier itself counts — a value class inside a type argument is boxed and
+ * Only the classifier itself counts - a value class inside a type argument is boxed and
  * leaves the name intact. Type aliases are expanded, and a type parameter erases to its
  * first upper bound, so `<T : UserId> f(t: T)` mangles like a direct mention. The visited
  * set guards against cyclic bounds in erroneous code.
@@ -181,17 +181,17 @@ internal fun ConeKotlinType.mangledValueClass(): Name? {
 }
 
 /**
- * Return types only mangle members: a dispatch receiver is what distinguishes `give()` — a
- * top-level function keeping its JVM name — from `member-aWk8GsU()`.
+ * Return types only mangle members: a dispatch receiver is what distinguishes `give()` - a
+ * top-level function keeping its JVM name - from `member-aWk8GsU()`.
  */
 context(context: CheckerContext)
 internal fun FirCallableDeclaration.returnValueClassIfMember(): Name? =
     if (dispatchReceiverType != null) returnTypeRef.coneType.mangledValueClass() else null
 
 /**
- * The value class that mangles this function's compiled JVM name — found among the value
+ * The value class that mangles this function's compiled JVM name - found among the value
  * parameters, the extension receiver, the context parameters, or, for a member, the return
- * type — or null when the JVM name is kept.
+ * type - or null when the JVM name is kept.
  */
 context(context: CheckerContext)
 internal fun FirNamedFunction.mangledValueClassInSignature(): Name? =
@@ -202,8 +202,8 @@ internal fun FirNamedFunction.mangledValueClassInSignature(): Name? =
 
 /**
  * Whether Java sources cannot see this declaration because it is marked `@JvmSynthetic`. A
- * property is hidden when its every Java entry point is: the getter — and the setter of a
- * `var` — via `@get:`/`@set:JvmSynthetic`, while a `const` or `@JvmField` property stays
+ * property is hidden when its every Java entry point is: the getter - and the setter of a
+ * `var` - via `@get:`/`@set:JvmSynthetic`, while a `const` or `@JvmField` property stays
  * visible as a field regardless of accessor annotations.
  */
 context(context: CheckerContext)
@@ -249,7 +249,7 @@ private fun FirProperty.isAccessorHiddenWithJvmSynthetic(
 
 /**
  * Symbol-based public API gate for overload siblings, which checkers only reach as symbols. The
- * declaration under check shares the containers its own [isWatchedPublicApi] gate already vets —
+ * declaration under check shares the containers its own [isWatchedPublicApi] gate already vets -
  * or, for an inherited sibling, subsumes them: a supertype visible in a public class's scope is
  * itself reachable by clients. So only the sibling's own state matters here. Library symbols
  * carry no real source, so dependencies never pass this gate.
@@ -265,8 +265,8 @@ private val descriptionParameter = Name.identifier("description")
 private val otherReason = Name.identifier("OTHER")
 
 /**
- * The reasons that explain an exemption on their own. Every other entry — including ones a
- * future annotations version may add — only categorizes the exemption and requires a
+ * The reasons that explain an exemption on their own. Every other entry - including ones a
+ * future annotations version may add - only categorizes the exemption and requires a
  * non-empty description next to it.
  */
 private val selfSufficientReasons = setOf(
@@ -276,7 +276,7 @@ private val selfSufficientReasons = setOf(
 
 /**
  * The reason that fails to explain this exemption annotation on its own ([otherReason] when the
- * argument is absent), or null when the exemption is explained — by a self-sufficient reason or
+ * argument is absent), or null when the exemption is explained - by a self-sufficient reason or
  * by a non-blank description. Shared between [ExemptionExplanationChecker], which validates
  * exemptions on declarations, and the checkers that honor exemptions in positions declaration
  * checkers cannot see (type-use annotations).

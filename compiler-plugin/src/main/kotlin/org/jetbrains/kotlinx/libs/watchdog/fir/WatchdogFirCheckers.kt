@@ -34,7 +34,7 @@ class WatchdogFirCheckers(
         private fun <C : Any> C.unlessDisabled(vararg diagnostics: ConfigurableWatchdogDiagnostic<*>): C? =
             takeIf { enabled && diagnostics.any(severities::isEnabled) }
 
-        // The Java-interop checks guard how the compiled API looks to Java sources — a concern
+        // The Java-interop checks guard how the compiled API looks to Java sources - a concern
         // with no counterpart on other backends, so they only register for JVM compilations.
         private fun <C : Any> C.onlyOnJvm(): C? = takeIf { session.moduleData.platform.isJvm() }
 

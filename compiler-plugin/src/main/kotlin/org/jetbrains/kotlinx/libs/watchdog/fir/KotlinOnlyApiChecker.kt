@@ -30,16 +30,16 @@ import org.jetbrains.kotlin.name.JvmStandardClassIds
  * - a `suspend` function, which Java sees with a trailing `Continuation` parameter it cannot
  *   provide idiomatically,
  * - an `inline` function with a `reified` type parameter, whose compiled method cannot be called
- *   from Java at all — the call fails at runtime,
+ *   from Java at all - the call fails at runtime,
  * - a function taking a Kotlin-specific function type: a suspend function type (no Java lambda
  *   can implement it), a function type with receiver (a Java lambda has to take the receiver as
  *   an explicit first argument), or a `Unit`-returning function type (a Java lambda has to
  *   return the `Unit.INSTANCE` token explicitly).
  *
  * The fix is either hiding the Kotlin-only shape from Java with `@JvmSynthetic` or providing a
- * Java-friendly alternative alongside — a blocking or `CompletableFuture`-returning bridge for a
+ * Java-friendly alternative alongside - a blocking or `CompletableFuture`-returning bridge for a
  * suspend function, a `fun interface` parameter in place of a Kotlin function type. Authors
- * acknowledge a deliberately Java-visible Kotlin-only shape with `@IntentionallyKotlinOnlyApi` —
+ * acknowledge a deliberately Java-visible Kotlin-only shape with `@IntentionallyKotlinOnlyApi` -
  * on the function, or on a class, where it covers every function inside.
  *
  * Deliberate exceptions:
@@ -109,7 +109,7 @@ internal class KotlinOnlyApiChecker(
         }
         if (isInline && typeParameters.any { it.symbol.isReified }) {
             return "declares a reified type parameter, which only inlining Kotlin call sites " +
-                    "can substitute — calling the compiled method from Java fails at runtime"
+                    "can substitute - calling the compiled method from Java fails at runtime"
         }
         return valueParameters.firstNotNullOfOrNull { it.kotlinOnlyFunctionType() }
     }

@@ -38,24 +38,24 @@ import org.jetbrains.kotlin.fir.references.toResolvedPropertySymbol
 /**
  * Reports publicly visible
  * [inline functions](https://kotlinlang.org/docs/api-guidelines-backward-compatibility.html#considerations-for-using-the-publishedapi-annotation)
- * — and inline property accessors, which inline the same way — whose body does more than delegate
+ * - and inline property accessors, which inline the same way - whose body does more than delegate
  * to a non-inline function. The compiler copies an inline body into every client binary, so logic
- * placed there — and its bugs — stays frozen in clients compiled against an old library version
+ * placed there - and its bugs - stays frozen in clients compiled against an old library version
  * until they recompile. A public inline function should be a thin wrapper: it resolves what only
- * the call site knows — a reified type argument, an inlined lambda — and hands the actual work to
+ * the call site knows - a reified type argument, an inlined lambda - and hands the actual work to
  * a non-inline function (`@PublishedApi internal` when it should stay out of the public API),
  * where the library can still fix it. Authors acknowledge deliberately inlined logic with
- * `@IntentionallyInlinedLogic` — on the function, or on the property for its accessors.
+ * `@IntentionallyInlinedLogic` - on the function, or on the property for its accessors.
  *
- * A body counts as a thin wrapper when its single statement — besides an optional contract — is a
+ * A body counts as a thin wrapper when its single statement - besides an optional contract - is a
  * delegation whose parts only read or write values: parameters, properties, `this`, literals,
  * object references, `T::class`, callable references, nested non-inline calls, an assignment to a
  * property with a non-inline setter (the thin shape of a setter or a `set`-prefixed wrapper), and
  * an `as`/`as?` cast on a read (reified wrappers narrow their delegate's result that way). A
- * lambda literal passed along counts too when its own body is such a thin statement — the
+ * lambda literal passed along counts too when its own body is such a thin statement - the
  * `impl { block() }` shape a `crossinline` wrapper needs. Everything else is logic frozen into
  * clients: control flow of any kind, operator and infix calls (arithmetic compiles inline into
- * the client), string templates, local variables, multiple statements, object literals — and
+ * the client), string templates, local variables, multiple statements, object literals - and
  * calls to inline functions or inline property accessors, whose bodies the inliner drags into the
  * client binary transitively.
  *
@@ -131,8 +131,8 @@ internal class InlineFunctionLogicChecker(
         hasAnnotation(WatchdogClassIds.IntentionallyInlinedLogic, context.session)
 
     /**
-     * An empty body freezes nothing. Otherwise the single statement — a contract declared in the
-     * old statement syntax stays in the body as a [FirContractCallBlock] and does not count — must
+     * An empty body freezes nothing. Otherwise the single statement - a contract declared in the
+     * old statement syntax stays in the body as a [FirContractCallBlock] and does not count - must
      * be a plain delegation.
      */
     private fun FirBlock.isThinWrapper(): Boolean {
@@ -147,8 +147,8 @@ internal class InlineFunctionLogicChecker(
 
     /**
      * Whether the statement only reads or writes values and delegates. The whitelist errs on the
-     * safe side: any construct not listed — control flow, operators, string templates, local
-     * declarations, object literals — counts as logic.
+     * safe side: any construct not listed - control flow, operators, string templates, local
+     * declarations, object literals - counts as logic.
      */
     private fun FirStatement.isPlain(): Boolean = when (this) {
         is FirSmartCastExpression -> originalExpression.isPlain()
@@ -158,7 +158,7 @@ internal class InlineFunctionLogicChecker(
         is FirResolvedQualifier -> true
         is FirResolvedReifiedParameterReference -> true
         is FirGetClassCall -> argument.isPlain()
-        // Calling a value — typically the wrapper's own functional parameter — executes no
+        // Calling a value - typically the wrapper's own functional parameter - executes no
         // library code, however the call resolves its `invoke` operator.
         is FirImplicitInvokeCall -> isPlainCall()
         is FirFunctionCall -> origin == FirFunctionCallOrigin.Regular && isPlainCall()

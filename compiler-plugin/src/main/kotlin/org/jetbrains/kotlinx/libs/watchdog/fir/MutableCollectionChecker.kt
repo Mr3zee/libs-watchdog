@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.name.StandardClassIds
  *
  * A type counts as mutable when it is one of the `kotlin.collections` mutable interfaces, any
  * classifier implementing them (`ArrayList`, a hand-written `MutableList` subtype, ...), or an
- * array — the guideline treats arrays as mutable collections as well. Flexible (Java platform)
+ * array - the guideline treats arrays as mutable collections as well. Flexible (Java platform)
  * types do not declare their mutability in Kotlin sources, so only the read-only upper bound is
  * inspected.
  */
@@ -40,7 +40,7 @@ internal class MutableCollectionChecker(
 
     /**
      * A `vararg` parameter receives a defensive copy of the array, so only the declared element
-     * type — the array's type argument — can leak mutable state, not the array itself.
+     * type - the array's type argument - can leak mutable state, not the array itself.
      */
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun findVarargViolation(parameterType: ConeKotlinType): Name? =

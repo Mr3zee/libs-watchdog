@@ -23,9 +23,9 @@ import org.jetbrains.kotlin.name.JvmStandardClassIds
  * omit defaulted parameters from the right.
  *
  * The recommendation is honest about its limits: `@JvmOverloads` generates right-truncated
- * overloads only — a defaulted parameter in the middle of the list still cannot be skipped from
+ * overloads only - a defaulted parameter in the middle of the list still cannot be skipped from
  * Java (which is why [RequiredParameterAfterOptionalChecker] pushes optional parameters to the
- * end) — and it only improves Java call sites; it does not make adding a parameter later binary
+ * end) - and it only improves Java call sites; it does not make adding a parameter later binary
  * compatible for Kotlin callers.
  *
  * Authors acknowledge deliberately Kotlin-only defaults with `@IntentionallyWithoutJvmOverloads`
@@ -35,10 +35,10 @@ import org.jetbrains.kotlin.name.JvmStandardClassIds
  * - Non-JVM compilations: overload generation is a JVM-interop concern, so
  *   [WatchdogFirCheckers] only registers this checker when the platform is JVM.
  * - Abstract and interface members: `@JvmOverloads` is not applicable to them.
- * - Annotation class constructors: not applicable there either — Java sources see annotation
+ * - Annotation class constructors: not applicable there either - Java sources see annotation
  *   attributes with their own default handling instead.
  * - `suspend` functions and members of a value class: not Java-callable regardless of
- *   overloads — [KotlinOnlyApiChecker] and [MangledJvmNameChecker] report them with fitting
+ *   overloads - [KotlinOnlyApiChecker] and [MangledJvmNameChecker] report them with fitting
  *   fixes.
  * - Overrides: they cannot re-declare default values.
  * - `@JvmSynthetic` functions: they are hidden from Java on purpose.

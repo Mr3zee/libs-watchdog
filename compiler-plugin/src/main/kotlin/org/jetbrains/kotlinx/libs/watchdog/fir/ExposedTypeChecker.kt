@@ -33,7 +33,7 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 
 /**
- * Base class for the checkers that hunt a type down in publicly visible signatures — return
+ * Base class for the checkers that hunt a type down in publicly visible signatures - return
  * types, property types, value parameter types, and type parameter bounds (`<T : X>` constrains
  * every instantiation to the same shape as a direct mention of `X`), including their type
  * arguments (`List<X>` exposes `X` all the same). Subclasses supply the classifier judgement
@@ -48,7 +48,7 @@ import org.jetbrains.kotlin.name.Name
  * - Extension receivers are skipped: an extension on the hunted type provides functionality for
  *   values the client already holds instead of exposing new ones.
  * - A `val`/`var` primary constructor parameter is watched through the property it creates, so
- *   the shared parameter/property text is reported once — even when only the property is public.
+ *   the shared parameter/property text is reported once - even when only the property is public.
  * - Type aliases are expanded before the classifier judgement: an alias does not change what
  *   clients see. Flexible (Java platform) types are inspected through [declaredBound] only.
  * - The exemption annotation is honored on the whole declaration, on a single (type) parameter,
@@ -77,8 +77,8 @@ internal abstract class ExposedTypeChecker(
     /**
      * The bound a flexible (Java platform) type is inspected through. A platform type does not
      * declare the watched trait in Kotlin sources, so each check picks the bound where the trait
-     * is absent — [NullableBooleanChecker] the non-nullable lower bound, everything else the
-     * read-only upper bound — keeping platform types unreported.
+     * is absent - [NullableBooleanChecker] the non-nullable lower bound, everything else the
+     * read-only upper bound - keeping platform types unreported.
      */
     protected open fun ConeKotlinType.declaredBound(): ConeKotlinType = upperBoundIfFlexible()
 
@@ -86,7 +86,7 @@ internal abstract class ExposedTypeChecker(
      * The violation a `vararg` parameter's declared type exposes. By default the type is
      * traversed like any other parameter type: for most checks the array carrying the arguments
      * never matches the hunted classifier, and an offending element type is found as its type
-     * argument. [MutableCollectionChecker] overrides this — its judgement matches the array
+     * argument. [MutableCollectionChecker] overrides this - its judgement matches the array
      * itself, which the compiler already passes as a defensive copy.
      */
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -187,7 +187,7 @@ internal abstract class ExposedTypeChecker(
      * Reports violating bounds: a type parameter bounded by the hunted type constrains every
      * instantiation to it, so it exposes the same shape as a direct mention of the bound.
      * Outer-class parameters reappear as [FirTypeParameterRef]s without their own declaration
-     * and are skipped — they are reported on the declaring class.
+     * and are skipped - they are reported on the declaring class.
      */
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun checkTypeParameters(typeParameters: List<FirTypeParameterRef>) {

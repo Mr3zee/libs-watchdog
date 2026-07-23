@@ -17,8 +17,8 @@ import org.jetbrains.kotlin.name.JvmStandardClassIds
 /**
  * Reports files whose public top-level functions or properties compile into a file facade class
  * without an explicit `@file:JvmName`. The facade's name is derived from the file name
- * (`foo.kt` → `FooKt`), so the file name leaks into the Java API surface — Java callers write
- * `FooKt.topFun()` — and renaming the file, invisible to Kotlin callers, renames the facade and
+ * (`foo.kt` → `FooKt`), so the file name leaks into the Java API surface - Java callers write
+ * `FooKt.topFun()` - and renaming the file, invisible to Kotlin callers, renames the facade and
  * breaks Java sources and binaries compiled against it. `@file:JvmName` decouples the facade
  * name from the file name and lets the author choose a deliberate, Java-idiomatic one.
  *

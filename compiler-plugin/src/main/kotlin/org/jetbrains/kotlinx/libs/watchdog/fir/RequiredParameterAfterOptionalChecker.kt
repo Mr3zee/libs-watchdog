@@ -80,8 +80,8 @@ internal class RequiredParameterAfterOptionalChecker(
 
     /**
      * Whether a lambda literal can be passed for this parameter in trailing position: its
-     * (fully expanded) type is a function type — suspend and nullable variants included, but not
-     * the `KFunction` reflection kinds, which no lambda literal satisfies — or a `fun interface`,
+     * (fully expanded) type is a function type - suspend and nullable variants included, but not
+     * the `KFunction` reflection kinds, which no lambda literal satisfies - or a `fun interface`,
      * where SAM conversion keeps the same call syntax.
      */
     context(context: CheckerContext)

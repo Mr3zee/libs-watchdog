@@ -15,12 +15,12 @@ import org.jetbrains.kotlin.name.Name
  * bounds and type arguments included (`List<Pair<Int, String>>` exposes the tuple all the same;
  * see [ExposedTypeChecker] for the shared sweep). Tuple components carry no domain meaning: at
  * the use site `first`/`second`/`third` and positional destructuring reveal nothing about the
- * values, and the fixed shape cannot evolve — adding a value means switching to a different
+ * values, and the fixed shape cannot evolve - adding a value means switching to a different
  * type, breaking clients. The API should expose
  * [a small class with descriptively named properties](https://kotlinlang.org/docs/data-classes.html)
  * instead. Authors acknowledge a deliberate tuple with `@IntentionallyPairOrTriple`.
  *
- * `Pair` and `Triple` are final, so a direct classifier match suffices — no subtype can smuggle
+ * `Pair` and `Triple` are final, so a direct classifier match suffices - no subtype can smuggle
  * the tuple shape in under another name.
  */
 internal class PairOrTripleChecker(

@@ -14,7 +14,7 @@ public fun <!INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS!>draw<!>(x: Int, y: Int) 
 
 public fun <!INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS!>draw<!>(y: Int, x: Int, scale: Double) {}
 
-// Consistent overloads stay silent — including conversion overloads, where the same parameter
+// Consistent overloads stay silent - including conversion overloads, where the same parameter
 // names deliberately take different types.
 
 public fun move(x: Int, y: Int) {}
@@ -50,7 +50,7 @@ public class Turtle {
 }
 
 // An inherited overload is an ordering reference too: clients see it side by side with the
-// declared ones. Only the subtype's declaration warns — the supertype cannot see it.
+// declared ones. Only the subtype's declaration warns - the supertype cannot see it.
 
 public interface Shape {
     public fun place(x: Int, y: Int) {}
@@ -60,7 +60,7 @@ public class Widget : Shape {
     public fun <!INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS!>place<!>(y: Int, x: Int, scale: Double) {}
 }
 
-// Overrides never warn — their order is fixed by the overridden declaration — but a new
+// Overrides never warn - their order is fixed by the overridden declaration - but a new
 // overload declared next to one must still follow it.
 
 public class Panel : Shape {

@@ -28,13 +28,13 @@ import org.jetbrains.kotlin.name.StandardClassIds
  * Nullable Booleans are three-state flags and count too, a type alias does not change what
  * clients pass, and a `vararg` Boolean parameter takes the same positional `true`/`false`
  * arguments (only the declared element type matters there, not the array carrying it). Authors
- * acknowledge a deliberate Boolean parameter with `@IntentionallyBooleanParameter` — on the
+ * acknowledge a deliberate Boolean parameter with `@IntentionallyBooleanParameter` - on the
  * function, where it covers every parameter, or on a single parameter.
  *
  * Deliberate exceptions:
  * - Constructors: a construction site stores data in the named type rather than switching an
  *   operation mode, and there is no behavior to split into descriptively named constructors.
- * - Constructor functions — factory functions named after the type they create, as in
+ * - Constructor functions - factory functions named after the type they create, as in
  *   `fun Widget(visible: Boolean): Widget` (the alias name counts for a factory returning a type
  *   alias): they share the constructor call shape by design.
  * - Overrides: their signature is fixed by the overridden declaration and is reported there.
@@ -74,7 +74,7 @@ internal class BooleanParameterChecker(
     }
 
     /**
-     * A constructor function is named after the type it creates — the alias, not its expansion,
+     * A constructor function is named after the type it creates - the alias, not its expansion,
      * when the declared return type is a type alias, since that is the name the call site reads.
      */
     private fun FirNamedFunction.isConstructorFunction(): Boolean =

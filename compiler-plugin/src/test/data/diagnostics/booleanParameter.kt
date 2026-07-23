@@ -70,7 +70,7 @@ public enum class Mode(public val fast: Boolean) { QUICK(true), FULL(false) }
 
 public annotation class Feature(val enabled: Boolean)
 
-// Constructor functions — factories named after the type they create — share the constructor
+// Constructor functions - factories named after the type they create - share the constructor
 // call shape: no warning.
 
 public fun Widget(visible: Boolean, scale: Int): Widget = Widget(visible)

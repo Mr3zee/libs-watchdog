@@ -224,7 +224,7 @@ public inline var tagged: String
     set(value) = logImpl("tag", value)
 
 // Logic in an inline accessor is compiled into clients like any inline function body: should
-// warn — whether the modifier sits on the property or on the single accessor.
+// warn - whether the modifier sits on the property or on the single accessor.
 
 public inline val <!INLINE_FUNCTION_WITH_LOGIC!>threshold<!>: Int
     get() = 1 + 1

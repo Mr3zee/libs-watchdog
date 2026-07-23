@@ -37,7 +37,7 @@ public fun aliased(): <!MUTABLE_COLLECTION_PUBLIC_API!>Bag<!> = mutableListOf()
 public val makeBuffer: <!MUTABLE_COLLECTION_PUBLIC_API!>() -> MutableList<Int><!> = { mutableListOf() }
 
 // Function types are FunctionN classifiers, so mutable state hidden in a lambda's parameter,
-// return, or receiver position is found the same way — whether the lambda is accepted...
+// return, or receiver position is found the same way - whether the lambda is accepted...
 
 public fun onBatch(action: <!MUTABLE_COLLECTION_PUBLIC_API!>(MutableList<Int>) -> Unit<!>): Unit = Unit
 

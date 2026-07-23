@@ -152,8 +152,8 @@ public class ConstructorPropertyDocumentedInPlace(
     public val <!UNDOCUMENTED_PUBLIC_API!>undocumentedParameter<!>: Int,
 )
 
-// The primary constructor cannot carry its own KDoc — `@constructor` and `@param` tags in the
-// class KDoc describe it — so only secondary constructors are watched.
+// The primary constructor cannot carry its own KDoc - `@constructor` and `@param` tags in the
+// class KDoc describe it - so only secondary constructors are watched.
 
 /** Documented. */
 public class WithSecondaryConstructors(input: Int) {

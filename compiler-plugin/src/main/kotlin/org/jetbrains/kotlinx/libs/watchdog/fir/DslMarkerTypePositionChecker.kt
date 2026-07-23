@@ -33,7 +33,7 @@ import org.jetbrains.kotlin.name.StandardClassIds
  *
  * The check is deliberately position-local: a value whose type carries a marker can still become
  * an implicit receiver later through type inference (`with(value) { ... }` infers the annotated
- * type), but relying on that is obscure enough that the direct positions are reported anyway —
+ * type), but relying on that is obscure enough that the direct positions are reported anyway -
  * suppress the diagnostic where such flow-through marking is intended.
  *
  * Unlike the API-surface checkers, this one is not limited to public declarations: an inert

@@ -31,8 +31,8 @@ import org.jetbrains.kotlin.name.Name
  * name an illegal Java identifier. Kotlin clients never notice, but for Java clients the
  * declaration might as well not exist. A JVM name is mangled when the callable
  * - declares a value parameter, an extension receiver, or a context parameter of a value class
- *   type — nullable types and type parameters whose JVM erasure (the first upper bound) is a
- *   value class included, — or
+ *   type - nullable types and type parameters whose JVM erasure (the first upper bound) is a
+ *   value class included, - or
  * - is a member of a class, interface, or object and returns a value class (top-level callables
  *   merely returning a value class keep their JVM name), while
  * - a constructor with a value class parameter is not mangled but replaced: the visible
@@ -44,9 +44,9 @@ import org.jetbrains.kotlin.name.Name
  *
  * The fix is an explicit Java-facing shape: `@JvmName` on the function (`@get:`/`@set:JvmName`
  * on property accessors) unmangles the name, and `@JvmExposeBoxed` generates Java-callable boxed
- * variants — the only option for constructors and overridable members, which `@JvmName` does not
+ * variants - the only option for constructors and overridable members, which `@JvmName` does not
  * accept. Authors acknowledge a deliberately Kotlin-only shape with `@IntentionallyMangledJvmName`
- * — on the declaration, on a constructor `val`/`var` parameter for the property made from it, or
+ * - on the declaration, on a constructor `val`/`var` parameter for the property made from it, or
  * on a class, where it covers every declaration inside.
  *
  * Deliberate exceptions:
@@ -94,8 +94,8 @@ internal class MangledJvmNameChecker(
         }
 
         // A receiver or context parameter is passed to both accessors, so it mangles both; the
-        // property type itself is the getter's return type — mangled for members only — and the
-        // setter's parameter type — mangled everywhere.
+        // property type itself is the getter's return type - mangled for members only - and the
+        // setter's parameter type - mangled everywhere.
         val receiverValueClass = declaration.receiverParameter?.typeRef?.coneType?.mangledValueClass()
             ?: declaration.contextParameters.firstNotNullOfOrNull { it.returnTypeRef.coneType.mangledValueClass() }
         val getterValueClass = receiverValueClass ?: declaration.returnValueClassIfMember()
@@ -143,7 +143,7 @@ internal class MangledJvmNameChecker(
             return false
         }
 
-        // @JvmExposeBoxed — on the declaration or anywhere up the class nesting — generates
+        // @JvmExposeBoxed - on the declaration or anywhere up the class nesting - generates
         // Java-callable boxed variants next to the mangled entry points.
         if (hasAnnotation(JvmStandardClassIds.JVM_EXPOSE_BOXED_ANNOTATION_CLASS_ID, session) ||
             context.containingDeclarations.any {
@@ -173,10 +173,10 @@ internal class MangledJvmNameChecker(
     }
 
     /**
-     * Whether the accessor's Java-facing shape is already settled — renamed with `@JvmName` or
+     * Whether the accessor's Java-facing shape is already settled - renamed with `@JvmName` or
      * hidden with `@JvmSynthetic`. The annotation sits on an explicit accessor directly; the
-     * `@get:`/`@set:` use-site form stays on the property — or on the primary constructor
-     * parameter for a `val`/`var` parameter — with the accessor as its use-site target.
+     * `@get:`/`@set:` use-site form stays on the property - or on the primary constructor
+     * parameter for a `val`/`var` parameter - with the accessor as its use-site target.
      */
     context(context: CheckerContext)
     private fun FirProperty.accessorHasJavaFacingName(

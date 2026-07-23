@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.util.OperatorNameConventions
 /**
  * Reports publicly visible
  * [stateful classes](https://kotlinlang.org/docs/api-guidelines-debuggability.html#provide-a-tostring-method-for-stateful-types)
- * — classes with at least one property that stores its value in a backing field — that neither
+ * - classes with at least one property that stores its value in a backing field - that neither
  * declare nor inherit a `toString` implementation: their instances render as the opaque
  * class-name-with-hash-code default, which reveals nothing in logs and debugger output. Authors
  * acknowledge the opaque rendering with `@IntentionallyWithoutToString`.
@@ -34,8 +34,8 @@ import org.jetbrains.kotlin.util.OperatorNameConventions
  *
  * Only regular classes are checked. Data and value classes receive a compiler-generated
  * `toString` (data classes are reported by [DataClassChecker] anyway), enum entries render their
- * name, interfaces and annotation classes cannot hold backing fields, and objects — companion
- * objects in particular — typically hold constants rather than per-instance state.
+ * name, interfaces and annotation classes cannot hold backing fields, and objects - companion
+ * objects in particular - typically hold constants rather than per-instance state.
  */
 internal class StatefulClassWithoutToStringChecker(
     private val severities: WatchdogDiagnosticSeverities,

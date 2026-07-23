@@ -67,8 +67,8 @@ public open class DescriptionExplainedExemption
 @IntentionallyOpen(reason = ExemptionReason.OTHER, description = "kept open for mocking")
 public open class OtherWithDescriptionExemption
 
-// INTEROP and EXTERNAL_CONTRACT only categorize the exemption — which constraint applies is
-// not obvious from the entry alone — so they still require a description.
+// INTEROP and EXTERNAL_CONTRACT only categorize the exemption - which constraint applies is
+// not obvious from the entry alone - so they still require a description.
 
 <!EXEMPTION_WITHOUT_EXPLANATION!>@IntentionallyOpen(reason = ExemptionReason.INTEROP)<!>
 public open class InteropWithoutDescription

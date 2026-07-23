@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.name.StandardClassIds
  * `TYPE` and `TYPEALIAS` ones.
  *
  * The marker's own visibility is irrelevant: even an internal or private marker is applied
- * across the library's — possibly public — DSL classes, so every marker is checked.
+ * across the library's - possibly public - DSL classes, so every marker is checked.
  *
  * For an already-published marker, fixing the target set is a breaking change, so authors
  * acknowledge the legacy shape with `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`.
