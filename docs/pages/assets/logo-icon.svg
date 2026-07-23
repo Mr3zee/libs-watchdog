@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 120 120">
+  <defs>
+    <radialGradient id="kotlin-gradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(108 17) rotate(180) scale(131)">
+      <stop stop-color="#E44857"/>
+      <stop offset="0.504494" stop-color="#C711E1"/>
+      <stop offset="1" stop-color="#7F52FF"/>
+    </radialGradient>
+  </defs>
+  <g fill="url(#kotlin-gradient)">
+    <path d="M85.3,73.6c-2.4-2-4-4.9-4.4-8.1-1.1-10.1-9.6-17.7-19.7-17.7h-2.8c-10.1,0-18.6,7.6-19.7,17.7-.3,3.2-1.9,6.1-4.4,8.1-7.3,6.1-8.1,17-1.8,24.1h0c5.3,5.9,14,7.3,20.9,3.4,4-2.3,8.9-2.3,12.8,0h0c6.9,4,15.6,2.5,20.9-3.4h0c6.3-7.1,5.5-18-1.8-24.1Z"/>
+    <ellipse cx="45" cy="31" rx="10.8" ry="14.3"/>
+    <ellipse cx="74.8" cy="31" rx="10.8" ry="14.3"/>
+    <path d="M32.8,54.7c-2.1-7.6-8.4-12.5-14.2-10.9-5.8,1.6-8.8,9-6.7,16.6,2.1,7.6,8.4,12.5,14.2,10.9,5.8-1.6,8.8-9,6.7-16.6Z"/>
+    <path d="M102.6,44.4c-5.6-2.2-12.4,2-15.3,9.4-2.9,7.3-.6,15.1,4.9,17.2,5.6,2.2,12.4-2,15.3-9.4,2.9-7.3.6-15.1-4.9-17.2Z"/>
+  </g>
+</svg>

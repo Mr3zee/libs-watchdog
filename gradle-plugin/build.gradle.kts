@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
 plugins {
     kotlin("compiler.plugin.devkit.gradle-plugin")
+    alias(libs.plugins.dokka)
 }
 
 kotlin {

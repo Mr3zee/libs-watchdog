@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="lw"
+                  name="libs-watchdog"
+                  start-page="overview.md">
+
+    <toc-element topic="overview.md"/>
+    <toc-element toc-title="API Reference" href="%host%/libs-watchdog/api/"/>
+</instance-profile>

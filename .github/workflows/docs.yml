@@ -1,0 +1,143 @@
+name: Build docs website
+
+on:
+  pull_request:
+    paths:
+      - 'docs/pages/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        type: boolean
+        description: "Dry run. If set to true, the action will not actually publish the pages, but will assemble the artifact."
+        default: true
+        required: true
+
+permissions:
+  id-token: write
+  pages: write
+  contents: read
+
+env:
+  INSTANCE: 'libs-watchdog/lw'
+  ARTIFACT: 'webHelpLW2-all.zip'
+  DOCKER_VERSION: '243.22562'
+  DOKKA_OUTPUT: 'build/dokka/html'
+  ASSEMBLE_DIR: '__docs_assembled'
+  ASSEMBLE_ARTIFACT: 'assembled.zip'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Build docs using Writerside Docker builder
+        uses: JetBrains/writerside-github-action@v4
+        with:
+          instance: ${{ env.INSTANCE }}
+          artifact: ${{ env.ARTIFACT }}
+          docker-version: ${{ env.DOCKER_VERSION }}
+          location: docs/pages/libs-watchdog/
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      # The build consumes the compiler-plugin-dev-kit convention plugins from mavenLocal.
+      - name: Checkout compiler-plugin-dev-kit
+        uses: actions/checkout@v5
+        with:
+          repository: Kotlin/compiler-plugin-dev-kit
+          path: compiler-plugin-dev-kit
+
+      - name: Publish compiler-plugin-dev-kit to Maven Local
+        working-directory: compiler-plugin-dev-kit
+        run: |
+          ./gradlew -p artifact-transform publishToMavenLocal
+          ./gradlew -p plugins publishToMavenLocal
+          ./gradlew publishToMavenLocal
+
+      - name: Build Dokka API reference
+        run: ./gradlew :dokkaGenerate
+
+      - name: Unzip Writerside artifacts
+        run: unzip -O UTF-8 -qq 'artifacts/${{ env.ARTIFACT }}' -d ${{ env.ASSEMBLE_DIR }}
+
+      - name: Add Dokka to the assembled website
+        run: |
+          mkdir -p ${{ env.ASSEMBLE_DIR }}/api
+          cp -r ${{ env.DOKKA_OUTPUT }}/. ${{ env.ASSEMBLE_DIR }}/api/
+
+      - name: Update sitemap.xml
+        run: chmod +x scripts/update_sitemap.sh && ./scripts/update_sitemap.sh ${{ env.ASSEMBLE_DIR }}/sitemap.xml ${{ env.ASSEMBLE_DIR }}/api
+
+      - name: Assemble file
+        run: cd ${{ env.ASSEMBLE_DIR }} && zip -r ../${{ env.ASSEMBLE_ARTIFACT }} .
+
+      - name: Save artifact with build results
+        uses: actions/upload-artifact@v6
+        with:
+          name: libs-watchdog-docs
+          path: |
+            artifacts/${{ env.ARTIFACT }}
+            artifacts/report.json
+          retention-days: 7
+
+      - name: Save assembled artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: libs-watchdog-docs-assembled
+          path: ${{ env.ASSEMBLE_ARTIFACT }}
+          retention-days: 7
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: libs-watchdog-docs
+          path: artifacts
+
+      - name: Test documentation
+        uses: JetBrains/writerside-checker-action@v1
+        with:
+          instance: ${{ env.INSTANCE }}
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && !inputs.dry_run
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: [ build, test ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: libs-watchdog-docs-assembled
+
+      - name: Unzip artifact
+        run: unzip -O UTF-8 -qq '${{ env.ASSEMBLE_ARTIFACT }}' -d publish
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Package and upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: publish
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

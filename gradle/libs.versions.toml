@@ -1,6 +1,9 @@
 [versions]
 # https://github.com/JetBrains/kotlin
 kotlin = "2.4.0"
+# https://github.com/Kotlin/dokka
+dokka = "2.2.0"
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
