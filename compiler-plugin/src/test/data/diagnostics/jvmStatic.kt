@@ -4,8 +4,8 @@
 
 package foo.bar
 
-import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyNonStaticCompanionApi
+import org.jetbrains.kotlinx.libs.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyNonStaticCompanionApi
 
 public class Registry {
     public companion object {

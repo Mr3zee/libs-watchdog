@@ -4,7 +4,7 @@
 
 package foo.bar
 
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyDataClass
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyDataClass
 
 // Unacknowledged data classes: should warn.
 

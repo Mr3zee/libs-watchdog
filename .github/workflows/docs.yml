@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 env:
-  INSTANCE: 'libs-watchdog/lw'
+  INSTANCE: 'libs-api-watchdog/lw'
   ARTIFACT: 'webHelpLW2-all.zip'
   DOCKER_VERSION: '243.22562'
   DOKKA_OUTPUT: 'build/dokka/html'
@@ -41,7 +41,7 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
-          location: docs/pages/libs-watchdog/
+          location: docs/pages/libs-api-watchdog/
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -101,7 +101,7 @@ jobs:
       - name: Save artifact with build results
         uses: actions/upload-artifact@v6
         with:
-          name: libs-watchdog-docs
+          name: libs-api-watchdog-docs
           path: |
             artifacts/${{ env.ARTIFACT }}
             artifacts/report.json
@@ -110,7 +110,7 @@ jobs:
       - name: Save assembled artifact
         uses: actions/upload-artifact@v6
         with:
-          name: libs-watchdog-docs-assembled
+          name: libs-api-watchdog-docs-assembled
           path: ${{ env.ASSEMBLE_ARTIFACT }}
           retention-days: 7
 
@@ -121,7 +121,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v6
         with:
-          name: libs-watchdog-docs
+          name: libs-api-watchdog-docs
           path: artifacts
 
       - name: Test documentation
@@ -140,7 +140,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v6
         with:
-          name: libs-watchdog-docs-assembled
+          name: libs-api-watchdog-docs-assembled
 
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq '${{ env.ASSEMBLE_ARTIFACT }}' -d publish

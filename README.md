@@ -1,4 +1,4 @@
-# libs-watchdog <img src="logo.svg" width="48" align="right" alt="libs-watchdog logo"/>
+# libs-api-watchdog <img src="logo.svg" width="48" align="right" alt="libs-api-watchdog logo"/>
 
 A Kotlin compiler plugin that helps library authors keep their public API easy to evolve. Built on
 top of the [compiler-plugin-dev-kit](../compiler-plugin-dev-kit) (consumed from `mavenLocal`).
@@ -316,13 +316,13 @@ annotation class documents the internal API surface itself.
 
 Every diagnostic is reported as a compilation **error** by default. Each one can individually be
 demoted to a warning (`WatchdogSeverity.WARNING`) or disabled entirely (`WatchdogSeverity.NONE`)
-through the `libsWatchdog` extension - except `EXEMPTION_WITHOUT_EXPLANATION`, which is always an
+through the `libsApiWatchdog` extension - except `EXEMPTION_WITHOUT_EXPLANATION`, which is always an
 error:
 
 ```kotlin
-import org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity
+import org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSeverity
 
-libsWatchdog {
+libsApiWatchdog {
     openApiWithoutSubclassOptIn.set(WatchdogSeverity.WARNING)
     subclassOptInWithoutMarkers.set(WatchdogSeverity.WARNING)
     exhaustivePublicApi.set(WatchdogSeverity.WARNING)
@@ -356,7 +356,7 @@ libsWatchdog {
 
 When invoking the compiler directly, the same configuration is available as a repeatable plugin
 option taking `error`, `warning`, or `none`:
-`-P plugin:org.jetbrains.kotlinx.libs.watchdog:diagnosticSeverity=UNDOCUMENTED_PUBLIC_API:warning`.
+`-P plugin:org.jetbrains.kotlinx.libs.api.watchdog:diagnosticSeverity=UNDOCUMENTED_PUBLIC_API:warning`.
 
 Note that the Kotlin compiler hides regular warnings when a compilation fails with errors, so
 demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
@@ -388,7 +388,7 @@ Replace `<version>` with the
 The suggestion can be turned off through the extension:
 
 ```kotlin
-libsWatchdog {
+libsApiWatchdog {
     suggestTapmoc.set(false)
 }
 ```
@@ -408,7 +408,7 @@ libsWatchdog {
   `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`, `@InternalAnnotationMarker`,
   and the `ExemptionReason` enum.
 - [`:gradle-plugin`](gradle-plugin/src) - applies the compiler plugin and the annotations
-  dependency to a Kotlin project (plugin id `org.jetbrains.kotlinx.libs.watchdog`).
+  dependency to a Kotlin project (plugin id `org.jetbrains.kotlinx.libs.api.watchdog`).
 
 ## Prerequisites
 

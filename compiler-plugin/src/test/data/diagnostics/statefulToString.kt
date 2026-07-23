@@ -4,7 +4,7 @@
 
 package foo.bar
 
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyWithoutToString
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyWithoutToString
 
 // Stateful classes relying on the opaque default toString: should warn.
 

@@ -4,7 +4,7 @@
 
 package foo.bar
 
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyMutableCollection
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyMutableCollection
 
 // Mutable collection types in public signatures: should warn.
 

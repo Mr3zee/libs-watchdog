@@ -32,7 +32,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "libs-watchdog"
+rootProject.name = "libs-api-watchdog"
 
 include("compiler-plugin")
 

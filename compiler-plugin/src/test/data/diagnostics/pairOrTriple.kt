@@ -4,7 +4,7 @@
 
 package foo.bar
 
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyPairOrTriple
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyPairOrTriple
 
 // Tuple types in public signatures: should warn.
 

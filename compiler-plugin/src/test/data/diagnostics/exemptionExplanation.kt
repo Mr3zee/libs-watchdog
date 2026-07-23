@@ -4,15 +4,15 @@
 
 package foo.bar
 
-import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyDataClass
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyFunctionTypeAlias
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyKotlinOnlyApi
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyMutableCollection
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyOpen
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyUndocumented
-import org.jetbrains.kotlinx.libs.watchdog.InternalAnnotationMarker
+import org.jetbrains.kotlinx.libs.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyDataClass
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyFunctionTypeAlias
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyKotlinOnlyApi
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyMutableCollection
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyUndocumented
+import org.jetbrains.kotlinx.libs.api.watchdog.InternalAnnotationMarker
 
 // A bare exemption defaults to reason = OTHER with an empty description, which explains
 // nothing: should warn.

@@ -4,8 +4,8 @@
 
 package foo.bar
 
-import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyWithoutJvmOverloads
+import org.jetbrains.kotlinx.libs.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyWithoutJvmOverloads
 
 // For Java callers the defaults do not exist: should warn.
 

@@ -4,9 +4,9 @@
 
 package foo.bar
 
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyOpen
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyUndocumented
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyUndocumented
 
 // A @PublishedApi declaration is internal in sources but part of the published binary API:
 // public inline functions expose it to clients, so every check treats it as public API.

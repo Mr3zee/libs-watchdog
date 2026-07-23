@@ -108,7 +108,7 @@ FILE: statefulToString.kt
             public get(): R|kotlin/Int|
 
     }
-    @R|org/jetbrains/kotlinx/libs/watchdog/IntentionallyWithoutToString|() public final class MarkedOpaque : R|kotlin/Any| {
+    @R|org/jetbrains/kotlinx/libs/api/watchdog/IntentionallyWithoutToString|() public final class MarkedOpaque : R|kotlin/Any| {
         public constructor(secret: R|kotlin/String|): R|foo/bar/MarkedOpaque| {
             super<R|kotlin/Any|>()
         }

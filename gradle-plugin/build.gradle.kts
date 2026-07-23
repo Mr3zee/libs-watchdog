@@ -31,12 +31,12 @@ tasks.named("installForFunctionalTest") {
 
 gradlePlugin {
     plugins {
-        create("LibsWatchdog") {
+        create("LibsApiWatchdog") {
             id = group.toString()
-            displayName = "LibsWatchdog"
+            displayName = "LibsApiWatchdog"
             description =
                 "Warns Kotlin library authors about public API declarations that are hard to evolve"
-            implementationClass = "org.jetbrains.kotlinx.libs.watchdog.WatchdogSupportPlugin"
+            implementationClass = "org.jetbrains.kotlinx.libs.api.watchdog.WatchdogSupportPlugin"
         }
     }
 }

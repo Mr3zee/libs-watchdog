@@ -4,8 +4,8 @@
 
 package foo.bar
 
-import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyBooleanParameter
+import org.jetbrains.kotlinx.libs.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyBooleanParameter
 
 // Boolean parameters in public functions: should warn.
 

@@ -58,8 +58,8 @@ public val kotlinOnlyValue: Int = 0
 
 package foo.bar
 
-import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.libs.watchdog.IntentionallyDefaultFacadeName
+import org.jetbrains.kotlinx.libs.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.libs.api.watchdog.IntentionallyDefaultFacadeName
 
 // The derived facade name is acknowledged: no warning.
 public fun legacyEntryPoint(): Int = 0

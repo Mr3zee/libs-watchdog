@@ -1,1 +1,1 @@
-org.jetbrains.kotlinx.libs.watchdog.WatchdogCompilerPluginRegistrar
+org.jetbrains.kotlinx.libs.api.watchdog.WatchdogCompilerPluginRegistrar

@@ -16,7 +16,7 @@ dokka {
     pluginsConfiguration.html {
         customAssets.from("docs/pages/assets/logo-icon.svg")
         footerMessage = "© ${Year.now()} JetBrains s.r.o and contributors."
-        homepageLink = "https://mr3zee.github.io/libs-watchdog/"
+        homepageLink = "https://mr3zee.github.io/libs-api-watchdog/"
     }
 }
 
@@ -29,7 +29,7 @@ dependencies {
 subprojects {
     plugins.withId("org.jetbrains.dokka") {
         extensions.configure<DokkaExtension> {
-            moduleName = "libs-watchdog-${project.name}"
+            moduleName = "libs-api-watchdog-${project.name}"
 
             dokkaSourceSets.configureEach {
                 documentedVisibilities = setOf(
@@ -39,7 +39,7 @@ subprojects {
 
                 sourceLink {
                     localDirectory = rootDir
-                    remoteUrl("https://github.com/Mr3zee/libs-watchdog/blob/main")
+                    remoteUrl("https://github.com/Mr3zee/libs-api-watchdog/blob/main")
                     remoteLineSuffix = "#L"
                 }
             }
