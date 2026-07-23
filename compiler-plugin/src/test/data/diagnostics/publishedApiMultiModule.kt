@@ -12,6 +12,7 @@
 package libapi
 
 import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyInlinedLogic
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyOpen
 import org.jetbrains.kotlinx.libs.watchdog.IntentionallyUndocumented
 
@@ -32,7 +33,8 @@ internal open class LibPublishedOpenClass
 @PublishedApi
 internal fun libPublishedHelper(): Int = 0
 
-/** Documented. */
+/** Documented; the inlined logic exists to exercise the published declarations above. */
+@IntentionallyInlinedLogic(reason = ExemptionReason.API_DESIGN)
 public inline fun libInlineApi(block: () -> Unit): Int {
     block()
     return libPublishedHelper()
@@ -44,6 +46,8 @@ public inline fun libInlineApi(block: () -> Unit): Int {
 package foo.bar
 
 import libapi.libInlineApi
+import org.jetbrains.kotlinx.libs.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.libs.watchdog.IntentionallyInlinedLogic
 
 @PublishedApi
 internal class <!UNDOCUMENTED_PUBLIC_API!>MainPublishedClass<!>
@@ -63,7 +67,8 @@ internal enum class <!EXHAUSTIVE_PUBLIC_API!>MainPublishedEnum<!> {
 @PublishedApi
 internal fun mainPublishedHelper(): Int = 0
 
-/** Documented. */
+/** Documented; the inlined logic exists to exercise the published declarations above. */
+@IntentionallyInlinedLogic(reason = ExemptionReason.API_DESIGN)
 public inline fun mainInlineApi(block: () -> Unit): Int {
     block()
     return libInlineApi(block) + mainPublishedHelper()

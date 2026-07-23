@@ -23,7 +23,7 @@ FILE: lib.kt
     @R|kotlin/PublishedApi|() internal final fun libPublishedHelper(): R|kotlin/Int| {
         ^libPublishedHelper Int(0)
     }
-    public final inline fun libInlineApi(block: R|() -> kotlin/Unit|): R|kotlin/Int| {
+    @R|org/jetbrains/kotlinx/libs/watchdog/IntentionallyInlinedLogic|(reason = Q|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason|.R|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason.API_DESIGN| [evaluated = Q|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason|.R|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason.API_DESIGN|]) public final inline fun libInlineApi(block: R|() -> kotlin/Unit|): R|kotlin/Int| {
         R|<local>/block|.R|SubstitutionOverride<kotlin/Function0.invoke: R|kotlin/Unit|>|()
         ^libInlineApi R|libapi/libPublishedHelper|()
     }
@@ -62,7 +62,7 @@ FILE: main.kt
     @R|kotlin/PublishedApi|() internal final fun mainPublishedHelper(): R|kotlin/Int| {
         ^mainPublishedHelper Int(0)
     }
-    public final inline fun mainInlineApi(block: R|() -> kotlin/Unit|): R|kotlin/Int| {
+    @R|org/jetbrains/kotlinx/libs/watchdog/IntentionallyInlinedLogic|(reason = Q|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason|.R|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason.API_DESIGN| [evaluated = Q|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason|.R|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason.API_DESIGN|]) public final inline fun mainInlineApi(block: R|() -> kotlin/Unit|): R|kotlin/Int| {
         R|<local>/block|.R|SubstitutionOverride<kotlin/Function0.invoke: R|kotlin/Unit|>|()
         ^mainInlineApi R|libapi/libInlineApi|(R|<local>/block|).R|kotlin/Int.plus|(R|foo/bar/mainPublishedHelper|())
     }
