@@ -1,0 +1,68 @@
+// Klib ABI Dump
+// Targets: [androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, mingwX64, tvosArm64, tvosSimulatorArm64, wasmJs, wasmWasi, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <org.jetbrains.kotlinx.libs.watchdog:plugin-annotations>
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyExhaustive : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyExhaustive|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyExhaustive.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyExhaustive.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyExhaustive.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyExhaustive.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyExhaustive.reason.<get-reason>|<get-reason>(){}[0]
+}
+
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyFunctionTypeAlias : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyFunctionTypeAlias|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyFunctionTypeAlias.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyFunctionTypeAlias.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyFunctionTypeAlias.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyFunctionTypeAlias.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyFunctionTypeAlias.reason.<get-reason>|<get-reason>(){}[0]
+}
+
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyOpen.reason.<get-reason>|<get-reason>(){}[0]
+}
+
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented|null[0]
+    constructor <init>(org.jetbrains.kotlinx.libs.watchdog/ExemptionReason = ..., kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented.<init>|<init>(org.jetbrains.kotlinx.libs.watchdog.ExemptionReason;kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented.description.<get-description>|<get-description>(){}[0]
+    final val reason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented.reason|{}reason[0]
+        final fun <get-reason>(): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/IntentionallyUndocumented.reason.<get-reason>|<get-reason>(){}[0]
+}
+
+open annotation class org.jetbrains.kotlinx.libs.watchdog/IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility|null[0]
+    constructor <init>(kotlin/String = ...) // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility.<init>|<init>(kotlin.String){}[0]
+
+    final val description // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility.description|{}description[0]
+        final fun <get-description>(): kotlin/String // org.jetbrains.kotlinx.libs.watchdog/IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility.description.<get-description>|<get-description>(){}[0]
+}
+
+open annotation class org.jetbrains.kotlinx.libs.watchdog/InternalAnnotationMarker : kotlin/Annotation { // org.jetbrains.kotlinx.libs.watchdog/InternalAnnotationMarker|null[0]
+    constructor <init>() // org.jetbrains.kotlinx.libs.watchdog/InternalAnnotationMarker.<init>|<init>(){}[0]
+}
+
+final enum class org.jetbrains.kotlinx.libs.watchdog/ExemptionReason : kotlin/Enum<org.jetbrains.kotlinx.libs.watchdog/ExemptionReason> { // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason|null[0]
+    enum entry API_DESIGN // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.API_DESIGN|null[0]
+    enum entry EXTERNAL_CONTRACT // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.EXTERNAL_CONTRACT|null[0]
+    enum entry FOR_BACKWARDS_COMPATIBILITY // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.FOR_BACKWARDS_COMPATIBILITY|null[0]
+    enum entry INTEROP // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.INTEROP|null[0]
+    enum entry OTHER // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.OTHER|null[0]
+
+    final val entries // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<org.jetbrains.kotlinx.libs.watchdog/ExemptionReason> // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): org.jetbrains.kotlinx.libs.watchdog/ExemptionReason // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<org.jetbrains.kotlinx.libs.watchdog/ExemptionReason> // org.jetbrains.kotlinx.libs.watchdog/ExemptionReason.values|values#static(){}[0]
+}

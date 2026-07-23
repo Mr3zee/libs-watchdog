@@ -1,0 +1,38 @@
+public final class org/jetbrains/kotlinx/libs/watchdog/ExemptionReason : java/lang/Enum {
+	public static final field API_DESIGN Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+	public static final field EXTERNAL_CONTRACT Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+	public static final field FOR_BACKWARDS_COMPATIBILITY Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+	public static final field INTEROP Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+	public static final field OTHER Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+	public static fun values ()[Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+}
+
+public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyExhaustive : java/lang/annotation/Annotation {
+	public abstract fun description ()Ljava/lang/String;
+	public abstract fun reason ()Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+}
+
+public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyFunctionTypeAlias : java/lang/annotation/Annotation {
+	public abstract fun description ()Ljava/lang/String;
+	public abstract fun reason ()Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+}
+
+public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyOpen : java/lang/annotation/Annotation {
+	public abstract fun description ()Ljava/lang/String;
+	public abstract fun reason ()Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+}
+
+public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyUndocumented : java/lang/annotation/Annotation {
+	public abstract fun description ()Ljava/lang/String;
+	public abstract fun reason ()Lorg/jetbrains/kotlinx/libs/watchdog/ExemptionReason;
+}
+
+public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility : java/lang/annotation/Annotation {
+	public abstract fun description ()Ljava/lang/String;
+}
+
+public abstract interface annotation class org/jetbrains/kotlinx/libs/watchdog/InternalAnnotationMarker : java/lang/annotation/Annotation {
+}
+
