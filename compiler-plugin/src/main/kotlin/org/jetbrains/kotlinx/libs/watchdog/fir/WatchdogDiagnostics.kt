@@ -41,7 +41,7 @@ enum class WatchdogSeverity {
 /**
  * A diagnostic whose severity is chosen per compilation. A diagnostic factory bakes its severity
  * in at construction, so each configurable diagnostic keeps an [error] and a [warning] factory
- * under the same diagnostic name and the checkers pick one of them — or none — at report time.
+ * under the same diagnostic name and the checkers pick one of them - or none - at report time.
  */
 class ConfigurableWatchdogDiagnostic<out F : AbstractKtDiagnosticFactory>(
     val error: F,
@@ -219,7 +219,9 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "The {0} ''{1}'' can be subclassed outside the library without restriction, " +
                     "which makes it hard to evolve. Mark it with @SubclassOptInRequired to control " +
                     "external subclassing, or with @IntentionallyOpen if unrestricted subclassing " +
-                    "is intended.",
+                    "is intended. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-predictability.html#prevent-unwanted-and-invalid-extensions " +
+                    "for details.",
             rendererA = CLASS_KIND,
             rendererB = NAME,
         )
@@ -227,13 +229,17 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             diagnostic = WatchdogDiagnostics.SUBCLASS_OPT_IN_WITHOUT_MARKERS,
             message = "@SubclassOptInRequired lists no marker classes, so it does not restrict " +
                     "external subclassing. Pass at least one opt-in marker class " +
-                    "with a description of why the subclassing is restricted.",
+                    "with a description of why the subclassing is restricted. See " +
+                    "https://kotlinlang.org/docs/opt-in-requirements.html#require-opt-in-to-extend-api " +
+                    "for details.",
         )
         map.put(
             diagnostic = WatchdogDiagnostics.EXHAUSTIVE_PUBLIC_API,
             message = "The {0} ''{1}'' can be matched exhaustively by clients, so adding {2} later is " +
                     "a breaking change. Mark it with @IntentionallyExhaustive if this " +
-                    "exhaustive shape is an intended part of the API.",
+                    "exhaustive shape is an intended part of the API. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-predictability.html#prevent-unwanted-and-invalid-extensions " +
+                    "for details.",
             rendererA = CLASS_KIND,
             rendererB = NAME,
             rendererC = MEMBER_KIND,
@@ -242,7 +248,9 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             diagnostic = WatchdogDiagnostics.UNDOCUMENTED_PUBLIC_API,
             message = "The {0} ''{1}'' is part of the public API but has no KDoc. Document it " +
                     "so clients do not have to guess its purpose and usage contract, or mark it " +
-                    "with @IntentionallyUndocumented if leaving it undocumented is intended.",
+                    "with @IntentionallyUndocumented if leaving it undocumented is intended. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-informative-documentation.html#thoroughly-document-your-api " +
+                    "for details.",
             rendererA = STRING,
             rendererB = NAME,
         )
@@ -252,7 +260,9 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "bare function shape: the alias is erased from the compiled API and cannot " +
                     "evolve into a richer abstraction later. Declare a `fun interface` instead to " +
                     "keep lambda ergonomics behind a stable nominal type, or mark the alias with " +
-                    "@IntentionallyFunctionTypeAlias if exposing the function type is intended.",
+                    "@IntentionallyFunctionTypeAlias if exposing the function type is intended. See " +
+                    "https://kotlinlang.org/docs/fun-interfaces.html#functional-interfaces-vs-type-aliases " +
+                    "for details.",
             rendererA = NAME,
         )
         map.put(
@@ -263,17 +273,21 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "breaking change. Declare a regular class and implement " +
                     "`equals`/`hashCode`/`toString` explicitly, or mark the class with " +
                     "@IntentionallyDataClass if this property list is an intended, stable part " +
-                    "of the API.",
+                    "of the API. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-backward-compatibility.html#avoid-using-data-classes-in-your-api " +
+                    "for details.",
             rendererA = NAME,
         )
         map.put(
             diagnostic = WatchdogDiagnostics.STATEFUL_CLASS_WITHOUT_TO_STRING,
-            message = "The class ''{0}'' holds state — at least one property with a backing " +
-                    "field — but neither declares nor inherits a `toString` implementation, so " +
+            message = "The class ''{0}'' holds state - at least one property with a backing " +
+                    "field - but neither declares nor inherits a `toString` implementation, so " +
                     "instances render as the opaque class-name-with-hash-code default and reveal " +
                     "nothing in logs and debugger output. Override `toString` to render the " +
                     "current state, or mark the class with @IntentionallyWithoutToString if the " +
-                    "opaque rendering is intended.",
+                    "opaque rendering is intended. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-debuggability.html#provide-a-tostring-method-for-stateful-types " +
+                    "for details.",
             rendererA = NAME,
         )
         map.put(
@@ -284,7 +298,9 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "evolve its internal representation freely. Accept and return read-only " +
                     "types instead (arrays count as mutable collections too), handing out " +
                     "defensive copies where needed, or mark the declaration with " +
-                    "@IntentionallyMutableCollection if sharing mutable state is intended.",
+                    "@IntentionallyMutableCollection if sharing mutable state is intended. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-predictability.html#avoid-exposing-mutable-state " +
+                    "for details.",
             rendererA = STRING,
             rendererB = NAME,
             rendererC = NAME,
@@ -294,10 +310,12 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "The {0} ''{1}'' exposes the tuple type ''{2}''. Tuple components carry " +
                     "no domain meaning: at the use site `first`/`second`/`third` and positional " +
                     "destructuring reveal nothing about the values, and the fixed shape cannot " +
-                    "evolve — adding a value means switching to a different type, breaking " +
+                    "evolve - adding a value means switching to a different type, breaking " +
                     "clients. Declare a small class with descriptively named properties " +
                     "instead, or mark the declaration with @IntentionallyPairOrTriple if " +
-                    "exposing the tuple is intended.",
+                    "exposing the tuple is intended. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-consistency.html#use-object-oriented-design-for-data-and-state " +
+                    "for details.",
             rendererA = STRING,
             rendererB = NAME,
             rendererC = NAME,
@@ -307,10 +325,12 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "The parameter ''{0}'' of ''{1}'' is required but declared after an " +
                     "optional parameter, so it cannot be passed positionally without re-stating " +
                     "the defaults in front of it. Declare parameters from the general to the " +
-                    "specific: essential inputs first, optional inputs — defaulted and vararg " +
-                    "parameters — last. Move the required parameter in front of the optional " +
+                    "specific: essential inputs first, optional inputs - defaulted and vararg " +
+                    "parameters - last. Move the required parameter in front of the optional " +
                     "ones, or mark the declaration with @IntentionallyRequiredParameterAfterOptional " +
-                    "if this order is intended.",
+                    "if this order is intended. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-consistency.html#preserve-parameter-order-naming-and-usage " +
+                    "for details.",
             rendererA = NAME,
             rendererB = NAME,
         )
@@ -321,7 +341,9 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "overloads, so an inconsistent order of same-named parameters invites " +
                     "silently swapped arguments. Keep shared parameters in the same relative " +
                     "order across overloads, or mark the declaration with " +
-                    "@IntentionallyInconsistentParameterOrder if the differing order is intended.",
+                    "@IntentionallyInconsistentParameterOrder if the differing order is intended. " +
+                    "See https://kotlinlang.org/docs/api-guidelines-consistency.html#preserve-parameter-order-naming-and-usage " +
+                    "for details.",
             rendererA = NAME,
             rendererB = NAME,
             rendererC = NAME,
@@ -333,7 +355,9 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "meaning, and clients cannot be forced to use named arguments. Introduce " +
                     "separate, descriptively named functions for each mode, or replace the " +
                     "parameter with an enum class, or mark it with " +
-                    "@IntentionallyBooleanParameter if the Boolean parameter is intended.",
+                    "@IntentionallyBooleanParameter if the Boolean parameter is intended. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-readability.html#avoid-using-the-boolean-type-as-an-argument " +
+                    "for details.",
             rendererA = NAME,
             rendererB = NAME,
         )
@@ -344,7 +368,9 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "`null` stands for, and three-state logic hides in two-branch `if`s. " +
                     "Replace it with an enum class naming all three states, or drop the third " +
                     "state, or mark the declaration with @IntentionallyNullableBoolean if the " +
-                    "nullable Boolean is intended.",
+                    "nullable Boolean is intended. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-readability.html#avoid-using-the-boolean-type-as-an-argument " +
+                    "for details.",
             rendererA = STRING,
             rendererB = NAME,
         )
@@ -352,11 +378,13 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             diagnostic = WatchdogDiagnostics.INLINE_FUNCTION_WITH_LOGIC,
             message = "The {0} ''{1}'' does more than delegate to a non-inline " +
                     "function. The compiler copies an inline body into every client binary, so " +
-                    "logic placed there — and its bugs — stays frozen in clients compiled " +
+                    "logic placed there - and its bugs - stays frozen in clients compiled " +
                     "against an old library version until they recompile. Extract the logic " +
                     "into a non-inline function (@PublishedApi internal if it should stay out " +
                     "of the public API) and delegate to it, or mark the declaration with " +
-                    "@IntentionallyInlinedLogic if inlining the logic is intended.",
+                    "@IntentionallyInlinedLogic if inlining the logic is intended. See " +
+                    "https://kotlinlang.org/docs/api-guidelines-backward-compatibility.html#considerations-for-using-the-publishedapi-annotation " +
+                    "for details.",
             rendererA = STRING,
             rendererB = NAME,
         )
@@ -377,7 +405,9 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "marker restricts nothing and only gives a false sense of receiver scope " +
                     "control. Remove the target from @Target, or mark the marker with " +
                     "@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility if the target " +
-                    "must stay for compatibility with existing clients.",
+                    "must stay for compatibility with existing clients. See " +
+                    "https://kotlinlang.org/docs/type-safe-builders.html#scope-control-dslmarker " +
+                    "for details.",
             rendererA = NAME,
             rendererB = STRING,
         )
@@ -388,28 +418,34 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "the effective type usage (TYPE) and type alias (TYPEALIAS) targets stay " +
                     "unavailable. Declare @Target(CLASS, TYPE, TYPEALIAS) or a subset of it, or " +
                     "mark the marker with @IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility " +
-                    "if the default targets must stay for compatibility with existing clients.",
+                    "if the default targets must stay for compatibility with existing clients. " +
+                    "See https://kotlinlang.org/docs/type-safe-builders.html#scope-control-dslmarker " +
+                    "for details.",
             rendererA = NAME,
         )
         map.put(
             diagnostic = WatchdogDiagnostics.DSL_MARKER_NOOP_TYPE_POSITION,
             message = "The DSL marker ''{0}'' has no effect on this {1}: scope control only reacts " +
-                    "to markers on the type of an implicit value — a receiver type, a context " +
+                    "to markers on the type of an implicit value - a receiver type, a context " +
                     "parameter type, or a function type with such implicit values. A named value " +
                     "is always accessed explicitly, so the marker restricts nothing here. Move it " +
-                    "to the class or to a receiver position, or remove it.",
+                    "to the class or to a receiver position, or remove it. See " +
+                    "https://kotlinlang.org/docs/type-safe-builders.html#scope-control-dslmarker " +
+                    "for details.",
             rendererA = NAME,
             rendererB = STRING,
         )
         map.put(
             diagnostic = WatchdogDiagnostics.MANGLED_JVM_NAME_PUBLIC_API,
             message = "The {0} ''{1}'' has the value class ''{2}'' in its signature, so its " +
-                    "compiled JVM name is mangled — or, for a constructor, hidden behind a " +
-                    "synthetic one — and Java sources cannot call it. Kotlin clients are " +
+                    "compiled JVM name is mangled - or, for a constructor, hidden behind a " +
+                    "synthetic one - and Java sources cannot call it. Kotlin clients are " +
                     "unaffected. Give the compiled code a Java-callable shape with @JvmName " +
                     "(@get:JvmName/@set:JvmName on property accessors) or with @JvmExposeBoxed, " +
                     "or mark the declaration with @IntentionallyMangledJvmName if Java callers " +
-                    "are not supported.",
+                    "are not supported. See " +
+                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html#inline-value-classes " +
+                    "for details.",
             rendererA = STRING,
             rendererB = NAME,
             rendererC = NAME,
@@ -419,10 +455,11 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "The function ''{0}'' {1}. Kotlin callers see the intended shape, but the " +
                     "function still lands in the API surface Java sources see. Hide the " +
                     "Kotlin-only shape from Java with @JvmSynthetic, or provide a Java-friendly " +
-                    "alternative alongside — a blocking or CompletableFuture-returning bridge " +
+                    "alternative alongside - a blocking or CompletableFuture-returning bridge " +
                     "for a suspend function, a `fun interface` parameter in place of a Kotlin " +
-                    "function type — or mark the function with @IntentionallyKotlinOnlyApi if " +
-                    "leaving the shape visible to Java is intended.",
+                    "function type - or mark the function with @IntentionallyKotlinOnlyApi if " +
+                    "leaving the shape visible to Java is intended. See " +
+                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html for details.",
             rendererA = NAME,
             rendererB = STRING,
         )
@@ -431,10 +468,12 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "The companion object function ''{1}'' compiles to an instance method on " +
                     "the nested Companion class, so Java callers have to reach it as " +
                     "''{0}.Companion.{1}(...)''. Mark it with @JvmStatic to additionally compile " +
-                    "a static ''{0}.{1}(...)'' entry point for Java callers — Kotlin call sites " +
-                    "are unaffected — or hide it from Java with @JvmSynthetic, or mark it with " +
+                    "a static ''{0}.{1}(...)'' entry point for Java callers - Kotlin call sites " +
+                    "are unaffected - or hide it from Java with @JvmSynthetic, or mark it with " +
                     "@IntentionallyNonStaticCompanionApi if the companion-instance access path " +
-                    "is intended.",
+                    "is intended. See " +
+                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html#static-methods " +
+                    "for details.",
             rendererA = NAME,
             rendererB = NAME,
         )
@@ -444,10 +483,12 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "the nested Companion class, so Java callers have to read it through " +
                     "''{0}.Companion''. Expose the value on ''{0}'' itself: as a static field " +
                     "with @JvmField, as a compile-time constant with `const val` (primitives " +
-                    "and strings), or as a static getter with @JvmStatic — or hide the property " +
+                    "and strings), or as a static getter with @JvmStatic - or hide the property " +
                     "from Java with @get:JvmSynthetic, or mark it with " +
                     "@IntentionallyNonStaticCompanionApi if the companion-instance access path " +
-                    "is intended.",
+                    "is intended. See " +
+                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html#static-fields " +
+                    "for details.",
             rendererA = NAME,
             rendererB = NAME,
         )
@@ -455,10 +496,12 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             diagnostic = WatchdogDiagnostics.TOP_LEVEL_API_WITHOUT_JVM_NAME,
             message = "This file''s public top-level functions and properties compile into the " +
                     "facade class ''{0}'', a name derived from the file name: it reads as an " +
-                    "implementation detail at Java call sites, and renaming the file — invisible " +
-                    "to Kotlin callers — renames the facade and breaks Java callers. Choose and " +
+                    "implementation detail at Java call sites, and renaming the file - invisible " +
+                    "to Kotlin callers - renames the facade and breaks Java callers. Choose and " +
                     "pin the facade name deliberately with @file:JvmName, or mark the file with " +
-                    "@file:IntentionallyDefaultFacadeName if the derived name is intended. " +
+                    "@file:IntentionallyDefaultFacadeName if the derived name is intended. See " +
+                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html#package-level-functions " +
+                    "for details. " +
                     "Reported once per file, on its first public top-level function or property.",
             rendererA = STRING,
         )
@@ -467,12 +510,14 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             message = "The {0} ''{1}'' declares default parameter values, but for Java callers " +
                     "the defaults do not exist: only the full signature is compiled, and every " +
                     "argument must be spelled out. Mark the {0} with @JvmOverloads to also " +
-                    "compile the overloads that let Java callers omit defaulted parameters — " +
+                    "compile the overloads that let Java callers omit defaulted parameters - " +
                     "trailing ones only: a defaulted parameter in the middle of the list still " +
                     "cannot be skipped from Java, and adding a parameter later stays binary " +
-                    "incompatible either way — or mark the {0} with " +
+                    "incompatible either way - or mark the {0} with " +
                     "@IntentionallyWithoutJvmOverloads if serving Java callers the full " +
-                    "signature only is intended.",
+                    "signature only is intended. See " +
+                    "https://kotlinlang.org/docs/java-to-kotlin-interop.html#overloads-generation " +
+                    "for details.",
             rendererA = STRING,
             rendererB = NAME,
         )
