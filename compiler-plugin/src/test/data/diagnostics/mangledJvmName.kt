@@ -64,6 +64,26 @@ public class Ledger {
     public var <!MANGLED_JVM_NAME_PUBLIC_API!>editor<!>: UserId = UserId("x")
 }
 
+// @JvmSynthetic on an accessor hides it from Java on purpose and settles the Java-facing
+// shape the same way @JvmName does.
+
+public class SyntheticLedger {
+    @get:JvmSynthetic
+    public val ownerHidden: UserId get() = UserId("x")
+
+    // The annotation may sit on the explicit accessor directly.
+    public val ownerExplicit: UserId
+        @JvmSynthetic get() = UserId("x")
+
+    // The getter is hidden, but the var's setter is still mangled: should warn.
+    @get:JvmSynthetic
+    public var <!MANGLED_JVM_NAME_PUBLIC_API!>editorHalf<!>: UserId = UserId("x")
+
+    @get:JvmSynthetic
+    @set:JvmSynthetic
+    public var editorHidden: UserId = UserId("x")
+}
+
 // Object members have a dispatch receiver and mangle the same way as class members.
 public object Registry {
     public fun <!MANGLED_JVM_NAME_PUBLIC_API!>current<!>(): UserId = UserId("x")
@@ -83,6 +103,9 @@ public class Vault {
 
 // The @get:JvmName on the parameter fixes the property getter; the constructor stays hidden.
 public class Purse<!MANGLED_JVM_NAME_PUBLIC_API!>(@get:JvmName("getIdNamed") public val id: UserId)<!>
+
+// The @get:JvmSynthetic on the parameter hides the property getter; the constructor stays hidden.
+public class Pouch<!MANGLED_JVM_NAME_PUBLIC_API!>(@get:JvmSynthetic public val id: UserId)<!>
 
 // Everything declared inside the value class itself is exempt: declaring the public value class
 // is the deliberate choice, and @JvmName is not even applicable inside.
@@ -108,6 +131,11 @@ public class MapResolver : Resolver {
 // @JvmSynthetic hides the declaration from Java on purpose: no warning.
 @JvmSynthetic
 public fun hidden(id: UserId) {}
+
+// @JvmSynthetic without a use-site target lands on the backing field — it has no property
+// target — so the accessors stay visible to Java and still mangled: should warn.
+@JvmSynthetic
+public var <!MANGLED_JVM_NAME_PUBLIC_API!>fieldOnlySynthetic<!>: UserId = UserId("x")
 
 // @PublishedApi declarations belong to the published binary API.
 @PublishedApi

@@ -65,6 +65,30 @@ FILE: mangledJvmName.kt
             public set(value: R|foo/bar/UserId|): R|kotlin/Unit|
 
     }
+    public final class SyntheticLedger : R|kotlin/Any| {
+        public constructor(): R|foo/bar/SyntheticLedger| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val ownerHidden: R|foo/bar/UserId|
+            @PROPERTY_GETTER:R|kotlin/jvm/JvmSynthetic|() public get(): R|foo/bar/UserId| {
+                ^ R|foo/bar/UserId.UserId|(String(x))
+            }
+
+        public final val ownerExplicit: R|foo/bar/UserId|
+            @R|kotlin/jvm/JvmSynthetic|() public get(): R|foo/bar/UserId| {
+                ^ R|foo/bar/UserId.UserId|(String(x))
+            }
+
+        public final var editorHalf: R|foo/bar/UserId| = R|foo/bar/UserId.UserId|(String(x))
+            @PROPERTY_GETTER:R|kotlin/jvm/JvmSynthetic|() public get(): R|foo/bar/UserId|
+            public set(value: R|foo/bar/UserId|): R|kotlin/Unit|
+
+        public final var editorHidden: R|foo/bar/UserId| = R|foo/bar/UserId.UserId|(String(x))
+            @PROPERTY_GETTER:R|kotlin/jvm/JvmSynthetic|() public get(): R|foo/bar/UserId|
+            @PROPERTY_SETTER:R|kotlin/jvm/JvmSynthetic|() public set(value: R|foo/bar/UserId|): R|kotlin/Unit|
+
+    }
     public final object Registry : R|kotlin/Any| {
         private constructor(): R|foo/bar/Registry| {
             super<R|kotlin/Any|>()
@@ -103,6 +127,15 @@ FILE: mangledJvmName.kt
             @PROPERTY_GETTER:R|kotlin/jvm/JvmName|(name = String(getIdNamed) [evaluated = String(getIdNamed)]) public get(): R|foo/bar/UserId|
 
     }
+    public final class Pouch : R|kotlin/Any| {
+        public constructor(id: R|foo/bar/UserId|): R|foo/bar/Pouch| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val id: R|foo/bar/UserId| = R|<local>/id|
+            @PROPERTY_GETTER:R|kotlin/jvm/JvmSynthetic|() public get(): R|foo/bar/UserId|
+
+    }
     @R|kotlin/jvm/JvmInline|() public final value class Wrapped : R|kotlin/Any| {
         public constructor(id: R|foo/bar/UserId|): R|foo/bar/Wrapped| {
             super<R|kotlin/Any|>()
@@ -133,6 +166,9 @@ FILE: mangledJvmName.kt
     }
     @R|kotlin/jvm/JvmSynthetic|() public final fun hidden(id: R|foo/bar/UserId|): R|kotlin/Unit| {
     }
+    field:@R|kotlin/jvm/JvmSynthetic|() public final var fieldOnlySynthetic: R|foo/bar/UserId| = R|foo/bar/UserId.UserId|(String(x))
+        public get(): R|foo/bar/UserId|
+        public set(value: R|foo/bar/UserId|): R|kotlin/Unit|
     @R|kotlin/PublishedApi|() internal final fun published(id: R|foo/bar/UserId|): R|kotlin/Unit| {
     }
     @R|org/jetbrains/kotlinx/libs/watchdog/IntentionallyMangledJvmName|(reason = Q|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason|.R|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason.API_DESIGN| [evaluated = Q|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason|.R|org/jetbrains/kotlinx/libs/watchdog/ExemptionReason.API_DESIGN|]) public final fun acknowledged(id: R|foo/bar/UserId|): R|kotlin/Unit| {
