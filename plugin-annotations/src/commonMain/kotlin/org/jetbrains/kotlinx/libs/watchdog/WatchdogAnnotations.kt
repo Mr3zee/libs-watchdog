@@ -204,6 +204,41 @@ public annotation class IntentionallyMutableCollection(
 )
 
 /**
+ * Acknowledges that the annotated declaration deliberately exposes the tuple type `Pair` or
+ * `Triple` in the public API.
+ *
+ * The libs-watchdog compiler plugin warns about public signatures — return types, property
+ * types, and parameter types, including their type arguments (`List<Pair<Int, String>>` exposes
+ * the tuple all the same) — that mention `Pair` or `Triple`, as well as tuple bounds on type
+ * parameters. Tuple components carry no domain meaning: at the use site `first`/`second`/`third`
+ * and positional destructuring reveal nothing about the values, and the fixed shape cannot
+ * evolve — adding a value means switching to a different type, breaking clients. Prefer a small
+ * class with descriptively named properties. Apply this annotation to suppress the warning when
+ * exposing the tuple is an intended part of the API contract. On a function, a property, or a
+ * constructor it covers the whole signature; on a single parameter or type parameter it covers
+ * just that parameter; on a type usage (`List<@IntentionallyPairOrTriple Pair<Int, String>>`) it
+ * covers the annotated type and everything nested in it.
+ *
+ * @param reason why the declaration deliberately exposes a tuple type.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.CONSTRUCTOR,
+    AnnotationTarget.VALUE_PARAMETER,
+    AnnotationTarget.TYPE_PARAMETER,
+    AnnotationTarget.TYPE,
+)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyPairOrTriple(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
  * Acknowledges that the annotated function or parameter deliberately takes a Boolean argument.
  *
  * The libs-watchdog compiler plugin warns about
@@ -229,6 +264,40 @@ public annotation class IntentionallyMutableCollection(
 )
 @Retention(AnnotationRetention.BINARY)
 public annotation class IntentionallyBooleanParameter(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
+ * Acknowledges that the annotated declaration deliberately exposes a nullable Boolean in the
+ * public API.
+ *
+ * The libs-watchdog compiler plugin warns about public signatures — return types, property
+ * types, and parameter types, including their type arguments — that mention `Boolean?`, as well
+ * as `Boolean?` bounds on type parameters. A nullable Boolean models three states but names only
+ * two of them, so every use site has to know what `null` stands for, and three-state logic hides
+ * in two-branch `if`s. Prefer an enum class naming all three states. Apply this annotation to
+ * suppress the warning when the nullable Boolean is an intended part of the API contract. On a
+ * function, a property, or a constructor it covers the whole signature; on a single parameter or
+ * type parameter it covers just that parameter; on a type usage
+ * (`List<@IntentionallyNullableBoolean Boolean?>`) it covers the annotated type and everything
+ * nested in it.
+ *
+ * @param reason why the declaration deliberately exposes a nullable Boolean.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.CONSTRUCTOR,
+    AnnotationTarget.VALUE_PARAMETER,
+    AnnotationTarget.TYPE_PARAMETER,
+    AnnotationTarget.TYPE,
+)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyNullableBoolean(
     val reason: ExemptionReason = ExemptionReason.OTHER,
     val description: String = "",
 )
@@ -278,6 +347,66 @@ public annotation class IntentionallyRequiredParameterAfterOptional(
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR)
 @Retention(AnnotationRetention.BINARY)
 public annotation class IntentionallyInconsistentParameterOrder(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
+ * Acknowledges that the annotated inline function or the annotated property's inline accessors
+ * deliberately carry logic in their body.
+ *
+ * The libs-watchdog compiler plugin warns about publicly visible inline functions and inline
+ * property accessors whose body does more than delegate to a non-inline function, because the
+ * compiler copies an inline body into every client binary: logic placed there — and its bugs —
+ * stays frozen in clients compiled against an old library version until they recompile. Keep
+ * public inline functions thin wrappers that resolve what only the call site knows (a reified
+ * type argument, an inlined lambda) and hand the actual work to a non-inline function, marked
+ * `@PublishedApi internal` when it should stay out of the public API. Apply this annotation to
+ * suppress the warning when inlining the logic is intended (for example, when a lambda must run
+ * inline for non-local returns, or when a hot path must not pay for an extra call). On a
+ * property it covers both accessors.
+ *
+ * @param reason why the logic is deliberately inlined.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyInlinedLogic(
+    val reason: ExemptionReason = ExemptionReason.OTHER,
+    val description: String = "",
+)
+
+/**
+ * Acknowledges that the annotated declaration deliberately compiles to a JVM shape that Java
+ * sources cannot call.
+ *
+ * The libs-watchdog compiler plugin warns, in JVM compilations, about publicly visible functions,
+ * properties, and constructors that have a
+ * [value class](https://kotlinlang.org/docs/inline-classes.html#mangling) in their signature — as
+ * a parameter or receiver type, or as the return type of a class member. The compiler mangles the
+ * JVM name of such entry points with a hash suffix (and hides such constructors behind a synthetic
+ * one), so Kotlin clients are unaffected but Java clients cannot call them. Prefer giving the
+ * compiled code a Java-callable shape with `@JvmName` (`@get:`/`@set:JvmName` on property
+ * accessors) or `@JvmExposeBoxed`, and apply this annotation to suppress the warning when the
+ * declaration is deliberately Kotlin-only. On a class it covers every declaration inside; on a
+ * primary constructor `val`/`var` parameter it covers the property created from it.
+ *
+ * @param reason why the Java-inaccessible shape is intended.
+ * @param description free-form explanation of the exemption; may be empty only when [reason]
+ *   explains the exemption on its own ([ExemptionReason.FOR_BACKWARDS_COMPATIBILITY],
+ *   [ExemptionReason.API_DESIGN]).
+ */
+@Target(
+    AnnotationTarget.CLASS,
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.CONSTRUCTOR,
+    AnnotationTarget.VALUE_PARAMETER,
+)
+@Retention(AnnotationRetention.BINARY)
+public annotation class IntentionallyMangledJvmName(
     val reason: ExemptionReason = ExemptionReason.OTHER,
     val description: String = "",
 )

@@ -98,6 +98,20 @@ annotation class documents the internal API surface itself.
   `fun <T> MutableList<T>.sort()`), overrides (their signature is fixed by the overridden
   declaration and reported there), and Java platform types (their mutability is not declared in
   Kotlin sources).
+- `PAIR_OR_TRIPLE_PUBLIC_API` — reports the tuple types `Pair` and `Triple` in public
+  signatures: return types, property types, parameter types, and type parameter bounds,
+  including their type arguments (`List<Pair<Int, String>>` exposes the tuple all the same, and
+  a type alias does not change what clients see). Tuple components carry no domain meaning: at
+  the use site `first`/`second`/`third` and positional destructuring reveal nothing about the
+  values, and the fixed shape cannot evolve — adding a value means switching to a different
+  type, breaking clients. Declare a
+  [small class with descriptively named properties](https://kotlinlang.org/docs/data-classes.html)
+  instead, or acknowledge the tuple with `@IntentionallyPairOrTriple` — on the whole
+  declaration, on a single parameter or type parameter, or on a type usage
+  (`List<@IntentionallyPairOrTriple Pair<Int, String>>`), where it covers the annotated type and
+  everything nested in it. Deliberate exceptions: extension receivers (an extension on a tuple
+  serves values the client already holds, as in `fun <A, B> Pair<A, B>.swap()`) and overrides
+  (their signature is fixed by the overridden declaration and reported there).
 - `BOOLEAN_PARAMETER_PUBLIC_API` — reports
   [Boolean value parameters](https://kotlinlang.org/docs/api-guidelines-readability.html#avoid-using-the-boolean-type-as-an-argument)
   of public functions, including nullable (`Boolean?` is a three-state flag) and `vararg` ones
@@ -111,6 +125,22 @@ annotation class documents the internal API surface itself.
   functions — factory functions named after the type they create, like
   `fun Widget(visible: Boolean): Widget` — because a construction site stores data in the named
   type rather than switching an operation mode.
+- `NULLABLE_BOOLEAN_PUBLIC_API` — reports nullable Booleans in public signatures: return types,
+  property types, parameter types, and type parameter bounds (`<T : Boolean?>` admits the same
+  three-state values as a plain `Boolean?`), including their type arguments (`List<Boolean?>`
+  still exposes the unnamed third state, and a type alias does not change what clients see).
+  `Boolean?` models three states but names only two of them: every use site has to know what
+  `null` stands for, and three-state logic hides in two-branch `if`s. Unlike
+  `BOOLEAN_PARAMETER_PUBLIC_API`, constructors are checked too — a stored three-state flag is as
+  opaque as a passed one. Replace the type with an enum class naming all three states, or drop
+  the third state, or acknowledge it with `@IntentionallyNullableBoolean` — on the whole
+  declaration, on a single parameter or type parameter, or on a type usage
+  (`List<@IntentionallyNullableBoolean Boolean?>`), where it covers the annotated type and
+  everything nested in it. Deliberate exceptions: extension receivers (an extension on
+  `Boolean?`, typically a remedial helper like `fun Boolean?.orFalse()`, serves values the
+  client already holds), overrides (their signature is fixed by the overridden declaration and
+  reported there), and Java platform types (their nullability is not declared in Kotlin
+  sources).
 - `REQUIRED_PARAMETER_AFTER_OPTIONAL` — reports required parameters of public functions and
   constructors that are declared after an optional (defaulted or `vararg`) parameter.
   [Parameters should go from the general to the specific](https://kotlinlang.org/docs/api-guidelines-consistency.html#preserve-parameter-order-naming-and-usage):
@@ -137,6 +167,46 @@ annotation class documents the internal API surface itself.
   to them. Keep shared parameters in the same relative order, or acknowledge the difference
   with `@IntentionallyInconsistentParameterOrder`, which also stops the declaration from serving
   as an ordering reference.
+- `INLINE_FUNCTION_WITH_LOGIC` — reports public `inline` functions — and inline property
+  accessors, which inline the same way — whose body does more than delegate to a non-inline
+  function. The compiler copies an inline body into every client binary, so logic placed there
+  — and its bugs — stays frozen in clients compiled against an old library version until they
+  recompile (see the
+  [`@PublishedApi` considerations](https://kotlinlang.org/docs/api-guidelines-backward-compatibility.html#considerations-for-using-the-publishedapi-annotation)).
+  A thin wrapper resolves what only the call site knows — a reified type argument, an inlined
+  lambda — in a single statement that only reads or writes values: parameters, properties,
+  `this`, literals, `T::class`, callable references, nested non-inline calls, an assignment to
+  a property with a non-inline setter (the thin setter shape), an `as`/`as?` cast on the
+  delegate's result, and lambda literals that only forward such calls (the `impl { block() }`
+  shape a `crossinline` wrapper needs). Anything else counts as logic: control flow of any
+  kind, operator and infix calls (arithmetic compiles inline into the client), string
+  templates, local variables, multiple statements — and calls to other inline functions or
+  inline accessors, whose bodies the inliner drags into the client transitively. For the same
+  reason `@PublishedApi internal` inline functions are checked like public ones. Extract the
+  logic into a non-inline function (`@PublishedApi internal` when it should stay out of the
+  public API) and delegate to it, or acknowledge the inlined logic with
+  `@IntentionallyInlinedLogic` — on the function, or on the property for its accessors.
+- `MANGLED_JVM_NAME_PUBLIC_API` — reports public functions, properties, and constructors that
+  Java sources cannot call because a
+  [value class](https://kotlinlang.org/docs/inline-classes.html#mangling) appears in their
+  signature. Value classes compile to their underlying type, so the JVM backend mangles the
+  affected names with a hash suffix (`take(id: UserId)` compiles to `take-4ZD5Yi0`), and the `-`
+  makes them illegal Java identifiers; a constructor with a value class parameter is hidden
+  behind a synthetic one instead. A name is mangled by a value class among the value parameters,
+  the extension receiver, or the context parameters — nullable types and type parameters
+  bounded by a value class included — and by a value class *return* type on class members
+  (top-level callables merely returning a value class, and value classes inside type arguments
+  like `List<UserId>`, keep their JVM name and are not reported). Restore a Java-callable shape
+  with `@JvmName` on functions and `@get:`/`@set:JvmName` on property accessors, or expose boxed
+  variants with `@JvmExposeBoxed` (the only option for constructors and overridable members,
+  which `@JvmName` does not accept), or acknowledge a deliberately Kotlin-only declaration with
+  `@IntentionallyMangledJvmName` — on the declaration, on a primary constructor `val`/`var`
+  parameter for the property made from it, or on a class, covering every declaration inside.
+  Deliberate exceptions: non-JVM compilations (the checker only registers for JVM ones), members
+  and constructors of the value class itself (declaring the public value class is the deliberate
+  choice — `@JvmName` is not even applicable inside), `suspend` functions (not Java-friendly
+  regardless of the name), overrides (their signature is fixed by the overridden declaration and
+  reported there), and `@JvmSynthetic` declarations (hidden from Java on purpose).
 - `EXEMPTION_WITHOUT_EXPLANATION` — reports `@Intentionally*` exemption annotations whose `reason` is `OTHER`
   (the default) while the `description` is empty: such an exemption explains nothing. Fires on
   every usage of the exemption annotations, regardless of the annotated declaration's
@@ -186,9 +256,13 @@ libsWatchdog {
     dataClassPublicApi.set(WatchdogSeverity.WARNING)
     statefulClassWithoutToString.set(WatchdogSeverity.WARNING)
     mutableCollectionPublicApi.set(WatchdogSeverity.WARNING)
+    pairOrTriplePublicApi.set(WatchdogSeverity.WARNING)
     booleanParameterPublicApi.set(WatchdogSeverity.WARNING)
+    nullableBooleanPublicApi.set(WatchdogSeverity.WARNING)
     requiredParameterAfterOptional.set(WatchdogSeverity.WARNING)
     inconsistentParameterOrderInOverloads.set(WatchdogSeverity.WARNING)
+    inlineFunctionWithLogic.set(WatchdogSeverity.WARNING)
+    mangledJvmNamePublicApi.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTarget.set(WatchdogSeverity.WARNING)
     dslMarkerWithoutExplicitTargets.set(WatchdogSeverity.WARNING)
     dslMarkerNoopTypePosition.set(WatchdogSeverity.WARNING)
@@ -208,8 +282,9 @@ demoted diagnostics only show up in failing builds with `-Xreport-all-warnings`.
 - [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) — `@IntentionallyOpen`,
   `@IntentionallyExhaustive`, `@IntentionallyUndocumented`, `@IntentionallyFunctionTypeAlias`,
   `@IntentionallyDataClass`, `@IntentionallyWithoutToString`, `@IntentionallyMutableCollection`,
-  `@IntentionallyBooleanParameter`, `@IntentionallyRequiredParameterAfterOptional`,
-  `@IntentionallyInconsistentParameterOrder`,
+  `@IntentionallyPairOrTriple`, `@IntentionallyBooleanParameter`, `@IntentionallyNullableBoolean`,
+  `@IntentionallyRequiredParameterAfterOptional`,
+  `@IntentionallyInconsistentParameterOrder`, `@IntentionallyInlinedLogic`,
   `@IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility`, `@InternalAnnotationMarker`,
   and the `ExemptionReason` enum.
 - [`:gradle-plugin`](gradle-plugin/src) — applies the compiler plugin and the annotations

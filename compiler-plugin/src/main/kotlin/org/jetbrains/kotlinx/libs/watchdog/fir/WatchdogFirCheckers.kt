@@ -11,6 +11,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirTypeAliasChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.languageVersionSettings
+import org.jetbrains.kotlin.fir.moduleData
+import org.jetbrains.kotlin.platform.jvm.isJvm
 
 /**
  * The checkers guard a library's public API surface, so they only run in modules compiled with
@@ -53,6 +55,10 @@ class WatchdogFirCheckers(
                 .takeIf { enabled },
             MutableCollectionChecker(severities)
                 .unlessDisabled(WatchdogDiagnostics.MUTABLE_COLLECTION_PUBLIC_API),
+            PairOrTripleChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.PAIR_OR_TRIPLE_PUBLIC_API),
+            NullableBooleanChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.NULLABLE_BOOLEAN_PUBLIC_API),
         )
 
         // Dispatched to named functions and constructors alike: both declare parameter lists.
@@ -72,6 +78,14 @@ class WatchdogFirCheckers(
         // Dispatched to every callable: functions, properties, accessors, and value parameters.
         override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> = setOfNotNull(
             DslMarkerTypePositionChecker(severities).unlessDisabled(WatchdogDiagnostics.DSL_MARKER_NOOP_TYPE_POSITION),
+            // Watches properties besides functions: inline accessors are inlined the same way.
+            InlineFunctionLogicChecker(severities)
+                .unlessDisabled(WatchdogDiagnostics.INLINE_FUNCTION_WITH_LOGIC),
+            // Name mangling is a JVM-ABI concern with no counterpart on other backends, so the
+            // checker only registers for JVM compilations.
+            MangledJvmNameChecker(severities)
+                .takeIf { session.moduleData.platform.isJvm() }
+                ?.unlessDisabled(WatchdogDiagnostics.MANGLED_JVM_NAME_PUBLIC_API),
         )
     }
 }

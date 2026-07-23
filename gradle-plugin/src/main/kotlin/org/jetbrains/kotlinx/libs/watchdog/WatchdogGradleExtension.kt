@@ -39,14 +39,26 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
     /** Severity of `MUTABLE_COLLECTION_PUBLIC_API`: mutable collections and arrays in public signatures. */
     public val mutableCollectionPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
+    /** Severity of `PAIR_OR_TRIPLE_PUBLIC_API`: `Pair` and `Triple` in public signatures. */
+    public val pairOrTriplePublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
     /** Severity of `BOOLEAN_PARAMETER_PUBLIC_API`: Boolean parameters of public functions. */
     public val booleanParameterPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** Severity of `NULLABLE_BOOLEAN_PUBLIC_API`: nullable Booleans in public signatures. */
+    public val nullableBooleanPublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
     /** Severity of `REQUIRED_PARAMETER_AFTER_OPTIONAL`: required parameters declared after optional ones. */
     public val requiredParameterAfterOptional: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
     /** Severity of `INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS`: overloads disagreeing on shared parameter order. */
     public val inconsistentParameterOrderInOverloads: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** Severity of `INLINE_FUNCTION_WITH_LOGIC`: inline functions and accessors doing more than delegating. */
+    public val inlineFunctionWithLogic: Property<WatchdogSeverity> = objectFactory.severityProperty()
+
+    /** Severity of `MANGLED_JVM_NAME_PUBLIC_API`: value classes mangling public JVM signatures. */
+    public val mangledJvmNamePublicApi: Property<WatchdogSeverity> = objectFactory.severityProperty()
 
     /** Severity of `DSL_MARKER_NOOP_TARGET`: DSL marker targets without scope-control effect. */
     public val dslMarkerNoopTarget: Property<WatchdogSeverity> = objectFactory.severityProperty()
@@ -66,9 +78,13 @@ public open class WatchdogGradleExtension(objectFactory: ObjectFactory) {
         "DATA_CLASS_PUBLIC_API" to dataClassPublicApi,
         "STATEFUL_CLASS_WITHOUT_TO_STRING" to statefulClassWithoutToString,
         "MUTABLE_COLLECTION_PUBLIC_API" to mutableCollectionPublicApi,
+        "PAIR_OR_TRIPLE_PUBLIC_API" to pairOrTriplePublicApi,
         "BOOLEAN_PARAMETER_PUBLIC_API" to booleanParameterPublicApi,
+        "NULLABLE_BOOLEAN_PUBLIC_API" to nullableBooleanPublicApi,
         "REQUIRED_PARAMETER_AFTER_OPTIONAL" to requiredParameterAfterOptional,
         "INCONSISTENT_PARAMETER_ORDER_IN_OVERLOADS" to inconsistentParameterOrderInOverloads,
+        "INLINE_FUNCTION_WITH_LOGIC" to inlineFunctionWithLogic,
+        "MANGLED_JVM_NAME_PUBLIC_API" to mangledJvmNamePublicApi,
         "DSL_MARKER_NOOP_TARGET" to dslMarkerNoopTarget,
         "DSL_MARKER_WITHOUT_EXPLICIT_TARGETS" to dslMarkerWithoutExplicitTargets,
         "DSL_MARKER_NOOP_TYPE_POSITION" to dslMarkerNoopTypePosition,

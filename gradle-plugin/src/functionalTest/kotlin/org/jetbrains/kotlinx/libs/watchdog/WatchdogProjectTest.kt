@@ -24,9 +24,13 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("e: ", "bakes its constructor property list")
         result.assertDiagnosticReported("e: ", "neither declares nor inherits a `toString`")
         result.assertDiagnosticReported("e: ", "exposes the mutable collection type")
+        result.assertDiagnosticReported("e: ", "exposes the tuple type")
         result.assertDiagnosticReported("e: ", "takes the Boolean parameter")
+        result.assertDiagnosticReported("e: ", "exposes a nullable Boolean")
         result.assertDiagnosticReported("e: ", "is required but declared after an optional parameter")
         result.assertDiagnosticReported("e: ", "appear in the opposite order in another overload")
+        result.assertDiagnosticReported("e: ", "does more than delegate to a non-inline function")
+        result.assertDiagnosticReported("e: ", "compiled JVM name is mangled")
         result.assertDiagnosticReported("e: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("e: ", "declares no explicit @Target")
         result.assertDiagnosticReported("e: ", "has no effect on this parameter type")
@@ -44,9 +48,13 @@ class WatchdogProjectTest {
                     dataClassPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     statefulClassWithoutToString.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     mutableCollectionPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    pairOrTriplePublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     booleanParameterPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    nullableBooleanPublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     requiredParameterAfterOptional.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     inconsistentParameterOrderInOverloads.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    inlineFunctionWithLogic.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
+                    mangledJvmNamePublicApi.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTarget.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerWithoutExplicitTargets.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
                     dslMarkerNoopTypePosition.set(org.jetbrains.kotlinx.libs.watchdog.WatchdogSeverity.WARNING)
@@ -64,9 +72,13 @@ class WatchdogProjectTest {
         result.assertDiagnosticReported("w: ", "bakes its constructor property list")
         result.assertDiagnosticReported("w: ", "neither declares nor inherits a `toString`")
         result.assertDiagnosticReported("w: ", "exposes the mutable collection type")
+        result.assertDiagnosticReported("w: ", "exposes the tuple type")
         result.assertDiagnosticReported("w: ", "takes the Boolean parameter")
+        result.assertDiagnosticReported("w: ", "exposes a nullable Boolean")
         result.assertDiagnosticReported("w: ", "is required but declared after an optional parameter")
         result.assertDiagnosticReported("w: ", "appear in the opposite order in another overload")
+        result.assertDiagnosticReported("w: ", "does more than delegate to a non-inline function")
+        result.assertDiagnosticReported("w: ", "compiled JVM name is mangled")
         result.assertDiagnosticReported("w: ", "allows the FUNCTION annotation target")
         result.assertDiagnosticReported("w: ", "declares no explicit @Target")
         result.assertDiagnosticReported("w: ", "has no effect on this parameter type")
@@ -148,9 +160,13 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("bakes its constructor property list"))
         assertFalse(result.output.contains("neither declares nor inherits a `toString`"))
         assertFalse(result.output.contains("exposes the mutable collection type"))
+        assertFalse(result.output.contains("exposes the tuple type"))
         assertFalse(result.output.contains("takes the Boolean parameter"))
+        assertFalse(result.output.contains("exposes a nullable Boolean"))
         assertFalse(result.output.contains("is required but declared after an optional parameter"))
         assertFalse(result.output.contains("appear in the opposite order in another overload"))
+        assertFalse(result.output.contains("does more than delegate to a non-inline function"))
+        assertFalse(result.output.contains("compiled JVM name is mangled"))
         assertFalse(result.output.contains("DSL marker"))
     }
 
@@ -168,9 +184,13 @@ class WatchdogProjectTest {
         assertFalse(result.output.contains("bakes its constructor property list"))
         assertFalse(result.output.contains("neither declares nor inherits a `toString`"))
         assertFalse(result.output.contains("exposes the mutable collection type"))
+        assertFalse(result.output.contains("exposes the tuple type"))
         assertFalse(result.output.contains("takes the Boolean parameter"))
+        assertFalse(result.output.contains("exposes a nullable Boolean"))
         assertFalse(result.output.contains("is required but declared after an optional parameter"))
         assertFalse(result.output.contains("appear in the opposite order in another overload"))
+        assertFalse(result.output.contains("does more than delegate to a non-inline function"))
+        assertFalse(result.output.contains("compiled JVM name is mangled"))
         assertFalse(result.output.contains("DSL marker"))
     }
 
@@ -239,8 +259,14 @@ private val unacknowledgedFile = """
     /** A function handing out the library's mutable state. */
     public fun leakState(): MutableList<String> = mutableListOf()
 
+    /** A function pairing coordinates without naming them. */
+    public fun locateOrigin(): Pair<Int, Int> = 0 to 0
+
     /** A function switched by an opaque positional flag. */
     public fun toggleWork(enabled: Boolean) {}
+
+    /** A query returning a silent three-state flag. */
+    public fun lastKnownState(): Boolean? = null
 
     /** A function declaring a required parameter after an optional one. */
     public fun retryWork(retries: Int = 3, host: String) {}
@@ -250,6 +276,10 @@ private val unacknowledgedFile = """
 
     /** An overload breaking the parameter order convention. */
     public fun drawShape(y: Int, x: Int, scale: Double) {}
+
+    /** An inline function computing inline instead of delegating. */
+    @Suppress("NOTHING_TO_INLINE")
+    public inline fun squared(value: Int): Int = value * value
 
     /** A DSL marker with a target on which it has no effect. */
     @DslMarker
@@ -267,6 +297,17 @@ private val unacknowledgedFile = """
 
     /** A parameter type carrying a DSL marker that restricts nothing. */
     public fun processTag(tag: @ScopedDsl UnprotectedOpenClass): Unit = Unit
+
+    /**
+     * A user handle compiled to its underlying type.
+     *
+     * @param raw the raw handle value.
+     */
+    @JvmInline
+    public value class UserHandle(public val raw: String)
+
+    /** A lookup whose JVM name is mangled by the value class parameter. */
+    public fun findUser(handle: UserHandle) {}
 """.trimIndent()
 
 @Suppress("RedundantVisibilityModifier")
@@ -353,9 +394,17 @@ private val acknowledgedFile = """
     /** Deliberately shared mutable batches, acknowledged on the type usage. */
     public fun sharedBatches(): List<@IntentionallyMutableCollection(reason = ExemptionReason.API_DESIGN) MutableList<String>> = emptyList()
 
+    /** A deliberately exposed coordinate pair. */
+    @IntentionallyPairOrTriple(reason = ExemptionReason.API_DESIGN)
+    public fun originPoint(): Pair<Int, Int> = 0 to 0
+
     /** A deliberately Boolean-switched toggle. */
     @IntentionallyBooleanParameter(reason = ExemptionReason.API_DESIGN)
     public fun setEnabled(enabled: Boolean) {}
+
+    /** A deliberately three-state query result. */
+    @IntentionallyNullableBoolean(reason = ExemptionReason.EXTERNAL_CONTRACT, description = "Mirrors the wire format's optional flag.")
+    public fun consentState(): Boolean? = null
 
     /** A legacy signature keeping its required parameter behind an optional one. */
     @IntentionallyRequiredParameterAfterOptional(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
@@ -367,6 +416,23 @@ private val acknowledgedFile = """
     /** An overload with a deliberately different parameter order. */
     @IntentionallyInconsistentParameterOrder(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public fun renderShape(y: Int, x: Int, alpha: Long) {}
+
+    /** A deliberately inlined fast path. */
+    @IntentionallyInlinedLogic(reason = ExemptionReason.API_DESIGN)
+    @Suppress("NOTHING_TO_INLINE")
+    public inline fun cubed(value: Int): Int = value * value * value
+
+    /**
+     * An account handle compiled to its underlying type.
+     *
+     * @param raw the raw handle value.
+     */
+    @JvmInline
+    public value class AccountHandle(public val raw: String)
+
+    /** A deliberately Kotlin-only lookup. */
+    @IntentionallyMangledJvmName(reason = ExemptionReason.API_DESIGN)
+    public fun findAccount(handle: AccountHandle) {}
 
     /** A DSL marker with only effective targets. */
     @DslMarker

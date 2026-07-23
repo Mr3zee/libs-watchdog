@@ -110,6 +110,12 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
      */
     val MUTABLE_COLLECTION_PUBLIC_API by configurable3<KtElement, String, Name, Name>()
 
+    /**
+     * Parameters: declaration kind in words, declaration name, the tuple type's name. Reported
+     * on the offending type reference.
+     */
+    val PAIR_OR_TRIPLE_PUBLIC_API by configurable3<KtElement, String, Name, Name>()
+
     /** Parameters: the parameter name, the callable name. Reported on the parameter name. */
     val REQUIRED_PARAMETER_AFTER_OPTIONAL by configurable2<KtParameter, Name, Name>(NAME_IDENTIFIER)
 
@@ -118,6 +124,18 @@ object WatchdogDiagnostics : KtDiagnosticsContainer() {
 
     /** Parameters: the function name, the parameter name. Reported on the parameter name. */
     val BOOLEAN_PARAMETER_PUBLIC_API by configurable2<KtParameter, Name, Name>(NAME_IDENTIFIER)
+
+    /**
+     * Parameters: declaration kind in words, declaration name. Reported on the offending type
+     * reference.
+     */
+    val NULLABLE_BOOLEAN_PUBLIC_API by configurable2<KtElement, String, Name>()
+
+    /** Parameters: the inlined declaration kind in words, the declaration name. */
+    val INLINE_FUNCTION_WITH_LOGIC by configurable2<KtDeclaration, String, Name>(NAME_IDENTIFIER)
+
+    /** Parameters: declaration kind in words, declaration name, the value class's name. */
+    val MANGLED_JVM_NAME_PUBLIC_API by configurable3<KtDeclaration, String, Name, Name>(NAME_IDENTIFIER)
 
     /**
      * Parameters: the exemption annotation name, the reason that needs a description. Reported
@@ -257,6 +275,19 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
             rendererC = NAME,
         )
         map.put(
+            diagnostic = WatchdogDiagnostics.PAIR_OR_TRIPLE_PUBLIC_API,
+            message = "The {0} ''{1}'' exposes the tuple type ''{2}''. Tuple components carry " +
+                    "no domain meaning: at the use site `first`/`second`/`third` and positional " +
+                    "destructuring reveal nothing about the values, and the fixed shape cannot " +
+                    "evolve — adding a value means switching to a different type, breaking " +
+                    "clients. Declare a small class with descriptively named properties " +
+                    "instead, or mark the declaration with @IntentionallyPairOrTriple if " +
+                    "exposing the tuple is intended.",
+            rendererA = STRING,
+            rendererB = NAME,
+            rendererC = NAME,
+        )
+        map.put(
             diagnostic = WatchdogDiagnostics.REQUIRED_PARAMETER_AFTER_OPTIONAL,
             message = "The parameter ''{0}'' of ''{1}'' is required but declared after an " +
                     "optional parameter, so it cannot be passed positionally without re-stating " +
@@ -289,6 +320,29 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "parameter with an enum class, or mark it with " +
                     "@IntentionallyBooleanParameter if the Boolean parameter is intended.",
             rendererA = NAME,
+            rendererB = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.NULLABLE_BOOLEAN_PUBLIC_API,
+            message = "The {0} ''{1}'' exposes a nullable Boolean. `Boolean?` models three " +
+                    "states but names only two of them, so every use site has to know what " +
+                    "`null` stands for, and three-state logic hides in two-branch `if`s. " +
+                    "Replace it with an enum class naming all three states, or drop the third " +
+                    "state, or mark the declaration with @IntentionallyNullableBoolean if the " +
+                    "nullable Boolean is intended.",
+            rendererA = STRING,
+            rendererB = NAME,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.INLINE_FUNCTION_WITH_LOGIC,
+            message = "The {0} ''{1}'' does more than delegate to a non-inline " +
+                    "function. The compiler copies an inline body into every client binary, so " +
+                    "logic placed there — and its bugs — stays frozen in clients compiled " +
+                    "against an old library version until they recompile. Extract the logic " +
+                    "into a non-inline function (@PublishedApi internal if it should stay out " +
+                    "of the public API) and delegate to it, or mark the declaration with " +
+                    "@IntentionallyInlinedLogic if inlining the logic is intended.",
+            rendererA = STRING,
             rendererB = NAME,
         )
         map.put(
@@ -331,6 +385,19 @@ private object WatchdogErrorMessages : BaseDiagnosticRendererFactory() {
                     "to the class or to a receiver position, or remove it.",
             rendererA = NAME,
             rendererB = STRING,
+        )
+        map.put(
+            diagnostic = WatchdogDiagnostics.MANGLED_JVM_NAME_PUBLIC_API,
+            message = "The {0} ''{1}'' has the value class ''{2}'' in its signature, so its " +
+                    "compiled JVM name is mangled — or, for a constructor, hidden behind a " +
+                    "synthetic one — and Java sources cannot call it. Kotlin clients are " +
+                    "unaffected. Give the compiled code a Java-callable shape with @JvmName " +
+                    "(@get:JvmName/@set:JvmName on property accessors) or with @JvmExposeBoxed, " +
+                    "or mark the declaration with @IntentionallyMangledJvmName if Java callers " +
+                    "are not supported.",
+            rendererA = STRING,
+            rendererB = NAME,
+            rendererC = NAME,
         )
     }
 

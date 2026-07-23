@@ -22,9 +22,13 @@ open class WatchdogProject(
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyDataClass",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyWithoutToString",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyMutableCollection",
+        "org.jetbrains.kotlinx.libs.watchdog.IntentionallyPairOrTriple",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyBooleanParameter",
+        "org.jetbrains.kotlinx.libs.watchdog.IntentionallyNullableBoolean",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyRequiredParameterAfterOptional",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyInconsistentParameterOrder",
+        "org.jetbrains.kotlinx.libs.watchdog.IntentionallyInlinedLogic",
+        "org.jetbrains.kotlinx.libs.watchdog.IntentionallyMangledJvmName",
         "org.jetbrains.kotlinx.libs.watchdog.IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility",
         "org.jetbrains.kotlinx.libs.watchdog.InternalAnnotationMarker",
     )

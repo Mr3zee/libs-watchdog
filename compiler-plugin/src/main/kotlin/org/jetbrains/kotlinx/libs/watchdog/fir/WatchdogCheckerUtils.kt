@@ -32,9 +32,13 @@ internal object WatchdogClassIds {
     val IntentionallyDataClass: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyDataClass"))
     val IntentionallyWithoutToString: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyWithoutToString"))
     val IntentionallyMutableCollection: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyMutableCollection"))
+    val IntentionallyPairOrTriple: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyPairOrTriple"))
     val IntentionallyBooleanParameter: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyBooleanParameter"))
+    val IntentionallyNullableBoolean: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyNullableBoolean"))
     val IntentionallyRequiredParameterAfterOptional: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyRequiredParameterAfterOptional"))
     val IntentionallyInconsistentParameterOrder: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyInconsistentParameterOrder"))
+    val IntentionallyInlinedLogic: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyInlinedLogic"))
+    val IntentionallyMangledJvmName: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyMangledJvmName"))
     val IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility: ClassId = ClassId(annotationsPackage, Name.identifier("IntentionallyWrongDslMarkerTargetsForBackwardsCompatibility"))
     val InternalAnnotationMarker: ClassId = ClassId(annotationsPackage, Name.identifier("InternalAnnotationMarker"))
 
@@ -53,9 +57,13 @@ internal object WatchdogClassIds {
         IntentionallyDataClass,
         IntentionallyWithoutToString,
         IntentionallyMutableCollection,
+        IntentionallyPairOrTriple,
         IntentionallyBooleanParameter,
+        IntentionallyNullableBoolean,
         IntentionallyRequiredParameterAfterOptional,
         IntentionallyInconsistentParameterOrder,
+        IntentionallyInlinedLogic,
+        IntentionallyMangledJvmName,
     )
 }
 

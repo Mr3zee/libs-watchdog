@@ -8,8 +8,12 @@ public class org/jetbrains/kotlinx/libs/watchdog/WatchdogGradleExtension {
 	public final fun getExhaustivePublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getFunctionTypeAliasPublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getInconsistentParameterOrderInOverloads ()Lorg/gradle/api/provider/Property;
+	public final fun getInlineFunctionWithLogic ()Lorg/gradle/api/provider/Property;
+	public final fun getMangledJvmNamePublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getMutableCollectionPublicApi ()Lorg/gradle/api/provider/Property;
+	public final fun getNullableBooleanPublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getOpenApiWithoutSubclassOptIn ()Lorg/gradle/api/provider/Property;
+	public final fun getPairOrTriplePublicApi ()Lorg/gradle/api/provider/Property;
 	public final fun getRequiredParameterAfterOptional ()Lorg/gradle/api/provider/Property;
 	public final fun getStatefulClassWithoutToString ()Lorg/gradle/api/provider/Property;
 	public final fun getSubclassOptInWithoutMarkers ()Lorg/gradle/api/provider/Property;
